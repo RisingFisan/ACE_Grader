@@ -1,0 +1,30 @@
+<header class="px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between border-b border-zinc-100 py-3">
+    <div class="flex items-center gap-4">
+      <a href="/">
+        <p class="font-bold text-xl text-violet-800" title="Automatic Code Evaluator and Grader">ACE Grader</p>
+      </a>
+    </div>
+    <div class="flex items-center gap-4">
+      <p>This area will have login links and stuff...</p>
+    </div>
+  </div>
+</header>
+<main class="px-4 py-20 sm:px-6 lg:px-8">
+  <div class="mx-auto lg:max-w-[66%]">
+    <.flash kind={:info} title="Success!" flash={@flash} />
+    <.flash kind={:error} title="Error!" flash={@flash} />
+    <.flash
+      id="disconnected"
+      kind={:error}
+      title="We can't find the internet"
+      close={false}
+      autoshow={false}
+      phx-disconnected={show("#disconnected")}
+      phx-connected={hide("#disconnected")}
+    >
+      Attempting to reconnect <Heroicons.arrow_path class="ml-1 w-3 h-3 inline animate-spin" />
+    </.flash>
+    <%= @inner_content %>
+  </div>
+</main>

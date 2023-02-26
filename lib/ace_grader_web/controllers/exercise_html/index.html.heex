@@ -1,0 +1,25 @@
+<.header>
+  Listing Exercises
+  <:actions>
+    <.link href={~p"/exercises/new"}>
+      <.button>New Exercise</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="exercises" rows={@exercises} row_click={&JS.navigate(~p"/exercises/#{&1}")}>
+  <:col :let={exercise} label="Title"><%= exercise.title %></:col>
+  <:col :let={exercise} label="Description"><%= exercise.description %></:col>
+  <:col :let={exercise} label="Public"><%= exercise.public %></:col>
+  <:action :let={exercise}>
+    <div class="sr-only">
+      <.link navigate={~p"/exercises/#{exercise}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/exercises/#{exercise}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={exercise}>
+    <.link href={~p"/exercises/#{exercise}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
