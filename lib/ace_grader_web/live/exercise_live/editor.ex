@@ -1,4 +1,4 @@
-defmodule AceGraderWeb.EditorLive.Index do
+defmodule AceGraderWeb.ExerciseLive.Editor do
   use AceGraderWeb, :live_view
   alias AceGrader.Exercises
   alias AceGrader.Submissions

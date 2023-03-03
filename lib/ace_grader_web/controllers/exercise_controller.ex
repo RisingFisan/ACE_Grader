@@ -11,7 +11,7 @@ defmodule AceGraderWeb.ExerciseController do
 
   def new(conn, _params) do
     changeset = Exercises.change_exercise(%Exercise{})
-    render(conn, :new, changeset: changeset)
+    render(conn, :form, changeset: changeset)
   end
 
   def create(conn, %{"exercise" => exercise_params}) do
@@ -22,7 +22,7 @@ defmodule AceGraderWeb.ExerciseController do
         |> redirect(to: ~p"/exercises/#{exercise}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        render(conn, :form, changeset: changeset)
     end
   end
 
@@ -39,7 +39,7 @@ defmodule AceGraderWeb.ExerciseController do
   def edit(conn, %{"id" => id}) do
     exercise = Exercises.get_exercise!(id)
     changeset = Exercises.change_exercise(exercise)
-    render(conn, :edit, exercise: exercise, changeset: changeset)
+    render(conn, :form, exercise: exercise, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "exercise" => exercise_params}) do
@@ -52,7 +52,8 @@ defmodule AceGraderWeb.ExerciseController do
         |> redirect(to: ~p"/exercises/#{exercise}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, exercise: exercise, changeset: changeset)
+        IO.inspect(changeset)
+        render(conn, :form, exercise: exercise, changeset: changeset)
     end
   end
 

@@ -88,6 +88,8 @@ defmodule AceGraderWeb do
       import AceGraderWeb.CoreComponents
       import AceGraderWeb.Gettext
 
+      import AceGraderWeb.MyComponents
+
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 

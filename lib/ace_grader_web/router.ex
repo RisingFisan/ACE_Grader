@@ -19,11 +19,13 @@ defmodule AceGraderWeb.Router do
 
     get "/", PageController, :home
 
-    resources "/exercises", ExerciseController do
-      resources "/submissions", SubmissionController, only: [:delete]
+    live "/exercises/new", ExerciseLive.Form
+    live "/exercises/:id/edit", ExerciseLive.Form
+    live "/exercises/:id/editor", ExerciseLive.Editor
+    resources "/exercises", ExerciseController, except: [:new, :create, :edit, :update] do
+      delete "/submissions/:id", SubmissionController, :delete
       live "/submissions/:id", SubmissionLive.Show
     end
-    live "/exercises/:id/editor", EditorLive.Index
   end
 
   # Other scopes may use custom stacks.

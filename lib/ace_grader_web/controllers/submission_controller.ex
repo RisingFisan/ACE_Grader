@@ -2,7 +2,7 @@ defmodule AceGraderWeb.SubmissionController do
   use AceGraderWeb, :controller
 
   alias AceGrader.Submissions
-  alias AceGrader.Submissions.Submission
+  # alias AceGrader.Submissions.Submission
   alias AceGrader.Exercises
 
   # def index(conn, _params) do

@@ -37,7 +37,7 @@ defmodule AceGrader.Exercises do
   """
   def get_exercise!(id, preloads \\ true) do
     Repo.get!(Exercise, id)
-    |> Repo.preload(if preloads, do: [:submissions], else: [])
+    |> Repo.preload(if preloads, do: [:submissions, :tests], else: [])
   end
 
   @doc """
@@ -103,7 +103,7 @@ defmodule AceGrader.Exercises do
   """
   def change_exercise(%Exercise{} = exercise, attrs \\ %{}) do
     exercise
-    |> Repo.preload(:submissions)
+    |> Repo.preload([:submissions, :tests])
     |> Exercise.changeset(attrs)
   end
 end
