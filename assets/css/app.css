@@ -13,7 +13,7 @@
     @apply z-10 w-full h-full absolute bg-[#282a36] text-white;
 }
 
-#editor { 
+.editor { 
     position: absolute;
     width: 100%;
     height: 100%;

@@ -4,9 +4,11 @@ defmodule AceGrader.Submissions do
   """
 
   import Ecto.Query, warn: false
+  alias Plug.Adapters.Test
   alias AceGrader.Repo
 
   alias AceGrader.Submissions.Submission
+  alias AceGrader.Submissions.Test
 
   @doc """
   Returns the list of submissions.
@@ -35,7 +37,10 @@ defmodule AceGrader.Submissions do
       ** (Ecto.NoResultsError)
 
   """
-  def get_submission!(id), do: Repo.get!(Submission, id)
+  def get_submission!(id) do
+    Repo.get!(Submission, id)
+    |> Repo.preload([:tests])
+  end
 
   @doc """
   Creates a submission.
@@ -99,6 +104,44 @@ defmodule AceGrader.Submissions do
 
   """
   def change_submission(%Submission{} = submission, attrs \\ %{}) do
-    Submission.changeset(submission, attrs)
+    submission
+    |> Repo.preload([:tests])
+    |> Submission.changeset(attrs)
+  end
+
+  @doc """
+  Gets a single submission test.
+
+  Raises `Ecto.NoResultsError` if the Test does not exist.
+
+  ## Examples
+
+      iex> get_test!(123)
+      %Test{}
+
+      iex> get_test!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_test!(id) do
+    Repo.get!(Test, id)
+  end
+
+  @doc """
+  Updates a test.
+
+  ## Examples
+
+      iex> update_test(test, %{field: new_value})
+      {:ok, %Test{}}
+
+      iex> update_test(test, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_test(%Test{} = test, attrs) do
+    test
+    |> Test.changeset(attrs)
+    |> Repo.update()
   end
 end

@@ -16,7 +16,7 @@
   <.input field={f[:public]} type="checkbox" label="Public" />
   <h2>Tests</h2>
   <.inputs_for :let={tf} field={f[:tests]}>
-    <.input field={tf[:value]} type="textarea" label="Value" />
+    <.input field={tf[:expected_output]} type="textarea" label="Value" />
   </.inputs_for>
   <.button>New Test</.button>
   <:actions>

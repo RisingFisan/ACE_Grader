@@ -7,6 +7,7 @@ defmodule AceGrader.Exercises do
   alias AceGrader.Repo
 
   alias AceGrader.Exercises.Exercise
+  alias AceGrader.Submissions.Submission
 
   @doc """
   Returns the list of exercises.
@@ -37,7 +38,7 @@ defmodule AceGrader.Exercises do
   """
   def get_exercise!(id, preloads \\ true) do
     Repo.get!(Exercise, id)
-    |> Repo.preload(if preloads, do: [:submissions, :tests], else: [])
+    |> Repo.preload(if preloads, do: [:tests, submissions: from(s in Submission, order_by: s.inserted_at)], else: [])
   end
 
   @doc """
@@ -103,7 +104,7 @@ defmodule AceGrader.Exercises do
   """
   def change_exercise(%Exercise{} = exercise, attrs \\ %{}) do
     exercise
-    |> Repo.preload([:submissions, :tests])
+    |> Repo.preload([:tests, :submissions])
     |> Exercise.changeset(attrs)
   end
 end

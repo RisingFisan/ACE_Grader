@@ -8,7 +8,8 @@ defmodule AceGrader.Submissions.Submission do
     field :errors, :string
     field :success, :boolean, default: false
     field :executed, :boolean, default: false
-    field :output, :string
+
+    has_many :tests, AceGrader.Submissions.Test
 
     belongs_to :exercise, AceGrader.Exercises.Exercise
 
@@ -18,7 +19,8 @@ defmodule AceGrader.Submissions.Submission do
   @doc false
   def changeset(submission, attrs) do
     submission
-    |> cast(attrs, [:code, :exercise_id, :warnings, :errors, :success, :executed, :output])
+    |> cast(attrs, [:code, :exercise_id, :warnings, :errors, :success, :executed])
     |> validate_required([:code, :exercise_id])
+    |> cast_assoc(:tests)
   end
 end

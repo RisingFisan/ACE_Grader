@@ -5,6 +5,33 @@ defmodule AceGraderWeb.MyComponents do
   # alias Phoenix.LiveView.JS
   # import AceGraderWeb.Gettext
 
+  attr :tests, :list
+
+  def test_results(assigns) do
+    ~H"""
+    <div class="space-y-4">
+      <h2 class="text-2xl font-bold">Tests</h2>
+      <div class="space-y-4">
+        <div :for={{test, i} <- @tests |> Enum.with_index(1)} class="grid grid-cols-[64px_1fr] items-center">
+          <h3 class="font-light text-xl">Test <%= i %></h3>
+          <div class="bg-gray-200 rounded-xl px-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 items-center">
+            <p>Input</p><p><%= test.input %></p>
+            <p>Expected output</p><%= test.expected_output %>
+            <p>Actual output</p>
+            <%= if test.actual_output != nil do %>
+              <%= test.actual_output %>
+            <% else %>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
+              </svg>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   attr :class, :string, default: nil
 
   def ace_grader_logo(assigns) do

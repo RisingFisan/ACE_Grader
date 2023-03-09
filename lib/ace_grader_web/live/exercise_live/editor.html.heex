@@ -1,38 +1,46 @@
-<h1 class="text-3xl font-bold"><%= @exercise.title %></h1>
-<p><%= @exercise.description %></p>
-
-<div id="editor_container">
-  <div id="editor_loading" class="flex items-center justify-center flex-col text-2xl gap-2" phx-update="ignore">
-    <p>Loading editor</p>
-    <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
+<div class="space-y-8">
+<div class="flex items-center justify-between">
+  <div>
+    <h1 class="text-3xl font-bold"><%= @exercise.title %></h1>
+    <p><%= @exercise.description %></p>
   </div>
+  <.back navigate={~p"/exercises/#{@exercise}"}>Back to exercise</.back>
+</div>
 
-  <div id="editor" phx-hook="Editor" phx-update="ignore">int main() {
+<div>
+  <div id="editor_container" phx-update="ignore">
+    <div id="editor_loading" class="flex items-center justify-center flex-col text-2xl gap-2">
+      <p>Loading editor</p>
+      <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
+    </div>
+
+    <div id="editor" class="editor" phx-hook="Editor">int main() {
     int x = 5;
     printf("%d\n", x);
     return 0;
 }</div>
-</div>
+  </div>
 
-<div class="py-4 flex justify-center gap-6">
-<.button id="test_button" phx-hook="TestButton">Test</.button>
-<.button id="submit_button" phx-click={JS.push("show_confirm")}>Submit</.button>
+  <div class="py-4 flex justify-center gap-6">
+    <.button id="test_button" phx-hook="TestButton">Test</.button>
+    <.button id="submit_button" phx-click={JS.push("show_confirm")}>Submit</.button>
+  </div>
 </div>
 
 <.simple_form :let={f} hidden for={@submission} phx-submit="submit_code" id="submit_form" phx-update="ignore">
-  <%!-- <%= Phoenix.HTML.Form.textarea f, :editor_code, class: "hidden" %> --%>
   <.input hidden type="hidden" field={f[:exercise_id]} phx-update="ignore" value={@exercise.id}></.input>
   <.input hidden type="hidden" field={f[:code]} id="editor_code" phx-update="ignore"></.input>
+  <.inputs_for :let={tf} field={f[:tests]}>
+    <.input field={tf[:input]} type="hidden" label="Input" />
+    <.input field={tf[:type]} type="hidden" options={["Exact": "exact", "Regex": "regex", "Items": "items"]} label="Output Type" />
+    <.input field={tf[:expected_output]} type="hidden" label="Output Value" />
+    <.input field={tf[:grade]} type="hidden" label="Grade %" />
+  </.inputs_for>
   <%!-- <textarea hidden id="editor_code"></textarea> --%>
   <%!-- <:actions>
     <.button id="submit_button">Submit</.button>
   </:actions> --%>
 </.simple_form>
-
-<div :if={@output} class="max-w-full overflow-x-auto">
-  <h3 class="text-2xl font-bold">Output</h3>
-  <pre class="text-xl"><%= @output %></pre>
-</div>
 
 <div :if={@warnings} class="max-w-full overflow-x-scroll">
   <h2 class="text-xl font-bold">Warnings</h2>
@@ -44,9 +52,12 @@
   <pre class="text-red-800"><%= @errors %></pre>
 </div>
 
+<.test_results :if={@test_results} tests={@test_results}/>
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
   <p>Are you sure you want to submit your answer?</p>
   <:cancel>No</:cancel>
   <:confirm>Yes</:confirm>
 </.modal>
+
+</div>

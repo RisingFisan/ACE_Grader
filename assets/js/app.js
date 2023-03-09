@@ -36,20 +36,28 @@ function start_editor() {
   editor.setTheme("ace/theme/dracula");
   var cMode = ace.require("ace/mode/c_cpp").Mode;
   editor.session.setMode(new cMode());
-  document.getElementById("editor_loading").style.display = "none";
-  document.getElementById("editor_code").value = editor.getValue();
-  editor.session.on('change', function(delta) {
-      // delta.start, delta.end, delta.lines, delta.action
-      document.getElementById("submit_button").disabled = true;
-      document.getElementById("editor_code").value = editor.getValue();
-      document.getElementById("submit_button").disabled = false;
-  });
 }
 
 let Hooks = {}
+
 Hooks.Editor = {
   mounted() {
     start_editor();
+    document.getElementById("editor_loading").style.display = "none";
+    document.getElementById("editor_code").value = editor.getValue();
+    editor.session.on('change', function(delta) {
+        // delta.start, delta.end, delta.lines, delta.action
+        document.getElementById("submit_button").disabled = true;
+        document.getElementById("editor_code").value = editor.getValue();
+        document.getElementById("submit_button").disabled = false;
+    });
+  }
+}
+
+Hooks.EditorReadOnly = {
+  mounted() {
+    start_editor();
+    editor.setReadOnly(true);
   }
 }
 

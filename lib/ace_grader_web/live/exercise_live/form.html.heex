@@ -16,11 +16,13 @@
   <.input field={f[:public]} type="checkbox" label="Public" />
   <h2>Tests</h2>
   <.inputs_for :let={tf} field={f[:tests]}>
-    <div class="bg-gray-200 p-4 rounded-xl">
-      <.input field={tf[:id]} type="hidden" />
-      <.input field={tf[:type]} type="select" options={["Exact": "exact", "Regex": "regex", "Items": "items"]} label="Type" />
-      <.input field={tf[:value]} type="textarea" label="Value" />
+    <.input field={tf[:id]} type="hidden" />
+    <div class="bg-gray-200 p-4 rounded-xl space-y-2">
+      <.input field={tf[:input]} type="textarea" label="Input" />
+      <.input field={tf[:type]} type="select" options={["Exact": "exact", "Regex": "regex", "Items": "items"]} label="Output Type" />
+      <.input field={tf[:expected_output]} type="textarea" label="Expected Output" />
       <.input field={tf[:grade]} type="text" label="Grade %" />
+      <.input field={tf[:visible]} type="checkbox" label="Visible to students before submitting?" />
       <div class="form-group px-1 w-1/6">
         <%= if is_nil(tf.data.temp_id) do %>
           DELETE

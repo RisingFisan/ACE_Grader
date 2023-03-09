@@ -7,37 +7,48 @@
   </:actions> --%>
 </.header>
 
-<h1 class="text-3xl font-bold"><%= @submission.exercise.title %></h1>
-<p><%= @submission.exercise.description %></p>
+<div class="space-y-6 py-8 w-full">
+  <div>
+    <h2 class="text-3xl font-bold">Exercise: <%= @submission.exercise.title %></h2>
+    <p><%= @submission.exercise.description %></p>
+  </div>
 
-<div class="py-8">
-<h2 class="text-2xl font-bold">Code</h2>
-  <pre><%= @submission.code %></pre>
-</div>
+  <div id="editor_container" phx-update="ignore">
+    <h2 class="text-2xl font-bold">Code</h2>
+    <%!-- <pre class="bg-gray-800 text-gray-100 px-2 py-1"><%= @submission.code %></pre> --%>
+    <div 
+      id="editor"
+      phx-hook="EditorReadOnly" 
+      class="relative w-full h-[256px] text-lg"
+    ><%= @submission.code %></div>
+  </div>
 
-<h3 class="text-2xl font-bold">Output</h3>
-<%= if @submission.executed do %>
-  <%= if @submission.success do %>
-    <pre class="text-xl"><%= @submission.output %></pre>
+  <%!-- <h3 class="text-2xl font-bold">Output</h3>
+  <%= if @submission.executed do %>
+    <%= if @submission.success do %>
+      <pre class="text-xl"><%= @submission.output %></pre>
+    <% else %>
+      <Heroicons.exclamation_triangle class="fill-red-700 w-8 text-white" />
+    <% end %>
   <% else %>
-    <Heroicons.exclamation_triangle class="fill-red-700 w-8 text-white" />
-  <% end %>
-<% else %>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-8 my-4 mx-2 fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-    <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
-  </svg>
-<% end %>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-8 my-4 mx-2 fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+      <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
+    </svg>
+  <% end %> --%>
 
-<div :if={@submission.executed}>
-  <div :if={@submission.warnings}>
-    <h2 class="text-xl font-bold">Warnings</h2>
-    <pre><%= @submission.warnings %></pre>
+  <div :if={@submission.executed}>
+    <div :if={@submission.warnings}>
+      <h3 class="text-xl font-bold">Compilation warnings</h3>
+      <pre class="break-all whitespace-pre-wrap w-full"><%= @submission.warnings %></pre>
+    </div>
+
+    <div :if={@submission.errors}>
+      <h3 class="text-xl font-bold">Compilation errors</h3>
+      <pre class="text-red-800"><%= @submission.errors %></pre>
+    </div>
   </div>
 
-  <div :if={@submission.errors}>
-    <h2 class="text-xl font-bold">Errors</h2>
-    <pre class="text-red-800"><%= @submission.errors %></pre>
-  </div>
+  <.test_results tests={@submission.tests}/>
 </div>
 
 <.back navigate={~p"/exercises/#{@submission.exercise}"}>Back to exercise</.back>
