@@ -2,6 +2,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
   use AceGraderWeb, :live_view
   alias AceGrader.Exercises
   alias AceGrader.Submissions
+  alias AceGrader.Grader
 
   def mount(_params = %{"id" => id}, _session, socket) do
     exercise = Exercises.get_exercise!(id)
@@ -15,28 +16,36 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
     socket = assign(socket, exercise: exercise)
     |> assign(warnings: nil, errors: nil, confirm_modal: false)
-    |> assign(test_results: nil)
+    |> assign(test_results: nil, success: nil, testing: false)
     |> assign(submission: changeset)
     {:ok, socket}
   end
 
+  def handle_event("pre_test_code", _params, socket) do
+    {:noreply, socket
+      |> assign(
+        test_results: nil,
+        warnings: nil,
+        errors: nil,
+        success: nil,
+        testing: true
+      )}
+  end
+
   def handle_event("test_code", %{"code" => code}, socket) do
-    File.write("./submissions/main.c", code)
-    case System.cmd("gcc", ~w(main.c -o main), stderr_to_stdout: true, cd: "./submissions") do
-      {warnings, 0} ->
-        live_view = self()
-        test_results = for {test, i} <- socket.assigns.exercise.tests |> Enum.with_index(), test.visible do
-          Task.start(fn ->
-            {output, _exit_status} = System.cmd(File.cwd!() <> "/submissions/main", (if test.input != nil, do: String.split(test.input), else: []))
-            send(live_view, {:test_result, {i, output}})
-          end)
-        end
-        {:noreply, assign(socket, test_results: Enum.map(socket.assigns.exercise.tests, fn test -> Map.put(test, :actual_output, nil) end))}
-      {errors, n} ->
-        {:noreply, socket
-        |> put_flash(:error, "Error #{n}")
-        |> assign(warnings: nil, errors: errors)}
-    end
+    submission = socket.assigns.submission
+    |> Ecto.Changeset.cast(%{code: code}, [:code])
+    |> Ecto.Changeset.apply_changes
+
+    submission = Grader.test_submission(submission)
+
+    {:noreply, socket
+      |> assign(
+        test_results: submission.tests,
+        warnings: submission.warnings,
+        errors: submission.errors,
+        success: submission.success,
+        testing: false)}
   end
 
   def handle_event("submit_code", %{"submission" => submission_params} = _params, socket) do

@@ -32,7 +32,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
 
   def handle_event("save", %{"exercise" => exercise_params} = _params, socket) do
     if socket.assigns[:exercise] do
-      case Exercises.update_exercise(socket.assigns.exercise, exercise_params) |> dbg do
+      case Exercises.update_exercise(socket.assigns.exercise, exercise_params) do
         {:ok, exercise} ->
           {:noreply, socket
           |> put_flash(:info, "Exercise updated successfully.")
@@ -44,7 +44,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
           |> assign(changeset: changeset)}
       end
     else
-      case Exercises.create_exercise(exercise_params) do
+      case Exercises.create_exercise(exercise_params) |> dbg do
         {:ok, exercise} ->
           {:noreply, socket
           |> put_flash(:info, "Exercise created successfully.")
@@ -71,7 +71,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
 
     {:noreply,
      assign(socket,
-       changeset: changeset  |> IO.inspect()
+       changeset: changeset
      )}
   end
 
@@ -89,6 +89,6 @@ defmodule AceGraderWeb.ExerciseLive.Form do
     {:noreply, assign(socket, changeset: changeset)}
   end
 
-  defp get_temp_id, do: :crypto.strong_rand_bytes(5) |> Base.url_encode64 |> binary_part(0, 5)
+  defp get_temp_id, do: :crypto.strong_rand_bytes(5) |> Base.url_encode64
 
 end

@@ -64,6 +64,7 @@ Hooks.EditorReadOnly = {
 Hooks.TestButton = {
   mounted() {
     this.el.addEventListener("click", (e) => {
+      this.pushEvent("pre_test_code")
       this.pushEvent("test_code", {"code": editor.getValue()})
     })
   }

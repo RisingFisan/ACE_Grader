@@ -22,7 +22,9 @@
   </div>
 
   <div class="py-4 flex justify-center gap-6">
-    <.button id="test_button" phx-hook="TestButton">Test</.button>
+    <.button id="test_button" phx-hook="TestButton" disabled={@testing}>
+      <%= if @testing, do: "Running...", else: "Test" %>
+    </.button>
     <.button id="submit_button" phx-click={JS.push("show_confirm")}>Submit</.button>
   </div>
 </div>
@@ -42,17 +44,8 @@
   </:actions> --%>
 </.simple_form>
 
-<div :if={@warnings} class="max-w-full overflow-x-scroll">
-  <h2 class="text-xl font-bold">Warnings</h2>
-  <pre><%= @warnings %></pre>
-</div>
-
-<div :if={@errors} class="max-w-full overflow-x-scroll">
-  <h2 class="text-xl font-bold">Errors</h2>
-  <pre class="text-red-800"><%= @errors %></pre>
-</div>
-
-<.test_results :if={@test_results} tests={@test_results}/>
+<.compilation_results :if={@test_results != nil} warnings={@warnings} errors={@errors} />
+<.test_results :if={@test_results != nil and @success} tests={@test_results}/>
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
   <p>Are you sure you want to submit your answer?</p>

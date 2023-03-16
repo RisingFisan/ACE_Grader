@@ -1,13 +1,15 @@
 <.header>
   <%= @exercise.title %>
+  <:subtitle>
+    <%= @exercise.description %>
+  </:subtitle>
   <:actions>
+    <.back navigate={~p"/exercises"}>Back to exercises</.back>
     <.link href={~p"/exercises/#{@exercise}/edit"}>
       <.button>Edit exercise</.button>
     </.link>
   </:actions>
 </.header>
-
-<p><%= @exercise.description %></p>
 
 <div class="flex flex-col items-center py-4">
   <.link href={~p"/exercises/#{@exercise}/editor"}>
@@ -30,5 +32,3 @@
   <:item title="Description"><%= @exercise.description %></:item>
   <:item title="Public"><%= @exercise.public %></:item>
 </.list> --%>
-
-<.back navigate={~p"/exercises"}>Back to exercises</.back>

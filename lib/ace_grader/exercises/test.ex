@@ -2,6 +2,8 @@ defmodule AceGrader.Exercises.Test do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "tests" do
     field :grade, :integer
     field :input, :string

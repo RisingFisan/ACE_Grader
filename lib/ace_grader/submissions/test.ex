@@ -2,6 +2,8 @@ defmodule AceGrader.Submissions.Test do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "submission_tests" do
     field :grade, :integer
     field :input, :string
@@ -9,6 +11,7 @@ defmodule AceGrader.Submissions.Test do
     field :expected_output, :string
     field :actual_output, :string
     field :visible, :boolean, default: false
+    field :executed, :boolean, default: false
 
     belongs_to :submission, AceGrader.Submissions.Submission
 
@@ -18,7 +21,7 @@ defmodule AceGrader.Submissions.Test do
   @doc false
   def changeset(test, attrs) do
     test
-    |> cast(attrs, [:type, :input, :expected_output, :actual_output, :grade, :visible])
+    |> cast(attrs, [:type, :input, :expected_output, :actual_output, :grade, :visible, :executed])
     |> validate_required([:type, :expected_output, :grade, :visible])
     |> validate_inclusion(:grade, 0..100)
   end

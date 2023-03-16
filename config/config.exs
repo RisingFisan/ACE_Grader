@@ -8,7 +8,8 @@
 import Config
 
 config :ace_grader,
-  ecto_repos: [AceGrader.Repo]
+  ecto_repos: [AceGrader.Repo],
+  generators: [binary_id: true]
 
 # Configures the endpoint
 config :ace_grader, AceGraderWeb.Endpoint,

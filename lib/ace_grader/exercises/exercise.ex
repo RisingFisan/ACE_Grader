@@ -2,6 +2,8 @@ defmodule AceGrader.Exercises.Exercise do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "exercises" do
     field :description, :string
     field :public, :boolean, default: true
@@ -17,7 +19,7 @@ defmodule AceGrader.Exercises.Exercise do
 
   @doc false
   def changeset(exercise, attrs) do
-    tests = Map.get(attrs, "tests", %{})
+    tests = Map.get(attrs, "tests", %{}) |> dbg
 
     validate_grade = not Enum.any?(tests, fn {_key, test} -> test["grade"] == "" end)
 

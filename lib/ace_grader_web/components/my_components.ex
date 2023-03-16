@@ -2,19 +2,19 @@ defmodule AceGraderWeb.MyComponents do
 
   use Phoenix.Component
 
-  # alias Phoenix.LiveView.JS
+  alias Phoenix.LiveView.JS
   # import AceGraderWeb.Gettext
 
   attr :tests, :list
 
   def test_results(assigns) do
     ~H"""
-    <div class="space-y-4">
+    <div class="space-y-4 bg-gray-300 rounded-[32px] px-8 py-4 text-2xl">
       <h2 class="text-2xl font-bold">Tests</h2>
       <div class="space-y-4">
-        <div :for={{test, i} <- @tests |> Enum.with_index(1)} class="grid grid-cols-[64px_1fr] items-center">
+        <div :for={{test, i} <- @tests |> Enum.with_index(1)} class="grid grid-cols-[64px_1fr] items-center text-lg bg-gray-100 rounded-xl px-4">
           <h3 class="font-light text-xl">Test <%= i %></h3>
-          <div class="bg-gray-200 rounded-xl px-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 items-center">
+          <div class="py-2 grid grid-cols-[152px_1fr] gap-y-1 items-center">
             <p>Input</p><p><%= test.input %></p>
             <p>Expected output</p><%= test.expected_output %>
             <p>Actual output</p>
@@ -28,6 +28,43 @@ defmodule AceGraderWeb.MyComponents do
           </div>
         </div>
       </div>
+    </div>
+    """
+  end
+
+  attr :warnings, :string
+  attr :errors, :string
+
+  def compilation_results(assigns) do
+    ~H"""
+    <div class="bg-gray-300 rounded-[32px] px-8 py-4 text-2xl space-y-4">
+      <div class="flex justify-between" phx-click={if @warnings != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
+        <p class="font-bold">Compilation</p>
+        <div>
+          <%= if (@warnings == nil or @warnings == "") and @errors == nil do %>
+            <div class="flex items-center text-green-600 gap-2 font-bold"><Heroicons.check class="w-8 h-8"/><p>Successful</p></div>
+          <% else %>
+            <%= if @errors == nil do %>
+              <div class="flex items-center text-yellow-600 gap-2 font-bold">
+                <Heroicons.exclamation_triangle class="w-8 h-8"/>
+                <p>Warning</p>
+                <Heroicons.chevron_down
+                  class="w-8 h-6 self-end text-gray-500 animate-bounce"
+                />
+              </div>
+            <% else %>
+              <div class="flex items-center text-red-600 gap-2 font-bold">
+                <Heroicons.exclamation_circle class="w-8 h-8"/>
+                <p>Error</p>
+                <Heroicons.chevron_down
+                  class="w-8 h-6 self-end text-gray-500 animate-bounce"
+                />
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <pre :if={@warnings || @errors} id="compilation_message" class="break-all whitespace-pre-wrap text-lg hidden"><%= String.trim(@warnings || @errors) %></pre>
     </div>
     """
   end

@@ -1,15 +1,13 @@
 <.header>
   Submission <%= @submission.id %>
-  <%!-- <:actions>
-    <.link href={~p"/submissions/#{@submission}/edit"}>
-      <.button>Edit submission</.button>
-    </.link>
-  </:actions> --%>
+  <:actions>
+    <.back navigate={~p"/exercises/#{@submission.exercise}"}>Back to exercise</.back>
+  </:actions>
 </.header>
 
 <div class="space-y-6 py-8 w-full">
   <div>
-    <h2 class="text-3xl font-bold">Exercise: <%= @submission.exercise.title %></h2>
+    <h2 class="text-3xl font-bold"><%= @submission.exercise.title %></h2>
     <p><%= @submission.exercise.description %></p>
   </div>
 
@@ -36,19 +34,6 @@
     </svg>
   <% end %> --%>
 
-  <div :if={@submission.executed}>
-    <div :if={@submission.warnings}>
-      <h3 class="text-xl font-bold">Compilation warnings</h3>
-      <pre class="break-all whitespace-pre-wrap w-full"><%= @submission.warnings %></pre>
-    </div>
-
-    <div :if={@submission.errors}>
-      <h3 class="text-xl font-bold">Compilation errors</h3>
-      <pre class="text-red-800"><%= @submission.errors %></pre>
-    </div>
-  </div>
-
+  <.compilation_results warnings={@submission.warnings} errors={@submission.errors} />
   <.test_results tests={@submission.tests}/>
 </div>
-
-<.back navigate={~p"/exercises/#{@submission.exercise}"}>Back to exercise</.back>
