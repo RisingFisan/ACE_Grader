@@ -3,27 +3,50 @@ defmodule AceGraderWeb.MyComponents do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  # import AceGraderWeb.Gettext
+  import AceGraderWeb.Gettext
 
   attr :tests, :list
+  attr :success, :boolean, default: true
 
   def test_results(assigns) do
     ~H"""
-    <div class="space-y-4 bg-gray-300 rounded-[32px] px-8 py-4 text-2xl">
-      <h2 class="text-2xl font-bold">Tests</h2>
+    <div class="space-y-4 bg-gray-300 rounded-[32px] px-8 py-4">
+      <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
       <div class="space-y-4">
-        <div :for={{test, i} <- @tests |> Enum.with_index(1)} class="grid grid-cols-[64px_1fr] items-center text-lg bg-gray-100 rounded-xl px-4">
-          <h3 class="font-light text-xl">Test <%= i %></h3>
-          <div class="py-2 grid grid-cols-[152px_1fr] gap-y-1 items-center">
-            <p>Input</p><p><%= test.input %></p>
-            <p>Expected output</p><%= test.expected_output %>
-            <p>Actual output</p>
+        <div :for={{test, i} <- @tests |> Enum.with_index(1)}
+          class={["grid grid-cols-[92px_1fr_128px] items-center text-lg bg-gray-100 rounded-xl border border-gray-500",
+            (if test.passed, do: "bg-green-200", else: ""),
+            (if (not test.passed and test.executed) or not @success, do: "bg-red-200", else: ""),
+          ]}>
+          <div class="h-full w-full font-light bg-gray-200 flex flex-col items-center justify-center rounded-l-xl">
+            <h3 class="text-xl"><%= "#{gettext("Test")} #{i}" %></h3>
+            <p><%= "(#{test.grade}%)" %></p>
+          </div>
+          <div class="pl-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 gap-x-4 items-center border-l border-gray-500">
+            <p><%= gettext "Input" %></p>
+            <pre><%= test.input %></pre>
+
+            <p class="self-start"><%= gettext "Expected output" %></p>
+            <pre><%= test.expected_output %></pre>
+
+            <p class="self-start"><%= gettext "Actual output" %></p>
             <%= if test.actual_output != nil do %>
-              <%= test.actual_output %>
+              <pre><%= test.actual_output %></pre>
             <% else %>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
-              </svg>
+              <%= if @success do %>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                  <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
+                </svg>
+              <% else %>
+                <Heroicons.x_mark class="w-6 h-6 text-red-600" />
+              <% end %>
+            <% end %>
+          </div>
+          <div class="justify-self-end pr-4">
+            <%= if test.passed do %>
+              <Heroicons.check_circle class="w-12 h-12 text-green-600" />
+            <% else %>
+              <Heroicons.x_circle class="w-12 h-12 text-red-600" />
             <% end %>
           </div>
         </div>
@@ -39,15 +62,17 @@ defmodule AceGraderWeb.MyComponents do
     ~H"""
     <div class="bg-gray-300 rounded-[32px] px-8 py-4 text-2xl space-y-4">
       <div class="flex justify-between" phx-click={if @warnings != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
-        <p class="font-bold">Compilation</p>
+        <p class="font-bold"><%= gettext "Compilation" %></p>
         <div>
           <%= if (@warnings == nil or @warnings == "") and @errors == nil do %>
-            <div class="flex items-center text-green-600 gap-2 font-bold"><Heroicons.check class="w-8 h-8"/><p>Successful</p></div>
+            <div class="flex items-center text-green-600 gap-2 font-bold">
+              <Heroicons.check class="w-8 h-8"/><p><%= gettext "Successful" %></p>
+            </div>
           <% else %>
             <%= if @errors == nil do %>
               <div class="flex items-center text-yellow-600 gap-2 font-bold">
                 <Heroicons.exclamation_triangle class="w-8 h-8"/>
-                <p>Warning</p>
+                <p><%= gettext "Warning" %></p>
                 <Heroicons.chevron_down
                   class="w-8 h-6 self-end text-gray-500 animate-bounce"
                 />
@@ -55,7 +80,7 @@ defmodule AceGraderWeb.MyComponents do
             <% else %>
               <div class="flex items-center text-red-600 gap-2 font-bold">
                 <Heroicons.exclamation_circle class="w-8 h-8"/>
-                <p>Error</p>
+                <p><%= gettext "Error" %></p>
                 <Heroicons.chevron_down
                   class="w-8 h-6 self-end text-gray-500 animate-bounce"
                 />

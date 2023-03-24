@@ -12,6 +12,7 @@ defmodule AceGrader.Submissions.Test do
     field :actual_output, :string
     field :visible, :boolean, default: false
     field :executed, :boolean, default: false
+    field :passed, :boolean, default: false
 
     belongs_to :submission, AceGrader.Submissions.Submission
 
@@ -21,7 +22,7 @@ defmodule AceGrader.Submissions.Test do
   @doc false
   def changeset(test, attrs) do
     test
-    |> cast(attrs, [:type, :input, :expected_output, :actual_output, :grade, :visible, :executed])
+    |> cast(attrs, [:type, :input, :expected_output, :actual_output, :grade, :visible, :executed, :passed])
     |> validate_required([:type, :expected_output, :grade, :visible])
     |> validate_inclusion(:grade, 0..100)
   end

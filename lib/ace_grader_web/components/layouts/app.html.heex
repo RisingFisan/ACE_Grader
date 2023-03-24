@@ -7,7 +7,21 @@
       </a>
     </div>
     <div class="flex items-center gap-4">
-      <p>This area will have login links and stuff...</p>
+      <.simple_form for={nil} id="lang-form">
+        <div class="flex items-center gap-2">
+          <Heroicons.language class="w-6 h-6"/>
+          <div class="w-32">
+          <.input 
+            id="lang-select"
+            name="locale" 
+            type="select" 
+            options={ ["English": "en", "Português": "pt"] } 
+            value={ Gettext.get_locale(AceGraderWeb.Gettext) }
+          >
+          </.input>
+          </div>
+        </div>
+      </.simple_form>
     </div>
   </div>
 </header>
@@ -30,3 +44,10 @@
     <%= @inner_content %>
   </div>
 </main>
+
+<script>
+document.getElementById("lang-select").addEventListener("change", (event) => {
+  console.log(event.target.value);
+  document.getElementById("lang-form").submit();
+})
+</script>

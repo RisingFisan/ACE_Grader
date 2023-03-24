@@ -55,6 +55,7 @@ defmodule AceGraderWeb do
       use Phoenix.LiveView,
         layout: {AceGraderWeb.Layouts, :app}
 
+      on_mount AceGraderWeb.RestoreLocale
       unquote(html_helpers())
     end
   end

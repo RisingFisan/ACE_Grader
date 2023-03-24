@@ -1,23 +1,33 @@
 <.header>
-  Submission <%= @submission.id %>
+  <%= @submission.exercise.title %>
+  <:subtitle>
+    <%= @submission.exercise.description %>
+  </:subtitle>
   <:actions>
-    <.back navigate={~p"/exercises/#{@submission.exercise}"}>Back to exercise</.back>
+    <.back navigate={~p"/exercises/#{@submission.exercise}"}><%= gettext "Back to exercise" %></.back>
   </:actions>
 </.header>
 
-<div class="space-y-6 py-8 w-full">
+<div class="flex justify-between items-end">
   <div>
-    <h2 class="text-3xl font-bold"><%= @submission.exercise.title %></h2>
-    <p><%= @submission.exercise.description %></p>
+    <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: "[PLACEHOLDER]" %></p>
+    <p><%= @submission.inserted_at |> NaiveDateTime.to_string() %></p>
   </div>
+  <div class="flex flex-col items-center">
+    <p class="font-light tracking-wide text-lg"><%= gettext "Final grade" %></p>
+    <div class="bg-gray-200 px-6 py-4 rounded-xl border-2 border-gray-500 text-2xl"><%= @submission.total_grade %>%</div>
+  </div>
+</div>
 
-  <div id="editor_container" phx-update="ignore">
-    <h2 class="text-2xl font-bold">Code</h2>
+<div class="space-y-6 py-8 w-full">
+
+  <div id="editor_container" phx-update="ignore" class="space-y-4 bg-gray-300 rounded-[32px] px-8 pt-4 pb-8 text-2xl">
+    <h2 class="text-2xl font-bold"><%= gettext "Code" %></h2>
     <%!-- <pre class="bg-gray-800 text-gray-100 px-2 py-1"><%= @submission.code %></pre> --%>
     <div 
       id="editor"
       phx-hook="EditorReadOnly" 
-      class="relative w-full h-[256px] text-lg"
+      class="editor"
     ><%= @submission.code %></div>
   </div>
 
@@ -35,5 +45,5 @@
   <% end %> --%>
 
   <.compilation_results warnings={@submission.warnings} errors={@submission.errors} />
-  <.test_results tests={@submission.tests}/>
+  <.test_results tests={@submission.tests} success={@submission.errors == nil}/>
 </div>

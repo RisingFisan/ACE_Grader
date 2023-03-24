@@ -1,44 +1,69 @@
 <.header>
   <%= if assigns[:exercise] do %>
-    Edit Exercise <%= @exercise.id %>
+    <%= gettext "Editing exercise %{exercise_name}", exercise_name: @exercise.title %>
   <% else %>
-    New Exercise
+    <%= gettext "New exercise" %>
   <% end %>
-  <:subtitle>Use this form to manage exercise records in your database.</:subtitle>
+  
+  <:actions>
+    <%= if assigns[:exercise] do %>
+      <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
+    <% else %>
+      <.back navigate={~p"/exercises/"}><%= gettext "Back to exercises" %></.back>
+    <% end %>
+  </:actions>
 </.header>
 
-<.simple_form :let={f} for={@changeset} phx-change="validate" phx-submit="save" action={if assigns[:exercise], do: ~p"/exercises/#{@exercise}", else: ~p"/exercises"}>
+<.simple_form 
+  :let={f}
+  for={@changeset} 
+  phx-change="validate" 
+  phx-submit="save" 
+  action={if assigns[:exercise], do: ~p"/exercises/#{@exercise}", else: ~p"/exercises"}
+  class="mt-8">
   <%!-- <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error> --%>
-  <.input field={f[:title]} type="text" label="Title" />
-  <.input field={f[:description]} type="text" label="Description" />
-  <.input field={f[:public]} type="checkbox" label="Public" />
-  <h2>Tests</h2>
+  <.input field={f[:title]} type="text" label={gettext "Title"} />
+  <.input field={f[:description]} type="textarea" label={gettext "Description" } />
+  <.input field={f[:public]} type="checkbox" label={gettext "Public"} />
+  <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
   <.inputs_for :let={tf} field={f[:tests]}>
     <.input :if={is_nil(tf.data.temp_id)} field={tf[:id]} type="hidden" />
     <div class="bg-gray-200 p-4 rounded-xl space-y-2">
-      <.input field={tf[:input]} type="textarea" label="Input" mono />
-      <.input field={tf[:type]} type="select" options={["Exact": "exact", "Regex": "regex", "Items": "items"]} label="Output Type" />
-      <.input field={tf[:expected_output]} type="textarea" label="Expected Output" />
-      <.input field={tf[:grade]} type="text" label="Grade %" />
-      <.input field={tf[:visible]} type="checkbox" label="Visible to students before submitting?" />
-      <div class="form-group px-1 w-1/6">
+      <.input field={tf[:input]} type="textarea" label={gettext "Input"} mono />
+      <div class="flex w-full items-center gap-5">
+        <div class="w-48">
+          <.input field={tf[:type]} type="select" options={[ {gettext("Exact"), "exact"}, {gettext("Regex"), "regex"}, {gettext("Items"), "items"}] } label={gettext "Output type"} />
+        </div>
+        <div class="cursor-pointer" phx-click={JS.toggle(to: "#type-tooltip_#{tf.data.temp_id || tf.data.id}")} >
+          <Heroicons.question_mark_circle class="h-6 w-6 hover:text-gray-500 duration-200" />
+        </div>
+        <div class="relative">
+          <div id={"type-tooltip_#{tf.data.temp_id || tf.data.id}"} hidden class="absolute left-0 w-[512px] -top-20 bg-gray-300 px-4 py-2 rounded-xl select-none shadow-lg">
+            <p><b><%= gettext "Exact" %></b>: verifica se o output esperado coincide ao output real (ignorando os espaços iniciais e finais).</p>
+            <p><b><%= gettext "Regex" %></b>: verifica se o output real corresponde à expressão regular especificada no output esperado.</p>
+            <p><b><%= gettext "Items" %></b>: verifica se o output real contém todos os valores especificados no output esperado (um por linha).</p>
+          </div>
+        </div>
+      </div>
+      <.input field={tf[:expected_output]} type="textarea" label={gettext "Expected output"} />
+      <.input field={tf[:grade]} type="text" label={ gettext "Grade %" } />
+      <.input field={tf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
+      <div class="w-full flex items-center justify-end gap-2 px-4">
         <%= if is_nil(tf.data.temp_id) do %>
-          DELETE
+          <Heroicons.trash class="w-6 h-6 text-red-600"/>
+          <.input field={tf[:delete]} type="checkbox" />
         <% else %>
           <.input field={tf[:temp_id]} type="hidden"/>
-          <a href="#" phx-click="remove-test" phx-value-remove={tf.data.temp_id}>&times</a>
+          <a href="#" phx-click="remove-test" phx-value-remove={tf.data.temp_id}><Heroicons.x_mark class="w-6 h-6" /></a>
         <% end %>
       </div>
     </div>
   </.inputs_for>
-  <.button type="button" phx-click="add-test">New Test</.button>
-  <% IO.inspect(f[:total_grade].errors) %>
-  <.error :if={length(f[:total_grade].errors) > 0}>The sum of every grade should equal 100!</.error>
+  <.button type="button" phx-click="add-test"><%= gettext "New Test" %></.button>
+  <.error :if={length(f[:total_grade].errors) > 0}><%= dgettext "errors", "The sum of every grade should equal 100!" %></.error>
   <:actions>
-    <.button id="submit-button">Save Exercise</.button>
+    <.button id="submit-button"><%= gettext "Save Exercise" %></.button>
   </:actions>
 </.simple_form>
-
-<.back navigate={~p"/exercises"}>Back to exercises</.back>

@@ -1,21 +1,25 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+/* @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;700;900&display=swap');
 
 /* This file is for your main application CSS */
+
+body {
+    font-family: 'Inter', 'Lexend', 'Atkinson Hyperlegible', sans-serif;
+}
+
 #editor_container {
     position: relative;
     width: 100%;
-    height: 300px;
 }
 
 #editor_loading { 
     @apply z-10 w-full h-full absolute bg-[#282a36] text-white;
 }
 
-.editor { 
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    @apply text-lg z-0;
+.editor {
+    @apply relative w-full h-[384px] text-lg;
 }

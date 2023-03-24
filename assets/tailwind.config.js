@@ -11,6 +11,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // fontFamily: {
+      //   'sans': ['Atkinson Hyperlegible', defaultTheme.fontFamily.sans]
+      // },
       colors: {
         brand: "#FD4F00",
       },

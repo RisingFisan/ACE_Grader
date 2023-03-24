@@ -19,12 +19,12 @@ defmodule AceGrader.Exercises.Exercise do
 
   @doc false
   def changeset(exercise, attrs) do
-    tests = Map.get(attrs, "tests", %{}) |> dbg
+    tests = Map.get(attrs, "tests", %{})
 
     validate_grade = not Enum.any?(tests, fn {_key, test} -> test["grade"] == "" end)
 
     attrs = if validate_grade do
-      sum = Enum.reduce(tests, 0, fn {_key, test}, acc -> acc + (if test["grade"] == "", do: 0, else: String.to_integer(test["grade"])) end)
+      sum = Enum.reduce(tests, 0, fn {_key, test}, acc -> acc + (if test["grade"] == "" or test["delete"] == "true", do: 0, else: String.to_integer(test["grade"])) end)
       Map.put(attrs, "total_grade", sum)
     else
       attrs

@@ -52,7 +52,6 @@ defmodule AceGraderWeb.ExerciseController do
         |> redirect(to: ~p"/exercises/#{exercise}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset)
         render(conn, :form, exercise: exercise, changeset: changeset)
     end
   end

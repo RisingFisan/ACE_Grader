@@ -7,21 +7,37 @@ defmodule AceGrader.Grader do
     case System.cmd("gcc", ~w(main.c -o main), stderr_to_stdout: true, cd: "./submissions") do
       {warnings, 0} ->
         if warnings != "" and liveview != nil, do: send(liveview, {:compilation_warnings, warnings})
-        test_results = for {test, i} <- submission.tests |> Enum.with_index(1), not test.executed do
+        tests = for {test, i} <- submission.tests |> Enum.with_index(1) do
           Task.async(fn ->
-            {output, _exit_status} = System.cmd(File.cwd!() <> "/submissions/main", (if test.input != nil, do: String.split(test.input), else: []))
-            if liveview != nil do
-              send(liveview, {:test_result, test.id, output, i})
-              %{id: test.id, executed: true, actual_output: output}
+            if not test.executed do
+              {output, _exit_status} = System.cmd("python", [File.cwd!() <> "/submissions/runner.py", File.cwd!() <> "/submissions/main", test.input || ""])
+              output = String.trim_trailing(output, "\n")
+              passed = case test.type do
+                :exact ->
+                  String.trim(output) == String.trim(test.expected_output)
+                :regex ->
+                  Regex.compile!(test.expected_output)
+                  |> Regex.match?(output)
+                :items ->
+                  String.split(test.expected_output, "\n")
+                  |> Enum.all?(& &1 =~ output)
+              end
+              if liveview != nil do
+                send(liveview, {:test_result, test.id, output, i})
+                %{ Map.from_struct(test) | executed: true, actual_output: output, passed: passed}
+              else
+                %{test | executed: true, actual_output: output, passed: passed}
+              end
             else
-              %{test | executed: true, actual_output: output}
+              Map.from_struct(test)
             end
           end)
         end
         |> Task.await_many()
-        %{success: true, warnings: warnings, tests: test_results}
+        total_grade = Enum.reduce(tests, 0, fn test, acc -> (if test.passed, do: acc + test.grade, else: acc) end)
+        %{success: true, warnings: warnings, total_grade: total_grade, tests: tests}
       {errors, _n} ->
-        %{success: false, errors: errors}
+        %{success: false, errors: errors, total_grade: 0}
     end
   end
 

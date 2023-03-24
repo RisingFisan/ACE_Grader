@@ -17,17 +17,12 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   end
 
   def handle_event("validate", %{"exercise" => exercise_params} = _params, socket) do
-    tests = Map.get(exercise_params, "tests", %{})
-    sum = Enum.reduce(tests, 0, fn {_key, test}, acc -> acc + (if test["grade"] == "", do: 0, else: String.to_integer(test["grade"])) end)
-
-    valid_grades = sum == 100 or map_size(tests) == 0
-
     changeset =
       %Exercise{}
-      |> Exercises.change_exercise(exercise_params |> Map.put("total_grade", sum))
+      |> Exercises.change_exercise(exercise_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, changeset: changeset, valid_grades: valid_grades)}
+    {:noreply, assign(socket, changeset: changeset)}
   end
 
   def handle_event("save", %{"exercise" => exercise_params} = _params, socket) do
@@ -59,8 +54,6 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   end
 
   def handle_event("add-test", _params, socket) do
-    IO.inspect(socket.assigns)
-
     existing_tests = Map.get(socket.assigns.changeset.changes, :tests, (if socket.assigns[:exercise], do: socket.assigns.exercise.tests, else: []))
 
     changeset =

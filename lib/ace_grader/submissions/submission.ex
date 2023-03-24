@@ -9,6 +9,7 @@ defmodule AceGrader.Submissions.Submission do
     field :warnings, :string
     field :errors, :string
     field :success, :boolean, default: false
+    field :total_grade, :integer
 
     has_many :tests, AceGrader.Submissions.Test
 
@@ -20,7 +21,7 @@ defmodule AceGrader.Submissions.Submission do
   @doc false
   def changeset(submission, attrs) do
     submission
-    |> cast(attrs, [:code, :exercise_id, :warnings, :errors, :success])
+    |> cast(attrs, [:code, :exercise_id, :warnings, :errors, :success, :total_grade])
     |> validate_required([:code, :exercise_id])
     |> cast_assoc(:tests)
   end

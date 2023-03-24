@@ -4,13 +4,13 @@
     <h1 class="text-3xl font-bold"><%= @exercise.title %></h1>
     <p><%= @exercise.description %></p>
   </div>
-  <.back navigate={~p"/exercises/#{@exercise}"}>Back to exercise</.back>
+  <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
 </div>
 
 <div>
   <div id="editor_container" phx-update="ignore">
     <div id="editor_loading" class="flex items-center justify-center flex-col text-2xl gap-2">
-      <p>Loading editor</p>
+      <p><%= gettext "Loading editor" %></p>
       <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
     </div>
 
@@ -23,9 +23,9 @@
 
   <div class="py-4 flex justify-center gap-6">
     <.button id="test_button" phx-hook="TestButton" disabled={@testing}>
-      <%= if @testing, do: "Running...", else: "Test" %>
+      <%= if @testing, do: gettext("Running..."), else: gettext("Run tests") %>
     </.button>
-    <.button id="submit_button" phx-click={JS.push("show_confirm")}>Submit</.button>
+    <.button id="submit_button" phx-click={JS.push("show_confirm")}><%= gettext "Submit" %></.button>
   </div>
 </div>
 
@@ -48,9 +48,9 @@
 <.test_results :if={@test_results != nil and @success} tests={@test_results}/>
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
-  <p>Are you sure you want to submit your answer?</p>
-  <:cancel>No</:cancel>
-  <:confirm>Yes</:confirm>
+  <p><%= gettext "Are you sure you want to submit your answer?" %></p>
+  <:cancel><%= gettext "No" %></:cancel>
+  <:confirm><%= gettext "Yes" %></:confirm>
 </.modal>
 
 </div>

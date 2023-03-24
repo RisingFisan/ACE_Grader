@@ -4,23 +4,23 @@
     <%= @exercise.description %>
   </:subtitle>
   <:actions>
-    <.back navigate={~p"/exercises"}>Back to exercises</.back>
+    <.back navigate={~p"/exercises"}><%= gettext "Back to exercises" %></.back>
     <.link href={~p"/exercises/#{@exercise}/edit"}>
-      <.button>Edit exercise</.button>
+      <.button><%= gettext "Edit exercise" %></.button>
     </.link>
   </:actions>
 </.header>
 
 <div class="flex flex-col items-center py-4">
   <.link href={~p"/exercises/#{@exercise}/editor"}>
-    <.button>Open in Editor</.button>
+    <.button><%= gettext "Open in Editor" %></.button>
   </.link>
 </div>
 
-<h2 class="font-bold text-2xl">Submissions</h2>
+<h2 class="font-bold text-2xl"><%= gettext "Submissions" %></h2>
 <div :for={submission <- @exercise.submissions}>
   <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"}>
-    <span class="">Submission <%= submission.id %></span>
+    <span class=""><%= gettext "Submission %{id}", id: submission.id %></span>
   </.link>
   <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"} method="delete" data-confirm="Are you sure?" class="font-light">
     Delete
