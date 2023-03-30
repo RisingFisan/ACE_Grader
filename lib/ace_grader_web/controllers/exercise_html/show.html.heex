@@ -1,31 +1,67 @@
 <.header>
   <%= @exercise.title %>
   <:subtitle>
-    <%= @exercise.description %>
+    <p>Created by:
+      <.link class="text-violet-800">
+        @<%= if @exercise.author_id, do: @exercise.user.username, else: "[DELETED]" %>
+      </.link>
+    </p>
   </:subtitle>
   <:actions>
     <.back navigate={~p"/exercises"}><%= gettext "Back to exercises" %></.back>
-    <.link href={~p"/exercises/#{@exercise}/edit"}>
+    <.link :if={@current_user && @current_user.account_type != :student} href={~p"/exercises/#{@exercise}/edit"}>
       <.button><%= gettext "Edit exercise" %></.button>
     </.link>
   </:actions>
 </.header>
 
-<div class="flex flex-col items-center py-4">
+<p class="mt-6"><%= @exercise.description %></p>
+
+<div class="flex flex-col items-center py-4 gap-2">
   <.link href={~p"/exercises/#{@exercise}/editor"}>
-    <.button><%= gettext "Open in Editor" %></.button>
+    <.button disabled={@current_user == nil}><%= gettext "Open in Editor" %></.button>
   </.link>
+  <p :if={@current_user == nil} class="font-light text-sm">Only registered users can use the online editor.</p>
 </div>
 
-<h2 class="font-bold text-2xl"><%= gettext "Submissions" %></h2>
-<div :for={submission <- @exercise.submissions}>
-  <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"}>
-    <span class=""><%= gettext "Submission %{id}", id: submission.id %></span>
-  </.link>
-  <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"} method="delete" data-confirm="Are you sure?" class="font-light">
-    Delete
-  </.link>
-</div>
+<%= if @current_user do %>
+  <%= if @current_user.account_type != :student do %>
+    <h2 class="font-bold text-2xl"><%= gettext "Submissions" %></h2>
+    <%= if length(@exercise.submissions) > 0 do %>
+      <.table id="submissions-table" rows={@exercise.submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
+        <:col :let={submission} label={gettext "Date"}><%= NaiveDateTime.to_string(submission.inserted_at) %></:col>
+        <:col :let={submission} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
+        <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
+        <:action :let={submission}>
+          <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"} method="delete" data-confirm="Are you sure?">
+            <%= gettext "Delete" %>
+          </.link>
+        </:action>
+      </.table>
+      <%!-- <div :for={submission <- @exercise.submissions}>
+        <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"}>
+          <span class=""><%= gettext "Submission %{id}", id: submission.id %></span>
+        </.link>
+        <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"} method="delete" data-confirm="Are you sure?" class="font-light">
+          Delete
+        </.link>
+      </div> --%>
+    <% else %>
+      <p class="font-light">There are no submissions for this exercise yet.</p>
+    <% end %>
+  <% else %>
+    <h2 class="font-bold text-2xl"><%= ngettext "My submission", "My submissions", length(@exercise.submissions) %></h2>
+    <%= if length(@exercise.submissions) > 0 do %>
+      <%= for {submission, i} <- Enum.with_index(@exercise.submissions, 1) do %>
+        <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"}>
+          <p class=""><%= gettext "Submission %{i} (%{grade}%)", i: i, grade: submission.total_grade %></p>
+        </.link>
+      <% end %>
+    <% else %>
+      <p class="font-light">You have not submitted anything yet.</p>
+    <% end %>
+  <% end %>
+<% end %>
 
 <%!-- <.list>
   <:item title="Title"><%= @exercise.title %></:item>

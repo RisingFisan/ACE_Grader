@@ -26,6 +26,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   end
 
   def handle_event("save", %{"exercise" => exercise_params} = _params, socket) do
+    exercise_params = Map.put(exercise_params, "author_id", socket.assigns.current_user.id)
     if socket.assigns[:exercise] do
       case Exercises.update_exercise(socket.assigns.exercise, exercise_params) do
         {:ok, exercise} ->

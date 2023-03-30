@@ -38,18 +38,8 @@ defmodule AceGrader.Submissions do
 
   """
   def get_submission!(id) do
-    submission = Repo.get!(Submission, id)
-    |> Repo.preload([:tests])
-
-    if submission.total_grade == nil do
-      total_grade = Enum.reduce(submission.tests, 0, fn test, acc -> (if test.passed, do: acc + test.grade, else: acc) end)
-      case update_submission(submission, %{total_grade: total_grade}) do
-        {:ok, submission2} -> submission2
-        {:error, _changeset} -> submission
-      end
-    else
-      submission
-    end
+    Repo.get!(Submission, id)
+    |> Repo.preload([:tests, :user])
   end
 
   @doc """

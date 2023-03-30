@@ -6,7 +6,7 @@
         <p class="font-bold text-xl text-violet-800" title="Automatic Code Evaluator and Grader">ACE Grader</p>
       </a>
     </div>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-6">
       <.simple_form for={nil} id="lang-form">
         <div class="flex items-center gap-2">
           <Heroicons.language class="w-6 h-6"/>
@@ -22,6 +22,23 @@
           </div>
         </div>
       </.simple_form>
+      <div class="flex gap-4 items-center">
+        <%= if @current_user do %>
+          <.link href={~p"/users/settings"}>
+            <div class="flex gap-2 px-2 pr-3 py-2 border-2 rounded-full hover:bg-gray-100 duration-200">
+              <Heroicons.user_circle class="w-6 h-6"/>
+              <p><%= @current_user.display_name %></p>
+            </div>
+          </.link>
+          <.link href={~p"/users/log_out"} method="delete">
+            <p class="border-2 px-3 py-2 rounded-lg hover:bg-gray-100 duration-200">Log out</p>
+          </.link>
+        <% else %>
+          <.link href={~p"/users/log_in"}>
+            <p class="border-2 px-3 py-2 rounded-lg hover:bg-gray-100 duration-200">Log in</p>
+          </.link>
+        <% end %>
+      </div>
     </div>
   </div>
 </header>

@@ -13,6 +13,7 @@ defmodule AceGrader.Submissions.Submission do
 
     has_many :tests, AceGrader.Submissions.Test
 
+    belongs_to :user, AceGrader.Accounts.User, foreign_key: :author_id
     belongs_to :exercise, AceGrader.Exercises.Exercise
 
     timestamps()
@@ -21,7 +22,7 @@ defmodule AceGrader.Submissions.Submission do
   @doc false
   def changeset(submission, attrs) do
     submission
-    |> cast(attrs, [:code, :exercise_id, :warnings, :errors, :success, :total_grade])
+    |> cast(attrs, [:code, :exercise_id, :warnings, :errors, :success, :total_grade, :author_id])
     |> validate_required([:code, :exercise_id])
     |> cast_assoc(:tests)
   end

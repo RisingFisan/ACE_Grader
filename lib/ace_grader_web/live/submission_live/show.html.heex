@@ -10,7 +10,7 @@
 
 <div class="flex justify-between items-end">
   <div>
-    <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: "[PLACEHOLDER]" %></p>
+    <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: @submission.user.display_name %><span> (@<%= @submission.user.username %>)</span></p>
     <p><%= @submission.inserted_at |> NaiveDateTime.to_string() %></p>
   </div>
   <div class="flex flex-col items-center">

@@ -23,7 +23,7 @@
 
   <div class="py-4 flex justify-center gap-6">
     <.button id="test_button" phx-hook="TestButton" disabled={@testing}>
-      <%= if @testing, do: gettext("Running..."), else: gettext("Run tests") %>
+      <%= if @testing, do: gettext("Running..."), else: pgettext("verb", "Test") %>
     </.button>
     <.button id="submit_button" phx-click={JS.push("show_confirm")}><%= gettext "Submit" %></.button>
   </div>
@@ -45,7 +45,7 @@
 </.simple_form>
 
 <.compilation_results :if={@test_results != nil} warnings={@warnings} errors={@errors} />
-<.test_results :if={@test_results != nil and @success} tests={@test_results}/>
+<.test_results :if={@test_results != nil and @success and length(@test_results) > 0} tests={@test_results}/>
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
   <p><%= gettext "Are you sure you want to submit your answer?" %></p>

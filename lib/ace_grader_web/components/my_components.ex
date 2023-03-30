@@ -19,7 +19,7 @@ defmodule AceGraderWeb.MyComponents do
             (if (not test.passed and test.executed) or not @success, do: "bg-red-200", else: ""),
           ]}>
           <div class="h-full w-full font-light bg-gray-200 flex flex-col items-center justify-center rounded-l-xl">
-            <h3 class="text-xl"><%= "#{gettext("Test")} #{i}" %></h3>
+            <h3 class="text-xl"><%= "#{pgettext("noun", "Test")} #{i}" %></h3>
             <p><%= "(#{test.grade}%)" %></p>
           </div>
           <div class="pl-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 gap-x-4 items-center border-l border-gray-500">

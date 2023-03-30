@@ -4,7 +4,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
   alias AceGrader.Exercises
   alias AceGrader.Submissions
 
-  def mount(_params = %{"id" => id, "exercise_id" => exercise_id}, %{"locale" => locale}, socket) do
+  def mount(_params = %{"id" => id, "exercise_id" => exercise_id}, _assigns, socket) do
     submission = Submissions.get_submission!(id)
     |> Map.put(:exercise, Exercises.get_exercise!(exercise_id, false))
 
@@ -15,7 +15,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
       Task.async(fn -> Grader.grade_submission(submission, liveview) end)
     end
 
-    {:ok, socket |> assign(:locale, locale)}
+    {:ok, socket}
   end
 
   def handle_info({:compilation_warnings, warnings}, socket) do

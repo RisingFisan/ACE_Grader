@@ -4,7 +4,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
   alias AceGrader.Submissions
   alias AceGrader.Grader
 
-  def mount(_params = %{"id" => id}, %{"locale" => locale}, socket) do
+  def mount(_params = %{"id" => id}, _session, socket) do
     exercise = Exercises.get_exercise!(id)
     submission = %Submissions.Submission{}
     changeset = Submissions.change_submission(submission)
@@ -14,13 +14,11 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
         |> Map.take([:grade, :input, :type, :expected_output, :visible]))
     end))
 
-    IO.inspect(Gettext.get_locale())
-
     socket = assign(socket, exercise: exercise)
     |> assign(warnings: nil, errors: nil, confirm_modal: false)
     |> assign(test_results: nil, success: nil, testing: false)
     |> assign(submission: changeset)
-    {:ok, socket |> assign(:locale, locale)}
+    {:ok, socket |> assign(page_title: "Exercise Editor")}
   end
 
   def handle_event("pre_test_code", _params, socket) do
@@ -51,6 +49,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
   end
 
   def handle_event("submit_code", %{"submission" => submission_params} = _params, socket) do
+    submission_params = Map.put(submission_params, "author_id", socket.assigns.current_user.id)
     case Submissions.create_submission(submission_params) do
       {:ok, submission} ->
         {:noreply, push_navigate(socket, to: ~p"/exercises/#{submission.exercise_id}/submissions/#{submission}")}

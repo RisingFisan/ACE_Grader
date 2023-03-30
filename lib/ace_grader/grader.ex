@@ -1,13 +1,12 @@
 defmodule AceGrader.Grader do
   alias AceGrader.Submissions
-  alias AceGrader.Submissions.Submission
 
   def run(submission, liveview \\ nil) do
     File.write("./submissions/main.c", submission.code)
     case System.cmd("gcc", ~w(main.c -o main), stderr_to_stdout: true, cd: "./submissions") do
       {warnings, 0} ->
         if warnings != "" and liveview != nil, do: send(liveview, {:compilation_warnings, warnings})
-        tests = for {test, i} <- submission.tests |> Enum.with_index(1) do
+        tests = for {test, i} <- submission.tests |> Enum.with_index(1), liveview != nil or test.visible do
           Task.async(fn ->
             if not test.executed do
               {output, _exit_status} = System.cmd("python", [File.cwd!() <> "/submissions/runner.py", File.cwd!() <> "/submissions/main", test.input || ""])

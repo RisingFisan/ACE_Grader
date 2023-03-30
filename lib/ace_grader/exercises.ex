@@ -38,7 +38,8 @@ defmodule AceGrader.Exercises do
   """
   def get_exercise!(id, preloads \\ true) do
     Repo.get!(Exercise, id)
-    |> Repo.preload(if preloads, do: [:tests, submissions: from(s in Submission, order_by: s.inserted_at)], else: [])
+    |> Repo.preload([:user])
+    |> Repo.preload(if preloads, do: [:tests, submissions: from(s in Submission, order_by: s.inserted_at, preload: [:user])], else: [])
   end
 
   @doc """
