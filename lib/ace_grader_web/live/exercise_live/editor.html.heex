@@ -7,31 +7,28 @@
   <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
 </div>
 
-<div>
-  <div id="editor_container" phx-update="ignore">
-    <div id="editor_loading" class="flex items-center justify-center flex-col text-2xl gap-2">
+<div class="space-y-4">
+  <div id="editor-container" class="editor-container" phx-update="ignore">
+    <div id="editor-loading" class="editor-loading">
       <p><%= gettext "Loading editor" %></p>
       <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
     </div>
 
-    <div id="editor" class="editor" phx-hook="Editor">int main() {
-    int x = 5;
-    printf("%d\n", x);
-    return 0;
-}</div>
+    <div id="editor" class="editor" phx-hook="Editor"><%= @exercise.template || "" %></div>
   </div>
 
-  <div class="py-4 flex justify-center gap-6">
-    <.button id="test_button" phx-hook="TestButton" disabled={@testing}>
+  <div class="flex flex-col justify-center items-center">
+    <.button id="submit_button" class="w-64" phx-click={JS.push("show_confirm")}><span class="text-2xl"><%= gettext "Submit" %></span></.button>
+    <div class="my-4 bg-zinc-300 dark:bg-zinc-600 h-[1px] self-stretch"></div>
+    <button id="test_button" class="w-36 font-bold self-center border-2 border-zinc-400 dark:border-zinc-600 text-xl bg-zinc-300 dark:bg-zinc-700 px-4 py-2 rounded-xl hover:bg-zinc-400 dark:hover:bg-zinc-600" phx-hook="TestButton" disabled={@testing}>
       <%= if @testing, do: gettext("Running..."), else: pgettext("verb", "Test") %>
-    </.button>
-    <.button id="submit_button" phx-click={JS.push("show_confirm")}><%= gettext "Submit" %></.button>
+    </button>
   </div>
 </div>
 
 <.simple_form :let={f} hidden for={@submission} phx-submit="submit_code" id="submit_form" phx-update="ignore">
   <.input hidden type="hidden" field={f[:exercise_id]} phx-update="ignore" value={@exercise.id}></.input>
-  <.input hidden type="hidden" field={f[:code]} id="editor_code" phx-update="ignore"></.input>
+  <.input hidden type="hidden" field={f[:code]} id="editor-code" phx-update="ignore"></.input>
   <.inputs_for :let={tf} field={f[:tests]}>
     <.input field={tf[:input]} type="hidden" label="Input" />
     <.input field={tf[:type]} type="hidden" options={["Exact": "exact", "Regex": "regex", "Items": "items"]} label="Output Type" />
@@ -48,7 +45,7 @@
 <.test_results :if={@test_results != nil and @success and length(@test_results) > 0} tests={@test_results}/>
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
-  <p><%= gettext "Are you sure you want to submit your answer?" %></p>
+  <:title><%= gettext "Are you sure you want to submit your answer?" %></:title>
   <:cancel><%= gettext "No" %></:cancel>
   <:confirm><%= gettext "Yes" %></:confirm>
 </.modal>

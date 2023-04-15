@@ -27,20 +27,48 @@
   <.input field={f[:title]} type="text" label={gettext "Title"} />
   <.input field={f[:description]} type="textarea" label={gettext "Description" } />
   <.input field={f[:public]} type="checkbox" label={gettext "Public"} />
+  <div>
+    <.label>
+      <%= gettext("Test file") %>
+    </.label>
+    <div id="editor1-container" class="editor-container" phx-update="ignore">
+      <div id="editor1-loading" class="editor-loading">
+        <p><%= gettext "Loading editor" %></p>
+        <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
+      </div>
+
+      <div id="editor1" class="editor" phx-hook="Editor"><%= f[:test_file].value %></div>
+    </div>
+    <.input hidden type="hidden" field={f[:test_file]} id="editor1-code" phx-update="ignore"></.input>
+   </div>
+  <div>
+    <.label>
+      <%= gettext("Submission template") %>
+    </.label>
+    <div id="editor2-container" class="editor-container" phx-update="ignore">
+      <div id="editor2-loading" class="editor-loading">
+        <p><%= gettext "Loading editor" %></p>
+        <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
+      </div>
+
+      <div id="editor2" class="editor" phx-hook="Editor"><%= f[:template].value %></div>
+    </div>
+    <.input hidden type="hidden" field={f[:template]} id="editor2-code" phx-update="ignore"></.input>
+  </div>
   <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
   <.inputs_for :let={tf} field={f[:tests]}>
     <.input :if={is_nil(tf.data.temp_id)} field={tf[:id]} type="hidden" />
-    <div class="bg-gray-200 p-4 rounded-xl space-y-2">
+    <div class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-xl space-y-2 border-2 border-zinc-300 dark:border-zinc-700">
       <.input field={tf[:input]} type="textarea" label={gettext "Input"} mono />
       <div class="flex w-full items-center gap-5">
         <div class="w-48">
           <.input field={tf[:type]} type="select" options={[ {gettext("Exact"), "exact"}, {gettext("Regex"), "regex"}, {gettext("Items"), "items"}] } label={gettext "Output type"} />
         </div>
-        <div class="cursor-pointer" phx-click={JS.toggle(to: "#type-tooltip_#{tf.data.temp_id || tf.data.id}")} >
+        <div class="cursor-pointer" phx-click={JS.toggle(to: "#type-tooltip-#{tf.index}")} >
           <Heroicons.question_mark_circle class="h-6 w-6 hover:text-gray-500 duration-200" />
         </div>
         <div class="relative">
-          <div id={"type-tooltip_#{tf.data.temp_id || tf.data.id}"} hidden class="absolute left-0 w-[512px] -top-20 bg-gray-300 px-4 py-2 rounded-xl select-none shadow-lg">
+          <div id={"type-tooltip-#{tf.index}"} hidden class="absolute left-0 w-[512px] -top-20 bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none shadow-lg">
             <p><b><%= gettext "Exact" %></b>: verifica se o output esperado coincide ao output real (ignorando os espaços iniciais e finais).</p>
             <p><b><%= gettext "Regex" %></b>: verifica se o output real corresponde à expressão regular especificada no output esperado.</p>
             <p><b><%= gettext "Items" %></b>: verifica se o output real contém todos os valores especificados no output esperado (um por linha).</p>
@@ -61,9 +89,14 @@
       </div>
     </div>
   </.inputs_for>
-  <.button type="button" phx-click="add-test"><%= gettext "New Test" %></.button>
+  <div class="flex flex-col items-center">
+    <button type="button" phx-click="add-test" class="mx-auto bg-zinc-300 dark:bg-zinc-500 hover:bg-zinc-400 dark:hover:bg-zinc-400 px-4 py-2 rounded-lg duration-200"><%= "+ " <> gettext "Add test" %></button>
+  </div>
   <.error :if={length(f[:total_grade].errors) > 0}><%= dgettext "errors", "The sum of every grade should equal 100!" %></.error>
   <:actions>
-    <.button id="submit-button"><%= gettext "Save Exercise" %></.button>
+    <.button id="submit-button" class="flex items-center gap-2">
+      <svg class="w-5 h-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V173.3c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32H64zm0 96c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V128zM224 288a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
+      <%= gettext "Save Exercise" %>
+    </.button>
   </:actions>
 </.simple_form>

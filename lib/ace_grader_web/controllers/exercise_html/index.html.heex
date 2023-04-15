@@ -2,7 +2,10 @@
   <%= gettext "Listing Exercises" %>
   <:actions>
     <.link href={~p"/exercises/new"}>
-      <.button><%= gettext "New Exercise" %></.button>
+      <.button :if={@current_user && @current_user.account_type != :student} kind={:teacher} class="flex items-center gap-2">
+        <Heroicons.plus class="w-5 h-5" />
+        <%= gettext "New Exercise" %>
+      </.button>
     </.link>
   </:actions>
 </.header>
@@ -11,13 +14,7 @@
   <:col :let={exercise} label={gettext "Title"}><%= exercise.title %></:col>
   <:col :let={exercise} label={gettext "Description"}><%= exercise.description %></:col>
   <:col :let={exercise} label={gettext "Public"}><%= exercise.public %></:col>
-  <:action :let={exercise}>
-    <div class="sr-only">
-      <.link navigate={~p"/exercises/#{exercise}"}><%= gettext "Show" %></.link>
-    </div>
-    <.link navigate={~p"/exercises/#{exercise}/edit"}><%= gettext "Edit" %></.link>
-  </:action>
-  <:action :let={exercise}>
+  <:action :let={exercise} :if={@current_user != nil && @current_user.account_type != :student}>
     <.link href={~p"/exercises/#{exercise}"} method="delete" data-confirm="Are you sure?">
       <%= gettext "Delete" %>
     </.link>

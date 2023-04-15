@@ -18,10 +18,6 @@ defmodule AceGraderWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", AceGraderWeb do
-    pipe_through :browser
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", AceGraderWeb do
   #   pipe_through :api
@@ -89,14 +85,15 @@ defmodule AceGraderWeb.Router do
   scope "/", AceGraderWeb do
     pipe_through [:browser]
 
-    get "/", PageController, :home
-
     resources "/exercises", ExerciseController, except: [:new, :create, :edit, :update]
 
     delete "/users/log_out", UserSessionController, :delete
 
     live_session :current_user,
       on_mount: [{AceGraderWeb.UserAuth, :mount_current_user}] do
+
+      live "/", HomeLive
+
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end

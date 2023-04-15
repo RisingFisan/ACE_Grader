@@ -11,13 +11,13 @@ body {
     font-family: 'Inter', 'Lexend', 'Atkinson Hyperlegible', sans-serif;
 }
 
-#editor_container {
+.editor-container {
     position: relative;
     width: 100%;
 }
 
-#editor_loading { 
-    @apply z-10 w-full h-full absolute bg-[#282a36] text-white;
+.editor-loading { 
+    @apply z-10 w-full h-full absolute bg-[#282a36] text-white flex items-center justify-center flex-col text-2xl gap-2;
 }
 
 .editor {

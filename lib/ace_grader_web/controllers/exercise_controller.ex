@@ -2,10 +2,15 @@ defmodule AceGraderWeb.ExerciseController do
   use AceGraderWeb, :controller
 
   alias AceGrader.Exercises
-  # alias AceGrader.Exercises.Exercise
+  alias AceGrader.Exercises.Exercise
 
   def index(conn, _params) do
-    exercises = Exercises.list_exercises()
+    exercises =
+      if !conn.assigns.current_user || conn.assigns.current_user.account_type == :student do
+        Exercises.list_public_exercises()
+      else
+        Exercises.list_exercises()
+      end
     render(conn, :index, exercises: exercises, page_title: "Exercises")
   end
 
@@ -27,19 +32,19 @@ defmodule AceGraderWeb.ExerciseController do
   # end
 
   def show(conn, %{"id" => id}) do
-    if conn.assigns.current_user.account_type == :student do
-      exercise =
+    exercise =
+      if conn.assigns.current_user && conn.assigns.current_user.account_type == :student do
         Exercises.get_exercise!(id)
         |> Map.update!(:submissions, fn submissions ->
           Enum.filter(submissions, fn submission ->
             submission.author_id == conn.assigns.current_user.id
           end)
         end)
-      render(conn, :show, exercise: exercise)
-    else
-      exercise = Exercises.get_exercise!(id)
-      render(conn, :show, exercise: exercise)
-    end
+      else
+        Exercises.get_exercise!(id, conn.assigns.current_user != nil)
+      end
+    is_owner = Exercise.is_owner?(exercise, conn.assigns.current_user)
+    render(conn, :show, exercise: exercise, is_owner: is_owner)
   end
 
   def editor(conn, %{"id" => id}) do

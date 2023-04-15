@@ -13,6 +13,22 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   def mount(_params, _session, socket) do
     changeset = Exercises.change_exercise(%Exercise{})
       |> Ecto.Changeset.put_assoc(:tests, [%Exercises.Test{temp_id: get_temp_id()}])
+      |> Ecto.Changeset.put_change(:test_file, """
+      #include <stdio.h>
+
+      int main() {
+        hello_world();
+
+        return 0;
+      }
+      """)
+      |> Ecto.Changeset.put_change(:template, """
+      #include <stdio.h>
+
+      void hello_world() {
+        printf("Hello World!");
+      }
+      """)
     {:ok, socket |> assign(changeset: changeset, valid_grades: true)}
   end
 

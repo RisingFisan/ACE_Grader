@@ -9,6 +9,9 @@ defmodule AceGrader.Exercises.Exercise do
     field :public, :boolean, default: true
     field :title, :string
 
+    field :test_file, :string
+    field :template, :string
+
     field :total_grade, :integer, virtual: true
 
     belongs_to :user, AceGrader.Accounts.User, foreign_key: :author_id
@@ -33,9 +36,13 @@ defmodule AceGrader.Exercises.Exercise do
     end
 
     exercise
-    |> cast(attrs, [:title, :description, :public, :total_grade, :author_id])
+    |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
     |> validate_required([:title, :description, :public])
     |> cast_assoc(:tests)
     |> (& if validate_grade, do: validate_number(&1, :total_grade, equal_to: 100), else: &1).()
+  end
+
+  def is_owner?(exercise, user) do
+    user && exercise.author_id == user.id
   end
 end

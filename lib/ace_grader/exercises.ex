@@ -22,6 +22,10 @@ defmodule AceGrader.Exercises do
     Repo.all(Exercise)
   end
 
+  def list_public_exercises do
+    Repo.all(from(e in Exercise, where: e.public == true))
+  end
+
   @doc """
   Gets a single exercise.
 

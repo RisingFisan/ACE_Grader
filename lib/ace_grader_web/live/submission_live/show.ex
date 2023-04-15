@@ -1,18 +1,19 @@
 defmodule AceGraderWeb.SubmissionLive.Show do
   use AceGraderWeb, :live_view
   alias AceGrader.Grader
-  alias AceGrader.Exercises
+  # alias AceGrader.Exercises
   alias AceGrader.Submissions
 
-  def mount(_params = %{"id" => id, "exercise_id" => exercise_id}, _assigns, socket) do
+  def mount(_params = %{"id" => id, "exercise_id" => _exercise_id}, _assigns, socket) do
+    # exercise = Exercises.get_exercise!(exercise_id, false)
     submission = Submissions.get_submission!(id)
-    |> Map.put(:exercise, Exercises.get_exercise!(exercise_id, false))
+    # |> Map.put(:exercise, exercise)
 
     socket = assign(socket, submission: submission)
 
     if Submissions.Submission.pending_tests(submission) do
       liveview = self()
-      Task.async(fn -> Grader.grade_submission(submission, liveview) end)
+      Task.async(fn -> Grader.grade_submission(submission, submission.exercise.test_file, liveview) end)
     end
 
     {:ok, socket}

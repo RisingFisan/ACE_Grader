@@ -17,7 +17,7 @@ defmodule AceGraderWeb.UserSettingsLive do
         >
           <.input field={@info_form[:username]} type="text" label="Username" required />
           <.input field={@info_form[:display_name]} type="text" label="Display name" required />
-          <.input field={@info_form[:account_type]} type="radio" label="Account type" options={[:student, :teacher]} required />
+          <.input field={@info_form[:account_type]} type="radio" label="Account type" options={["student", "teacher"]} required />
           <:actions>
             <.button phx-disable-with="Changing...">Change Account Information</.button>
           </:actions>
@@ -62,7 +62,7 @@ defmodule AceGraderWeb.UserSettingsLive do
           phx-trigger-action={@trigger_submit}
         >
           <div> <!-- This div is to prevent the space-y-8 of the form from creating space before the password -->
-            <.input field={@password_form[:email]} type="hidden" value={@current_email} />
+            <.input id="hidden_user_email" field={@password_form[:email]} type="hidden" value={@current_email} />
             <.input field={@password_form[:password]} type="password" label="New password" required />
           </div>
           <.input

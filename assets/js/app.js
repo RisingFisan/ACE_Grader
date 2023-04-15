@@ -25,38 +25,38 @@ import ace from "../vendor/ace_editor/ace"
 import "../vendor/ace_editor/theme-dracula"
 import "../vendor/ace_editor/mode-c_cpp"
 
-var editor;
-
 // window.addEventListener(`phx:get_code`, (e) => {
 //     document.getElementById("editor_code").value = editor.getValue();
 // })
 
-function start_editor() {
-  editor = ace.edit("editor");
+function start_editor(editor_id) {
+  var editor = ace.edit(editor_id);
   editor.setTheme("ace/theme/dracula");
   var cMode = ace.require("ace/mode/c_cpp").Mode;
   editor.session.setMode(new cMode());
+  return editor;
 }
 
 let Hooks = {}
 
 Hooks.Editor = {
   mounted() {
-    start_editor();
-    document.getElementById("editor_loading").style.display = "none";
-    document.getElementById("editor_code").value = editor.getValue();
+    let editor_id = this.el.id;
+    let editor = start_editor(editor_id);
+    document.getElementById(`${editor_id}-loading`).style.display = "none";
+    document.getElementById(`${editor_id}-code`).value = editor.getValue();
     editor.session.on('change', function(delta) {
         // delta.start, delta.end, delta.lines, delta.action
-        document.getElementById("submit_button").disabled = true;
-        document.getElementById("editor_code").value = editor.getValue();
-        document.getElementById("submit_button").disabled = false;
+        // document.getElementById("submit_button").disabled = true;
+        document.getElementById(`${editor_id}-code`).value = editor.getValue();
+        // document.getElementById("submit_button").disabled = false;
     });
   }
 }
 
 Hooks.EditorReadOnly = {
   mounted() {
-    start_editor();
+    let editor = start_editor(this.el.id);
     editor.setReadOnly(true);
   }
 }
@@ -65,7 +65,7 @@ Hooks.TestButton = {
   mounted() {
     this.el.addEventListener("click", (e) => {
       this.pushEvent("pre_test_code")
-      this.pushEvent("test_code", {"code": editor.getValue()})
+      this.pushEvent("test_code", {"code": ace.edit("editor").getValue()})
     })
   }
 }

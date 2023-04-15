@@ -8,20 +8,20 @@
   </:actions>
 </.header>
 
-<div class="flex justify-between items-end">
+<div class="flex justify-between items-center mt-8">
   <div>
     <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: @submission.user.display_name %><span> (@<%= @submission.user.username %>)</span></p>
     <p><%= @submission.inserted_at |> NaiveDateTime.to_string() %></p>
   </div>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center gap-1">
     <p class="font-light tracking-wide text-lg"><%= gettext "Final grade" %></p>
-    <div class="bg-gray-200 px-6 py-4 rounded-xl border-2 border-gray-500 text-2xl"><%= @submission.total_grade %>%</div>
+    <div class="bg-zinc-200 dark:bg-zinc-700 px-6 py-4 rounded-xl border-2 border-zinc-500 text-2xl w-28 text-center"><%= @submission.total_grade %>%</div>
   </div>
 </div>
 
 <div class="space-y-6 py-8 w-full">
 
-  <div id="editor_container" phx-update="ignore" class="space-y-4 bg-gray-300 rounded-[32px] px-8 pt-4 pb-8 text-2xl">
+  <div id="editor_container" phx-update="ignore" class="space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[32px] px-8 pt-4 pb-8 text-2xl">
     <h2 class="text-2xl font-bold"><%= gettext "Code" %></h2>
     <%!-- <pre class="bg-gray-800 text-gray-100 px-2 py-1"><%= @submission.code %></pre> --%>
     <div 

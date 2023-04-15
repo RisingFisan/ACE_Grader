@@ -10,44 +10,54 @@ defmodule AceGraderWeb.MyComponents do
 
   def test_results(assigns) do
     ~H"""
-    <div class="space-y-4 bg-gray-300 rounded-[32px] px-8 py-4">
+    <div class="space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[32px] px-8 py-4">
       <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
       <div class="space-y-4">
         <div :for={{test, i} <- @tests |> Enum.with_index(1)}
-          class={["grid grid-cols-[92px_1fr_128px] items-center text-lg bg-gray-100 rounded-xl border border-gray-500",
-            (if test.passed, do: "bg-green-200", else: ""),
-            (if (not test.passed and test.executed) or not @success, do: "bg-red-200", else: ""),
+          class={["grid grid-cols-[92px_1fr_128px] items-center text-lg rounded-xl border-2 border-zinc-400 dark:border-zinc-600",
+            (test.status == :success && "bg-green-200 dark:bg-green-800"),
+            ((test.status in [:failed, :error] or not @success) && "bg-red-200 dark:bg-red-900"),
+            (test.status == :timeout && "bg-orange-100 dark:bg-orange-900"),
+            (test.status == :pending && "bg-zinc-100 dark:bg-zinc-700"),
           ]}>
-          <div class="h-full w-full font-light bg-gray-200 flex flex-col items-center justify-center rounded-l-xl">
+          <% IO.inspect((test.status in [:failed, :timeout, :error] or not @success)) %>
+          <div class="h-full w-full font-light bg-zinc-200 dark:bg-zinc-500 flex flex-col items-center justify-center rounded-l-lg">
             <h3 class="text-xl"><%= "#{pgettext("noun", "Test")} #{i}" %></h3>
             <p><%= "(#{test.grade}%)" %></p>
           </div>
-          <div class="pl-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 gap-x-4 items-center border-l border-gray-500">
+          <div class="pl-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 gap-x-4 items-start border-l border-zinc-400 dark:border-zinc-700">
             <p><%= gettext "Input" %></p>
             <pre><%= test.input %></pre>
 
-            <p class="self-start"><%= gettext "Expected output" %></p>
+            <p><%= gettext "Expected output" %></p>
             <pre><%= test.expected_output %></pre>
 
-            <p class="self-start"><%= gettext "Actual output" %></p>
+            <p><%= gettext "Actual output" %></p>
             <%= if test.actual_output != nil do %>
               <pre><%= test.actual_output %></pre>
             <% else %>
-              <%= if @success do %>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <%= if test.status == :pending do %>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 self-center fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                   <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
                 </svg>
-              <% else %>
-                <Heroicons.x_mark class="w-6 h-6 text-red-600" />
+              <% end %>
+              <%= if test.status in [:error, :failed] do %>
+                <Heroicons.x_mark class="w-6 h-6 self-center text-red-600" />
               <% end %>
             <% end %>
           </div>
           <div class="justify-self-end pr-4">
-            <%= if test.passed do %>
-              <Heroicons.check_circle class="w-12 h-12 text-green-600" />
-            <% else %>
-              <Heroicons.x_circle class="w-12 h-12 text-red-600" />
-            <% end %>
+            <Heroicons.check_circle :if={test.status == :success} class="w-12 h-12 text-green-600" />
+            <Heroicons.x_circle :if={test.status == :error} class="w-12 h-12 text-red-600" />
+            <div :if={test.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
+              <Heroicons.x_circle class="w-12 h-12"/>
+              <p>Failed</p>
+            </div>
+            <div :if={test.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
+              <Heroicons.exclamation_circle class="w-12 h-12"/>
+              <p>Timeout</p>
+            </div>
+            <Heroicons.clock :if={test.status == :pending} class="w-12 h-12" />
           </div>
         </div>
       </div>
@@ -60,7 +70,7 @@ defmodule AceGraderWeb.MyComponents do
 
   def compilation_results(assigns) do
     ~H"""
-    <div class="bg-gray-300 rounded-[32px] px-8 py-4 text-2xl space-y-4">
+    <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[32px] px-8 py-4 text-2xl space-y-4">
       <div class="flex justify-between" phx-click={if @warnings != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
         <p class="font-bold"><%= gettext "Compilation" %></p>
         <div>

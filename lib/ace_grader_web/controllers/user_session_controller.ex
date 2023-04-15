@@ -14,8 +14,8 @@ defmodule AceGraderWeb.UserSessionController do
     |> create(params, "Password updated successfully!")
   end
 
-  def create(conn, params) do
-    create(conn, params, "Welcome back!")
+  def create(conn, %{"user" => _user_params} = params) do
+    create(conn, params, "Welcome back, [USER]!")
   end
 
   defp create(conn, %{"user" => user_params}, info) do
@@ -23,7 +23,7 @@ defmodule AceGraderWeb.UserSessionController do
 
     if user = Accounts.get_user_by_email_and_password(email, password) do
       conn
-      |> put_flash(:info, info)
+      |> put_flash(:info, String.replace(info, "[USER]", user.display_name))
       |> UserAuth.log_in_user(user, user_params)
     else
       # In order to prevent user enumeration attacks, don't disclose whether the email is registered.

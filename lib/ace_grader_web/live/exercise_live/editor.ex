@@ -13,6 +13,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
         |> Map.from_struct()
         |> Map.take([:grade, :input, :type, :expected_output, :visible]))
     end))
+    |> Ecto.Changeset.put_change(:author_id, socket.assigns.current_user.id)
 
     socket = assign(socket, exercise: exercise)
     |> assign(warnings: nil, errors: nil, confirm_modal: false)
@@ -37,7 +38,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     |> Ecto.Changeset.cast(%{code: code}, [:code])
     |> Ecto.Changeset.apply_changes
 
-    submission = Grader.test_submission(submission)
+    submission = Grader.test_submission(submission, socket.assigns.exercise.test_file)
 
     {:noreply, socket
       |> assign(

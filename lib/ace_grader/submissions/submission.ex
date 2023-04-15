@@ -28,6 +28,6 @@ defmodule AceGrader.Submissions.Submission do
   end
 
   def pending_tests(submission) do
-    length(Enum.filter(submission.tests, & not &1.executed)) > 0
+    length(Enum.filter(submission.tests, & &1.status == :pending)) > 0
   end
 end

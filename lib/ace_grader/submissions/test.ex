@@ -11,8 +11,9 @@ defmodule AceGrader.Submissions.Test do
     field :expected_output, :string
     field :actual_output, :string
     field :visible, :boolean, default: false
-    field :executed, :boolean, default: false
-    field :passed, :boolean, default: false
+    # field :executed, :boolean, default: false
+    # field :passed, :boolean, default: false
+    field :status, Ecto.Enum, values: [:pending, :success, :failed, :timeout, :error], default: :pending
 
     belongs_to :submission, AceGrader.Submissions.Submission
 
@@ -22,7 +23,7 @@ defmodule AceGrader.Submissions.Test do
   @doc false
   def changeset(test, attrs) do
     test
-    |> cast(attrs, [:type, :input, :expected_output, :actual_output, :grade, :visible, :executed, :passed])
+    |> cast(attrs, [:type, :input, :expected_output, :actual_output, :grade, :visible, :status])
     |> validate_required([:type, :expected_output, :grade, :visible])
     |> validate_inclusion(:grade, 0..100)
   end

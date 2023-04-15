@@ -53,7 +53,7 @@ defmodule AceGraderWeb.CoreComponents do
       phx-remove={hide_modal(@id)}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="fixed inset-0 bg-zinc-50/90 transition-opacity" aria-hidden="true" />
+      <div id={"#{@id}-bg"} class="fixed inset-0 bg-zinc-50/90 dark:bg-zinc-800/90 transition-opacity" aria-hidden="true" />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -70,7 +70,7 @@ defmodule AceGraderWeb.CoreComponents do
               phx-window-keydown={hide_modal(@on_cancel, @id)}
               phx-key="escape"
               phx-click-away={hide_modal(@on_cancel, @id)}
-              class="hidden relative rounded-2xl bg-white p-14 shadow-lg shadow-zinc-700/10 ring-1 ring-zinc-700/10 transition"
+              class="hidden relative rounded-2xl bg-white dark:bg-zinc-900 px-12 py-8 shadow-lg shadow-zinc-700/10 ring-1 ring-zinc-700/10 transition"
             >
               <div class="absolute top-6 right-5">
                 <button
@@ -79,24 +79,24 @@ defmodule AceGraderWeb.CoreComponents do
                   class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
                   aria-label={gettext("close")}
                 >
-                  <Heroicons.x_mark solid class="h-5 w-5 stroke-current" />
+                  <Heroicons.x_mark solid class="h-6 w-6 stroke-current dark:fill-zinc-400" />
                 </button>
               </div>
-              <div id={"#{@id}-content"}>
+              <div id={"#{@id}-content"} class="flex flex-col gap-4">
                 <header :if={@title != []}>
-                  <h1 id={"#{@id}-title"} class="text-lg font-semibold leading-8 text-zinc-800">
+                  <h1 id={"#{@id}-title"} class="text-xl font-semibold leading-8 text-zinc-800 dark:text-zinc-100">
                     <%= render_slot(@title) %>
                   </h1>
                   <p
                     :if={@subtitle != []}
                     id={"#{@id}-description"}
-                    class="mt-2 text-sm leading-6 text-zinc-600"
+                    class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300"
                   >
                     <%= render_slot(@subtitle) %>
                   </p>
                 </header>
                 <%= render_slot(@inner_block) %>
-                <div :if={@confirm != [] or @cancel != []} class="ml-6 my-4 flex items-center gap-5">
+                <div :if={@confirm != [] or @cancel != []} class="ml-6 my-4 flex items-center gap-8">
                   <.button
                     :for={confirm <- @confirm}
                     id={"#{@id}-confirm"}
@@ -109,7 +109,7 @@ defmodule AceGraderWeb.CoreComponents do
                   <.link
                     :for={cancel <- @cancel}
                     phx-click={hide_modal(@on_cancel, @id)}
-                    class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                    class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-50 hover:text-zinc-700 dark:hover:text-zinc-200"
                   >
                     <%= render_slot(cancel) %>
                   </.link>
@@ -138,6 +138,7 @@ defmodule AceGraderWeb.CoreComponents do
   attr :autoshow, :boolean, default: true, doc: "whether to auto show the flash on mount"
   attr :close, :boolean, default: true, doc: "whether the flash can be closed"
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
+  attr :header, :boolean, default: true, doc: "whether to render below the header"
 
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
@@ -150,10 +151,11 @@ defmodule AceGraderWeb.CoreComponents do
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed hidden top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 shadow-md shadow-zinc-900/5 ring-1",
+        "fixed hidden right-4 top-4 w-80 sm:w-96 z-50 rounded-lg p-3 shadow-md shadow-zinc-900/5 ring-1",
         @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
         @kind == :warning && "bg-yellow-50 text-yellow-800 ring-yellow-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 p-3 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
+        @kind == :error && "bg-rose-50 p-3 text-rose-900 shadow-md ring-rose-500 fill-rose-900",
+        @header && "top-20",
       ]}
       {@rest}
     >
@@ -188,6 +190,7 @@ defmodule AceGraderWeb.CoreComponents do
   def flash_group(assigns) do
     ~H"""
     <.flash kind={:info} title="Success!" flash={@flash} />
+    <.flash kind={:warning} title="Warning!" flash={@flash} />
     <.flash kind={:error} title="Error!" flash={@flash} />
     <.flash
       id="disconnected"
@@ -229,7 +232,7 @@ defmodule AceGraderWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="space-y-8 bg-white">
+      <div class="space-y-8">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -250,6 +253,7 @@ defmodule AceGraderWeb.CoreComponents do
   attr :type, :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
+  attr :kind, :atom, values: [:normal, :teacher, :delete], default: :normal
 
   slot :inner_block, required: true
 
@@ -258,9 +262,14 @@ defmodule AceGraderWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 disabled:bg-zinc-600",
-        "hover:bg-zinc-700 disabled:cursor-not-allowed py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded-lg disabled:bg-zinc-600 dark:disabled:bg-zinc-800",
+        "disabled:cursor-not-allowed py-3 px-5",
+        "text-lg font-semibold leading-6 text-white active:text-white/80",
+        (case @kind do
+          :teacher -> "bg-orange-700 hover:bg-orange-600"
+          :delete -> "bg-red-700 hover:bg-red-600"
+          :normal -> "bg-violet-800 hover:bg-violet-700"
+        end),
         @class
       ]}
       {@rest}
@@ -320,7 +329,7 @@ defmodule AceGraderWeb.CoreComponents do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600 dark:text-zinc-200">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -328,7 +337,7 @@ defmodule AceGraderWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
+          class="rounded border-zinc-300 dark:border-zinc-600 text-violet-700 focus:ring-0"
           {@rest}
         />
         <%= @label %>
@@ -345,7 +354,7 @@ defmodule AceGraderWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-1 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+        class="mt-1 block w-full rounded-md border border-gray-300 dark:border-zinc-600 dark:bg-zinc-800 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -365,9 +374,10 @@ defmodule AceGraderWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block w-full rounded-lg text-zinc-900 dark:text-zinc-50 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          "min-h-[6rem] border-zinc-300 focus:border-zinc-400",
+          "min-h-[6rem] border-zinc-300 dark:border-zinc-600 focus:border-zinc-400",
+          "bg-zinc-50 dark:bg-zinc-800",
           @errors != [] && "border-rose-400 focus:border-rose-400",
           @mono && "font-mono"
         ]}
@@ -383,8 +393,7 @@ defmodule AceGraderWeb.CoreComponents do
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
       <div :for={option <- @options} class="flex items-center mt-2 gap-2">
-        <% option_id = "#{@name}[#{option}]" %>
-        <.label for={option_id}><%= String.capitalize(option) %></.label>
+        <% option_id = "#{@name}_#{option}" %>
         <input
           type={@type}
           name={@name}
@@ -392,14 +401,17 @@ defmodule AceGraderWeb.CoreComponents do
           value={option}
           class={[
             "block rounded-lg border-zinc-300",
-            "text-zinc-900 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
+            "text-violet-700 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
             "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 phx-no-feedback:focus:ring-zinc-800/5",
-            "border-zinc-300 focus:border-zinc-400 focus:ring-zinc-800/5",
+            "border-zinc-300 focus:border-zinc-400 dark:border-zinc-600 focus:ring-zinc-800/5",
             @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10",
           ]}
-          checked={@value == option}
+          checked={to_string(@value) == option}
           {@rest}/>
-      </div>
+          <label for={option_id} class="block text-sm font-light leading-6 text-zinc-800 dark:text-zinc-100">
+            <%= String.capitalize(option) %>
+          </label>
+        </div>
       <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
     """
@@ -416,9 +428,10 @@ defmodule AceGraderWeb.CoreComponents do
         id={@id || @name}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block w-full rounded-lg text-zinc-900 dark:text-zinc-50 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          "border-zinc-300 focus:border-zinc-400",
+          "border-zinc-300 focus:border-zinc-400 dark:border-zinc-600",
+          "bg-zinc-50 dark:bg-zinc-800",
           @errors != [] && "border-rose-400 focus:border-rose-400",
           @mono && "font-mono"
         ]}
@@ -437,7 +450,7 @@ defmodule AceGraderWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800 dark:text-zinc-100">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -470,10 +483,10 @@ defmodule AceGraderWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-3xl font-bold leading-8 text-zinc-800">
+        <h1 class="text-3xl font-bold leading-8 text-zinc-800 dark:text-zinc-100">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-200">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
@@ -516,7 +529,7 @@ defmodule AceGraderWeb.CoreComponents do
     ~H"""
     <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
       <table class="mt-11 w-[40rem] sm:w-full">
-        <thead class="text-left text-sm leading-6 text-zinc-500">
+        <thead class="text-left text-sm leading-6 text-zinc-500 dark:text-zinc-300">
           <tr>
             <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal"><%= col[:label] %></th>
             <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
@@ -525,7 +538,7 @@ defmodule AceGraderWeb.CoreComponents do
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
+          class="relative divide-y divide-zinc-100 dark:divide-zinc-800 border-t border-zinc-200 dark:border-zinc-600 text-sm leading-6 text-zinc-700 dark:text-zinc-100"
         >
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
             <td
@@ -534,18 +547,18 @@ defmodule AceGraderWeb.CoreComponents do
               class={["relative p-0", @row_click && "hover:cursor-pointer"]}
             >
               <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
+                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800 sm:rounded-l-xl" />
+                <span class={["relative", i == 0 && "font-semibold text-zinc-900 dark:text-white"]}>
                   <%= render_slot(col, @row_item.(row)) %>
                 </span>
               </div>
             </td>
             <td :if={@action != []} class="relative p-0 w-14">
               <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
+                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800 sm:rounded-r-xl" />
                 <span
                   :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-100"
                 >
                   <%= render_slot(action, @row_item.(row)) %>
                 </span>
@@ -577,8 +590,8 @@ defmodule AceGraderWeb.CoreComponents do
     <div class="mt-14">
       <dl class="-my-4 divide-y divide-zinc-100">
         <div :for={item <- @item} class="flex gap-4 py-4 sm:gap-8">
-          <dt class="w-1/4 flex-none text-[0.8125rem] leading-6 text-zinc-500"><%= item.title %></dt>
-          <dd class="text-sm leading-6 text-zinc-700"><%= render_slot(item) %></dd>
+          <dt class="w-1/4 flex-none text-[0.8125rem] leading-6 text-zinc-500 dark:text-zinc-200"><%= item.title %></dt>
+          <dd class="text-sm leading-6 text-zinc-700 dark:text-zinc-100"><%= render_slot(item) %></dd>
         </div>
       </dl>
     </div>
@@ -600,9 +613,9 @@ defmodule AceGraderWeb.CoreComponents do
     <div class="">
       <.link
         navigate={@navigate}
-        class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700 outline-zinc-900 outline rounded-full px-4 py-2 hover:bg-zinc-200 duration-200"
+        class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-100 outline-zinc-900 dark:outline-zinc-200 outline rounded-full px-4 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 flex items-center gap-2"
       >
-        <Heroicons.arrow_left solid class="w-3 h-3 stroke-current inline" />
+        <Heroicons.arrow_left solid class="w-5 h-5 stroke-current inline" />
         <%= render_slot(@inner_block) %>
       </.link>
     </div>
