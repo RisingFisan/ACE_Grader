@@ -13,7 +13,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
 
     if Submissions.Submission.pending_tests(submission) do
       liveview = self()
-      Task.async(fn -> Grader.grade_submission(submission, submission.exercise.test_file, liveview) end)
+      Task.async(fn -> Grader.grade_submission(submission, liveview) end)
     end
 
     {:ok, socket}
@@ -23,9 +23,9 @@ defmodule AceGraderWeb.SubmissionLive.Show do
     {:noreply, socket |> update(:submission, fn s -> %{s | warnings: warnings} end)}
   end
 
-  def handle_info({:test_result, test_id, output, _i}, socket) do
-    {:noreply, socket |> update(:submission, fn s -> %{s | tests: List.foldr(s.tests, [], & [ (if &1.id == test_id, do: Map.put(&1, :actual_output, output), else: &1) | &2])} end)}
-  end
+  # def handle_info({:test_result, test_id, output, _i}, socket) do
+  #   {:noreply, socket |> update(:submission, fn s -> %{s | tests: List.foldr(s.tests, [], & [ (if &1.id == test_id, do: Map.put(&1, :actual_output, output), else: &1) | &2])} end)}
+  # end
 
   def handle_info({ref, result}, socket) do
     Process.demonitor(ref, [:flush]) # we flush the process before it dies, since we already have the result, and avoid needing another handle_info for the death message

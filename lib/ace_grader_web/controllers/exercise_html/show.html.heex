@@ -38,7 +38,7 @@
 <%= if @current_user do %>
   <h2 class="font-bold text-2xl"><%= if @current_user.account_type == :student, do: ngettext "My submission", "My submissions", length(@exercise.submissions), else: gettext "Submissions" %></h2>
   <%= if length(@exercise.submissions) > 0 do %>
-    <.table id="submissions-table" rows={@exercise.submissions |> Enum.sort(& &1.inserted_at >= &2.inserted_at)} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
+    <.table id="submissions-table" rows={@exercise.submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
       <:col :let={submission} label={gettext "Date"}><%= NaiveDateTime.to_string(submission.inserted_at) %></:col>
       <:col :if={@current_user.account_type != :student} :let={submission} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>

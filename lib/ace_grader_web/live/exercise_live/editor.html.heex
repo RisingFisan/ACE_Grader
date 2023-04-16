@@ -42,7 +42,7 @@
 </.simple_form>
 
 <.compilation_results :if={@test_results != nil} warnings={@warnings} errors={@errors} />
-<.test_results :if={@test_results != nil and @success and length(@test_results) > 0} tests={@test_results}/>
+<.test_results :if={@test_results != nil and length(@test_results) > 0} tests={@test_results} editor />
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
   <:title><%= gettext "Are you sure you want to submit your answer?" %></:title>

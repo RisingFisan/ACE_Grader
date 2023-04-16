@@ -41,7 +41,7 @@ defmodule AceGraderWeb.ExerciseController do
           end)
         end)
       else
-        Exercises.get_exercise!(id, conn.assigns.current_user != nil)
+        Exercises.get_exercise!(id, conn.assigns.current_user != nil) |> IO.inspect()
       end
     is_owner = Exercise.is_owner?(exercise, conn.assigns.current_user)
     render(conn, :show, exercise: exercise, is_owner: is_owner)

@@ -7,6 +7,7 @@ defmodule AceGraderWeb.MyComponents do
 
   attr :tests, :list
   attr :success, :boolean, default: true
+  attr :editor, :boolean, default: false
 
   def test_results(assigns) do
     ~H"""
@@ -20,10 +21,9 @@ defmodule AceGraderWeb.MyComponents do
             (test.status == :timeout && "bg-orange-100 dark:bg-orange-900"),
             (test.status == :pending && "bg-zinc-100 dark:bg-zinc-700"),
           ]}>
-          <% IO.inspect((test.status in [:failed, :timeout, :error] or not @success)) %>
           <div class="h-full w-full font-light bg-zinc-200 dark:bg-zinc-500 flex flex-col items-center justify-center rounded-l-lg">
             <h3 class="text-xl"><%= "#{pgettext("noun", "Test")} #{i}" %></h3>
-            <p><%= "(#{test.grade}%)" %></p>
+            <p :if={!@editor}><%= "(#{test.grade}%)" %></p>
           </div>
           <div class="pl-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 gap-x-4 items-start border-l border-zinc-400 dark:border-zinc-700">
             <p><%= gettext "Input" %></p>
@@ -48,14 +48,17 @@ defmodule AceGraderWeb.MyComponents do
           </div>
           <div class="justify-self-end pr-4">
             <Heroicons.check_circle :if={test.status == :success} class="w-12 h-12 text-green-600" />
-            <Heroicons.x_circle :if={test.status == :error} class="w-12 h-12 text-red-600" />
-            <div :if={test.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
+            <div :if={test.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
+              <p>Error</p>
               <Heroicons.x_circle class="w-12 h-12"/>
+            </div>
+            <div :if={test.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p>Failed</p>
+              <Heroicons.x_circle class="w-12 h-12"/>
             </div>
             <div :if={test.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
-              <Heroicons.exclamation_circle class="w-12 h-12"/>
               <p>Timeout</p>
+              <Heroicons.exclamation_circle class="w-12 h-12"/>
             </div>
             <Heroicons.clock :if={test.status == :pending} class="w-12 h-12" />
           </div>

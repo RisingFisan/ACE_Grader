@@ -241,7 +241,6 @@ defmodule AceGraderWeb.UserAuth do
 
   def require_teacher_user(conn, _opts) do
     if conn.assigns[:current_user] do
-      IO.inspect(conn.assigns[:current_user].account_type)
       if conn.assigns[:current_user].account_type == :teacher do
         conn
       else

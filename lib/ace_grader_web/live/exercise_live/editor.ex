@@ -5,8 +5,8 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
   alias AceGrader.Grader
 
   def mount(_params = %{"id" => id}, _session, socket) do
-    exercise = Exercises.get_exercise!(id)
-    submission = %Submissions.Submission{}
+    exercise = Exercises.get_exercise!(id, false)
+    submission = %Submissions.Submission{exercise: exercise}
     changeset = Submissions.change_submission(submission)
     |> Ecto.Changeset.put_assoc(:tests, (for test <- exercise.tests do
       struct(%Submissions.Test{}, test
@@ -17,7 +17,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
     socket = assign(socket, exercise: exercise)
     |> assign(warnings: nil, errors: nil, confirm_modal: false)
-    |> assign(test_results: nil, success: nil, testing: false)
+    |> assign(test_results: nil, testing: false)
     |> assign(submission: changeset)
     {:ok, socket |> assign(page_title: "Exercise Editor")}
   end
@@ -28,7 +28,6 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
         test_results: nil,
         warnings: nil,
         errors: nil,
-        success: nil,
         testing: true
       )}
   end
@@ -38,14 +37,13 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     |> Ecto.Changeset.cast(%{code: code}, [:code])
     |> Ecto.Changeset.apply_changes
 
-    submission = Grader.test_submission(submission, socket.assigns.exercise.test_file)
+    submission = Grader.test_submission(submission)
 
     {:noreply, socket
       |> assign(
         test_results: submission.tests,
         warnings: submission.warnings,
         errors: submission.errors,
-        success: submission.success,
         testing: false)}
   end
 

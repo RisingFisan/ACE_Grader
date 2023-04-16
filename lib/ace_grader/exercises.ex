@@ -19,9 +19,23 @@ defmodule AceGrader.Exercises do
 
   """
   def list_exercises do
-    Repo.all(Exercise)
+    Repo.all(from(e in Exercise, order_by: e.inserted_at))
   end
 
+  # define a function that lists every exercise, but in pages of 10
+  # def list_exercises_page(page) do
+  #   Repo.all(from(e in Exercise, order_by: e.inserted_at, limit: 10, offset: 10 * (page - 1)))
+  # end
+
+  @doc """
+  Returns the list of public exercises.
+
+  ## Examples
+
+      iex> list_public_exercises()
+      [%Exercise{}, ...]
+
+  """
   def list_public_exercises do
     Repo.all(from(e in Exercise, where: e.public == true))
   end
@@ -42,8 +56,8 @@ defmodule AceGrader.Exercises do
   """
   def get_exercise!(id, preloads \\ true) do
     Repo.get!(Exercise, id)
-    |> Repo.preload([:user])
-    |> Repo.preload(if preloads, do: [:tests, submissions: from(s in Submission, order_by: s.inserted_at, preload: [:user])], else: [])
+    |> Repo.preload([:user, :tests])
+    |> Repo.preload(if preloads, do: [submissions: from(s in Submission, order_by: [desc: s.inserted_at], preload: [:user])], else: [])
   end
 
   @doc """
