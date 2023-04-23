@@ -8,6 +8,7 @@ defmodule AceGrader.Accounts.User do
     field :username, :string
     field :display_name, :string
     field :account_type, Ecto.Enum, values: [:student, :teacher, :admin], default: :student
+    field :locale, :string, default: "en"
 
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -120,7 +121,7 @@ defmodule AceGrader.Accounts.User do
   """
   def changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:username, :display_name, :account_type])
+    |> cast(attrs, [:username, :display_name, :account_type, :locale])
     |> validate_username(opts)
     |> validate_display_name()
   end

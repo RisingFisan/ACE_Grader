@@ -59,6 +59,11 @@ defmodule AceGraderWeb.Router do
   scope "/", AceGraderWeb do
     pipe_through [:browser, :require_teacher_user]
 
+    delete "/exercises/:id", ExerciseController, :delete
+    if Application.compile_env(:ace_grader, :dev_routes) do
+      delete "/exercises/:exercise_id/submissions/:id", SubmissionController, :delete
+    end
+
     live_session :require_teacher_user,
       on_mount: [{AceGraderWeb.UserAuth, :ensure_teacher}] do
         live "/exercises/new", ExerciseLive.Form
@@ -68,8 +73,6 @@ defmodule AceGraderWeb.Router do
 
   scope "/", AceGraderWeb do
     pipe_through [:browser, :require_authenticated_user]
-
-    delete "/exercises/:exercise_id/submissions/:id", SubmissionController, :delete
 
     live_session :require_authenticated_user,
       on_mount: [{AceGraderWeb.UserAuth, :ensure_authenticated}] do
@@ -85,7 +88,7 @@ defmodule AceGraderWeb.Router do
   scope "/", AceGraderWeb do
     pipe_through [:browser]
 
-    resources "/exercises", ExerciseController, except: [:new, :create, :edit, :update]
+    resources "/exercises", ExerciseController, only: [:index, :show]
 
     delete "/users/log_out", UserSessionController, :delete
 

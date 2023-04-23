@@ -6,8 +6,12 @@ defmodule AceGraderWeb.ExerciseLive.Form do
 
   def mount(_params = %{"id" => id}, _session, socket) do
     exercise = Exercises.get_exercise!(id)
-    changeset = Exercises.change_exercise(exercise)
-    {:ok, socket |> assign(changeset: changeset, exercise: exercise, valid_grades: true)}
+    if !Exercise.is_owner?(exercise, socket.assigns.current_user) do
+      {:ok, socket |> put_flash(:error, "You must be this exercise's owner in order to perform this operation!") |> redirect(to: ~p"/exercises/#{id}")}
+    else
+      changeset = Exercises.change_exercise(exercise)
+      {:ok, socket |> assign(changeset: changeset, exercise: exercise, valid_grades: true)}
+    end
   end
 
   def mount(_params, _session, socket) do
@@ -16,17 +20,19 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       |> Ecto.Changeset.put_change(:test_file, """
       #include <stdio.h>
 
-      int main() {
-        hello_world();
+      void hello_world();
 
-        return 0;
+      int main() {
+          hello_world();
+
+          return 0;
       }
       """)
       |> Ecto.Changeset.put_change(:template, """
       #include <stdio.h>
 
       void hello_world() {
-        printf("Hello World!");
+          printf("Hello World!");
       }
       """)
     {:ok, socket |> assign(changeset: changeset, valid_grades: true)}

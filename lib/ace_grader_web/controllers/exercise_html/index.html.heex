@@ -1,22 +1,25 @@
-<.header>
-  <%= gettext "Listing Exercises" %>
-  <:actions>
-    <.link href={~p"/exercises/new"}>
-      <.button :if={@current_user && @current_user.account_type != :student} kind={:teacher} class="flex items-center gap-2">
-        <Heroicons.plus class="w-5 h-5" />
-        <%= gettext "New Exercise" %>
-      </.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="space-y-8">
+  <.header>
+    <%= gettext "Exercise List" %>
+    <:actions>
+      <.link href={~p"/exercises/new"}>
+        <.button :if={@current_user && @current_user.account_type != :student} kind={:teacher} class="flex items-center gap-2">
+          <Heroicons.plus class="w-5 h-5" />
+          <%= gettext "New Exercise" %>
+        </.button>
+      </.link>
+    </:actions>
+  </.header>
 
-<.table id="exercises" rows={@exercises} row_click={&JS.navigate(~p"/exercises/#{&1}")}>
-  <:col :let={exercise} label={gettext "Title"}><%= exercise.title %></:col>
-  <:col :let={exercise} label={gettext "Description"}><%= exercise.description %></:col>
-  <:col :let={exercise} label={gettext "Public"}><%= exercise.public %></:col>
-  <:action :let={exercise} :if={@current_user != nil && @current_user.account_type != :student}>
-    <.link href={~p"/exercises/#{exercise}"} method="delete" data-confirm="Are you sure?">
-      <%= gettext "Delete" %>
-    </.link>
-  </:action>
-</.table>
+  <div class="flex flex-col gap-2">
+    <a :for={exercise <- @exercises} phx-click={JS.navigate(~p"/exercises/#{exercise}")} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 space-y-2 cursor-pointer">
+      <div class="flex justify-between">
+        <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
+        <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
+      </div>
+      <div class="text-sm">
+        <%= exercise.description |> Earmark.as_html!() |> raw %>
+      </div>
+    </a>
+  </div>
+</div>

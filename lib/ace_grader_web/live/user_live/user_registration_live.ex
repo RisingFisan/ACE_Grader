@@ -6,15 +6,15 @@ defmodule AceGraderWeb.UserRegistrationLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="mx-auto max-w-lg">
       <.header class="text-center">
-        Register for an account
+        <%= gettext "Register for an account" %>
         <:subtitle>
-          Already registered?
+          <%= gettext "Already registered?" %>
           <.link navigate={~p"/users/log_in"} class="font-semibold text-brand hover:underline">
-            Sign in
+            <%= pgettext "action", "Sign in" %>
           </.link>
-          to your account now.
+          <%= gettext "to your account now." %>
         </:subtitle>
       </.header>
 
@@ -37,7 +37,7 @@ defmodule AceGraderWeb.UserRegistrationLive do
         <.input field={@form[:password]} type="password" label="Password" required />
         <.input field={@form[:account_type]} type="radio" label="Account type" options={["student", "teacher"]} required />
         <:actions>
-          <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
+          <.button phx-disable-with={gettext("Creating account...")} class="w-full"><%= gettext "Create an account" %></.button>
         </:actions>
       </.simple_form>
     </div>

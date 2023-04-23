@@ -2,10 +2,11 @@
 <div class="flex items-center justify-between">
   <div>
     <h1 class="text-3xl font-bold"><%= @exercise.title %></h1>
-    <p><%= @exercise.description %></p>
   </div>
   <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
 </div>
+
+<p><%= @exercise.description |> Earmark.as_html!() |> raw %></p>
 
 <div class="space-y-4">
   <div id="editor-container" class="editor-container" phx-update="ignore">
@@ -17,12 +18,12 @@
     <div id="editor" class="editor" phx-hook="Editor"><%= @exercise.template || "" %></div>
   </div>
 
-  <div class="flex flex-col justify-center items-center">
-    <.button id="submit_button" class="w-64" phx-click={JS.push("show_confirm")}><span class="text-2xl"><%= gettext "Submit" %></span></.button>
-    <div class="my-4 bg-zinc-300 dark:bg-zinc-600 h-[1px] self-stretch"></div>
-    <button id="test_button" class="w-36 font-bold self-center border-2 border-zinc-400 dark:border-zinc-600 text-xl bg-zinc-300 dark:bg-zinc-700 px-4 py-2 rounded-xl hover:bg-zinc-400 dark:hover:bg-zinc-600" phx-hook="TestButton" disabled={@testing}>
+  <div class="grid grid-cols-[1fr_min-content_1fr] justify-center">
+    <button id="test_button" class="w-36 place-self-end font-bold self-center text-xl bg-zinc-300 dark:bg-zinc-700 px-4 py-2 rounded-xl hover:bg-zinc-400 dark:hover:bg-zinc-600" phx-hook="TestButton" disabled={@testing}>
       <%= if @testing, do: gettext("Running..."), else: pgettext("verb", "Test") %>
     </button>
+    <div class="mx-4 bg-zinc-300 dark:bg-zinc-600 w-[1px] self-stretch"></div>
+    <.button id="submit_button" class="w-48 h-16" phx-click={JS.push("show_confirm")}><span class="text-2xl"><%= gettext "Submit" %></span></.button>
   </div>
 </div>
 
@@ -41,8 +42,8 @@
   </:actions> --%>
 </.simple_form>
 
-<.compilation_results :if={@test_results != nil} warnings={@warnings} errors={@errors} />
-<.test_results :if={@test_results != nil and length(@test_results) > 0} tests={@test_results} editor />
+<.compilation_results :if={@success != nil} warnings={@warnings} errors={@errors} />
+<.test_results :if={@success && length(@test_results) > 0} tests={@test_results} editor />
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
   <:title><%= gettext "Are you sure you want to submit your answer?" %></:title>

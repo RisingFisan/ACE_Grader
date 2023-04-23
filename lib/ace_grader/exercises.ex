@@ -19,7 +19,7 @@ defmodule AceGrader.Exercises do
 
   """
   def list_exercises do
-    Repo.all(from(e in Exercise, order_by: e.inserted_at))
+    Repo.all(from(e in Exercise, order_by: [desc: e.inserted_at]))
   end
 
   # define a function that lists every exercise, but in pages of 10
@@ -37,7 +37,7 @@ defmodule AceGrader.Exercises do
 
   """
   def list_public_exercises do
-    Repo.all(from(e in Exercise, where: e.public == true))
+    Repo.all(from(e in Exercise, where: e.public == true, order_by: e.inserted_at))
   end
 
   @doc """

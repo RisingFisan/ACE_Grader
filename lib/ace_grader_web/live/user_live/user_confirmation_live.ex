@@ -6,7 +6,7 @@ defmodule AceGraderWeb.UserConfirmationLive do
   def render(%{live_action: :edit} = assigns) do
     ~H"""
     <div class="mx-auto max-w-sm">
-      <.header class="text-center">Confirm Account</.header>
+      <.header class="text-center"><%= pgettext "infverb", "Confirm Account" %></.header>
 
       <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
         <.input field={@form[:token]} type="hidden" />
@@ -16,9 +16,9 @@ defmodule AceGraderWeb.UserConfirmationLive do
       </.simple_form>
 
       <p class="text-center mt-4">
-        <.link href={~p"/users/register"}>Register</.link>
+        <.link href={~p"/users/register"}><%= pgettext "infverb", "Register" %></.link>
         |
-        <.link href={~p"/users/log_in"}>Log in</.link>
+        <.link href={~p"/users/log_in"}><%= pgettext "infverb", "Log in" %></.link>
       </p>
     </div>
     """
@@ -36,7 +36,7 @@ defmodule AceGraderWeb.UserConfirmationLive do
       {:ok, _} ->
         {:noreply,
          socket
-         |> put_flash(:info, "User confirmed successfully.")
+         |> put_flash(:info, gettext("User confirmed successfully."))
          |> redirect(to: ~p"/")}
 
       :error ->
@@ -51,7 +51,7 @@ defmodule AceGraderWeb.UserConfirmationLive do
           %{} ->
             {:noreply,
              socket
-             |> put_flash(:error, "User confirmation link is invalid or it has expired.")
+             |> put_flash(:error, gettext("User confirmation link is invalid or it has expired."))
              |> redirect(to: ~p"/")}
         end
     end

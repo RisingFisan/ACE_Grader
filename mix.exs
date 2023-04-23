@@ -52,7 +52,9 @@ defmodule AceGrader.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:earmark, "~> 1.4"},
+      {:httpoison, "~> 2.0"}
     ]
   end
 

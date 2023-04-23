@@ -20,9 +20,9 @@ defmodule AceGraderWeb.UserForgotPasswordLive do
         </:actions>
       </.simple_form>
       <p class="text-center mt-4">
-        <.link href={~p"/users/register"}>Register</.link>
+        <.link href={~p"/users/register"}><%= pgettext "infverb", "Register" %></.link>
         |
-        <.link href={~p"/users/log_in"}>Log in</.link>
+        <.link href={~p"/users/log_in"}><%= pgettext "infverb", "Log in" %></.link>
       </p>
     </div>
     """
@@ -41,7 +41,7 @@ defmodule AceGraderWeb.UserForgotPasswordLive do
     end
 
     info =
-      "If your email is in our system, you will receive instructions to reset your password shortly."
+      gettext("If your email is in our system, you will receive instructions to reset your password shortly.")
 
     {:noreply,
      socket

@@ -49,15 +49,15 @@ defmodule AceGraderWeb.MyComponents do
           <div class="justify-self-end pr-4">
             <Heroicons.check_circle :if={test.status == :success} class="w-12 h-12 text-green-600" />
             <div :if={test.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
-              <p>Error</p>
+              <p><%= gettext "Error" %></p>
               <Heroicons.x_circle class="w-12 h-12"/>
             </div>
             <div :if={test.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
-              <p>Failed</p>
+              <p><%= gettext "Failed" %></p>
               <Heroicons.x_circle class="w-12 h-12"/>
             </div>
             <div :if={test.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
-              <p>Timeout</p>
+              <p><%= gettext "Timeout" %></p>
               <Heroicons.exclamation_circle class="w-12 h-12"/>
             </div>
             <Heroicons.clock :if={test.status == :pending} class="w-12 h-12" />

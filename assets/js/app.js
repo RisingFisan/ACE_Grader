@@ -22,8 +22,10 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import ace from "../vendor/ace_editor/ace"
+import EasyMDE from "easymde"
 import "../vendor/ace_editor/theme-dracula"
 import "../vendor/ace_editor/mode-c_cpp"
+import { marked } from "marked"
 
 // window.addEventListener(`phx:get_code`, (e) => {
 //     document.getElementById("editor_code").value = editor.getValue();
@@ -70,6 +72,14 @@ Hooks.TestButton = {
   }
 }
 
+Hooks.MdEditor = {
+  mounted() {
+    let theme = "dracula";
+    if (getCurrentTheme() == "Light") { theme = "eclipse"; }
+    let easyMDE = new EasyMDE({element: this.el, status: false, spellChecker: false, sideBySideFullscreen: false, toolbar: ["bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "|", "guide"], theme: theme });
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks: Hooks})
 
@@ -96,3 +106,15 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+function getCurrentTheme() {
+  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    return "Dark";
+  } else {
+    return "Light";
+  }
+}
+
+// document.querySelectorAll(".md-text").forEach((el) => {
+//   el.innerHTML = marked.parse(el.innerHTML);
+// })

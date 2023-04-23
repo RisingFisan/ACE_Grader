@@ -41,7 +41,7 @@ defmodule AceGraderWeb.ExerciseController do
           end)
         end)
       else
-        Exercises.get_exercise!(id, conn.assigns.current_user != nil) |> IO.inspect()
+        Exercises.get_exercise!(id, conn.assigns.current_user != nil)
       end
     is_owner = Exercise.is_owner?(exercise, conn.assigns.current_user)
     render(conn, :show, exercise: exercise, is_owner: is_owner)
@@ -74,10 +74,16 @@ defmodule AceGraderWeb.ExerciseController do
 
   def delete(conn, %{"id" => id}) do
     exercise = Exercises.get_exercise!(id)
-    {:ok, _exercise} = Exercises.delete_exercise(exercise)
+    if !Exercise.is_owner?(exercise, conn.assigns.current_user) do
+      conn
+      |> put_flash(:error, "You do not have permission to delete this exercise.")
+      |> redirect(to: ~p"/exercises/#{exercise}")
+    else
+      {:ok, _exercise} = Exercises.delete_exercise(exercise)
 
-    conn
-    |> put_flash(:info, "Exercise deleted successfully.")
-    |> redirect(to: ~p"/exercises")
+      conn
+      |> put_flash(:info, "Exercise deleted successfully.")
+      |> redirect(to: ~p"/exercises")
+    end
   end
 end

@@ -3,15 +3,15 @@ defmodule AceGraderWeb.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="mx-auto max-w-lg">
       <.header class="text-center">
-        Sign in to account
+        <%= gettext "Sign in to account" %>
         <:subtitle>
-          Don't have an account?
+          <%= gettext "Don't have an account?" %>
           <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline">
-            Sign up
+            <%= pgettext "action", "Sign up" %>
           </.link>
-          for an account now.
+          <%= gettext "for an account now." %>
         </:subtitle>
       </.header>
 
@@ -20,14 +20,14 @@ defmodule AceGraderWeb.UserLoginLive do
         <.input field={@form[:password]} type="password" label="Password" required />
 
         <:actions>
-          <.input field={@form[:remember_me]} type="checkbox" label="Keep me logged in" />
+          <.input field={@form[:remember_me]} type="checkbox" label={gettext "Keep me logged in"} />
           <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
-            Forgot your password?
+            <%= gettext "Forgot your password?" %>
           </.link>
         </:actions>
         <:actions>
           <.button phx-disable-with="Signing in..." class="w-full">
-            Sign in <span aria-hidden="true">→</span>
+            <%= gettext "Sign in" %><span aria-hidden="true">→</span>
           </.button>
         </:actions>
       </.simple_form>

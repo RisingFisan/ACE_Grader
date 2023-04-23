@@ -1,12 +1,11 @@
 <.header>
   <%= @submission.exercise.title %>
-  <:subtitle>
-    <%= @submission.exercise.description %>
-  </:subtitle>
   <:actions>
     <.back navigate={~p"/exercises/#{@submission.exercise}"}><%= gettext "Back to exercise" %></.back>
   </:actions>
 </.header>
+
+<p><%= @submission.exercise.description |> Earmark.as_html!() |> raw() %></p>
 
 <div class="flex justify-between items-center mt-8">
   <div>

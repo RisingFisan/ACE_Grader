@@ -17,7 +17,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
     socket = assign(socket, exercise: exercise)
     |> assign(warnings: nil, errors: nil, confirm_modal: false)
-    |> assign(test_results: nil, testing: false)
+    |> assign(test_results: nil, testing: false, success: nil)
     |> assign(submission: changeset)
     {:ok, socket |> assign(page_title: "Exercise Editor")}
   end
@@ -26,8 +26,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     {:noreply, socket
       |> assign(
         test_results: nil,
-        warnings: nil,
-        errors: nil,
+        success: nil,
         testing: true
       )}
   end
@@ -41,7 +40,8 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
     {:noreply, socket
       |> assign(
-        test_results: submission.tests,
+        success: submission.success,
+        test_results: submission.tests |> IO.inspect(),
         warnings: submission.warnings,
         errors: submission.errors,
         testing: false)}
@@ -63,9 +63,5 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
   def handle_event("hide_confirm", _params, socket) do
     {:noreply, assign(socket, confirm_modal: false)}
-  end
-
-  def handle_info({:test_result, {i, output}}, socket) do
-    {:noreply, update(socket, :test_results, fn tests -> List.update_at(tests, i, fn test -> Map.put(test, :actual_output, output) end) end)}
   end
 end

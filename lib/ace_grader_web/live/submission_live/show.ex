@@ -4,19 +4,20 @@ defmodule AceGraderWeb.SubmissionLive.Show do
   # alias AceGrader.Exercises
   alias AceGrader.Submissions
 
-  def mount(_params = %{"id" => id, "exercise_id" => _exercise_id}, _assigns, socket) do
-    # exercise = Exercises.get_exercise!(exercise_id, false)
+  def mount(_params = %{"id" => id, "exercise_id" => exercise_id}, _assigns, socket) do
     submission = Submissions.get_submission!(id)
-    # |> Map.put(:exercise, exercise)
+    if socket.assigns.current_user.account_type == :student && submission.author_id != socket.assigns.current_user.id do
+      {:ok, socket |> put_flash(:error, "You do not have permission to view this submission.") |> push_navigate(to: "/exercises/#{exercise_id}")}
+    else
+      socket = assign(socket, submission: submission)
 
-    socket = assign(socket, submission: submission)
+      if Submissions.Submission.pending_tests(submission) do
+        liveview = self()
+        Task.async(fn -> Grader.grade_submission(submission, liveview) end)
+      end
 
-    if Submissions.Submission.pending_tests(submission) do
-      liveview = self()
-      Task.async(fn -> Grader.grade_submission(submission, liveview) end)
+      {:ok, socket}
     end
-
-    {:ok, socket}
   end
 
   def handle_info({:compilation_warnings, warnings}, socket) do

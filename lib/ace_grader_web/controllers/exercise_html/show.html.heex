@@ -12,13 +12,13 @@
   </:actions>
 </.header>
 
-<p class="mt-6"><%= @exercise.description %></p>
+<p class="mt-6 md-text"><%= @exercise.description |> Earmark.as_html!() |> raw %></p>
 
 <div class="flex flex-col items-center py-4 gap-2">
   <.link href={~p"/exercises/#{@exercise}/editor"}>
     <.button disabled={@current_user == nil}><%= gettext "Open in Editor" %></.button>
   </.link>
-  <p :if={@current_user == nil} class="font-light text-sm">Only registered users can use the online editor.</p>
+  <p :if={@current_user == nil} class="font-light text-sm"><%= gettext "Only registered users can use the online editor." %></p>
   <div :if={@current_user && @is_owner} class="flex gap-3 border-t border-zinc-500 pt-2">
     <.link href={~p"/exercises/#{@exercise}/edit"}>
       <.button kind={:teacher} class="flex items-center">
@@ -26,7 +26,7 @@
         <%= gettext "Edit exercise" %>
       </.button>
     </.link>
-    <.link :if={@current_user && @current_user.account_type != :student} href={~p"/exercises/#{@exercise}/"} method="delete" data-confirm="Are you sure?">
+    <.link href={~p"/exercises/#{@exercise}/"} method="delete" data-confirm="Are you sure?">
       <.button kind={:delete} class="flex items-center">
         <Heroicons.trash solid class="w-5 h-5 mr-2" />
         <%= gettext "Delete exercise" %>
@@ -35,14 +35,14 @@
   </div>
 </div>
 
-<%= if @current_user do %>
-  <h2 class="font-bold text-2xl"><%= if @current_user.account_type == :student, do: ngettext "My submission", "My submissions", length(@exercise.submissions), else: gettext "Submissions" %></h2>
+<div :if={@current_user} class="mt-6 flex flex-col gap-4">
+  <h2 class="font-bold text-2xl"><%= (if @current_user.account_type == :student, do: (ngettext "My submission", "My submissions", length(@exercise.submissions)), else: gettext("Submissions")) %></h2>
   <%= if length(@exercise.submissions) > 0 do %>
     <.table id="submissions-table" rows={@exercise.submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
       <:col :let={submission} label={gettext "Date"}><%= NaiveDateTime.to_string(submission.inserted_at) %></:col>
       <:col :if={@current_user.account_type != :student} :let={submission} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
-      <:action :if={@current_user.account_type != :student} :let={submission}>
+      <:action :if={@current_user.account_type != :student && @current_user.id == @exercise.author_id} :let={submission}>
         <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"} method="delete" data-confirm="Are you sure?">
           <%= gettext "Delete" %>
         </.link>
@@ -65,7 +65,7 @@
       <% end %>
     </p>
   <% end %>
-<% end %>
+</div>
 
 <%!-- <.list>
   <:item title="Title"><%= @exercise.title %></:item>

@@ -111,7 +111,7 @@ function toggleOptions() {
 
 function openOptions(firstLevel) {
   document.getElementById("options-menu").classList.remove("hidden");
-  getCurrentTheme();
+  setCurrentTheme();
   if(firstLevel) {
     document.getElementById("options-overlay").classList.remove("hidden");
     document.querySelector("main").classList.add("blur-[2px]");
@@ -148,7 +148,7 @@ function openThemeMenu() {
   document.getElementById("theme-menu").classList.remove("hidden");
 }
 
-function getCurrentTheme() {
+function setCurrentTheme() {
 
   document.querySelectorAll(".currentThemeName").forEach((item) => {
     if (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) {
