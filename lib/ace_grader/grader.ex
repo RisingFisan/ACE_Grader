@@ -2,6 +2,10 @@ defmodule AceGrader.Grader do
   alias AceGrader.Submissions
   alias AceGrader.Submissions.Submission
 
+  defp grader_url do
+    "http://#{Application.get_env(:ace_grader, :grader_host)}:#{Application.get_env(:ace_grader, :grader_port)}"
+  end
+
   defp process_output(test, %{"status" => "success", "output" => output}) do
     {
       (if (case test.type do
@@ -25,7 +29,7 @@ defmodule AceGrader.Grader do
   end
 
   defp compile(submission, id) do
-    case HTTPoison.post("127.0.0.1:5000/compile", Jason.encode!(%{
+    case HTTPoison.post(grader_url() <> "/compile", Jason.encode!(%{
       "id" => id,
       "code" => submission.code,
       "test_file" => submission.exercise.test_file
@@ -51,47 +55,50 @@ defmodule AceGrader.Grader do
     # end
   end
 
-  def run(submission, id, liveview \\ nil) do
-    case compile(submission, id) do
-      {:ok, warnings} ->
-        if warnings != "" and liveview != nil, do: send(liveview, {:compilation_warnings, warnings})
-        tests = for {test, _i} <- submission.tests |> Enum.with_index(1), liveview != nil or test.visible do
-          Task.async(fn ->
-            if test.status == :pending do
-              {_status, response} = HTTPoison.post("127.0.0.1:5000/test", Jason.encode!(%{"id" => id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
-              {status, output} = process_output(test, Jason.decode!(response.body))
-              # if liveview != nil do
-              #   send(liveview, {:test_result, test.id, output, i})
-              # end
-              %{ Map.from_struct(test) | actual_output: output, status: status }
-            else
-              test
-            end
-          end)
-        end
-        |> Task.await_many(10_000)
-        total_grade = Enum.reduce(tests, 0, fn test, acc -> (if test.status == :success, do: acc + test.grade, else: acc) end)
-        %{success: true, warnings: warnings, total_grade: total_grade, tests: Enum.filter(tests, & &1.status != :pending)}
-      {:error, error_msg} ->
-        %{success: false, errors: error_msg, total_grade: 0, tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end)}
-    end
-  end
-
   def grade_submission(submission, liveview) do
     if Submission.pending_tests(submission) do
-      attrs = run(submission, submission.id, liveview)
-      Submissions.update_submission(submission, attrs)
+      case compile(submission, submission.id) do
+        {:ok, warnings} ->
+          send(liveview, {:compilation_warnings, warnings})
+          tests = for test <- submission.tests do
+            Task.async(fn ->
+              if test.status == :pending do
+                {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
+                {status, output} = process_output(test, Jason.decode!(response.body))
+                # send(liveview, {:test_result, test.id, output, i})
+                %{ Map.from_struct(test) | actual_output: output, status: status }
+              else
+                Map.from_struct(test)
+              end
+            end)
+          end
+          |> Task.await_many(10_000)
+          total_grade = Enum.reduce(tests, 0, fn test, acc -> (if test.status == :success, do: acc + test.grade, else: acc) end)
+          HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
+          Submissions.update_submission(submission, %{success: true, warnings: warnings, total_grade: total_grade, tests: tests})
+        {:error, error_msg} ->
+          Submissions.update_submission(submission, %{success: false, errors: error_msg, total_grade: 0, tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end)})
+      end
     else
       {:ok, submission}
     end
   end
 
   def test_submission(submission) do
-    attrs = run(submission, submission.author_id)
-    submission
-    |> Submission.changeset(attrs)
-    |> Ecto.Changeset.apply_changes()
+    case compile(submission, submission.author_id) do
+      {:ok, warnings} ->
+        tests = for test <- submission.tests, test.visible do
+          Task.async(fn ->
+            {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.author_id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
+            {status, output} = process_output(test, Jason.decode!(response.body))
+            %{ Map.from_struct(test) | actual_output: output, status: status }
+          end)
+        end
+        |> Task.await_many(10_000)
+        HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
+        %{success: true, compilation_msg: warnings, tests: tests}
+      {:error, error_msg} ->
+        %{success: false, compilation_msg: error_msg, tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end)}
+    end
   end
 end
-
-# sudo chmod -R a+rwx

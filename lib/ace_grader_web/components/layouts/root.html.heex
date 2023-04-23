@@ -8,6 +8,7 @@
       <%= assigns[:page_title] |> (& if &1, do: &1 <> " · ", else: "").() %>
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/tailwind.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
     <script>
       function applyTheme() {

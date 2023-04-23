@@ -32,3 +32,8 @@ ace_grader-*.tar
 npm-debug.log
 /assets/node_modules/
 
+ace_grader.env
+docker-compose.yml
+
+test/
+rel/

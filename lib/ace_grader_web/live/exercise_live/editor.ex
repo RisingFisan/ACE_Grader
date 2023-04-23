@@ -16,7 +16,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     |> Ecto.Changeset.put_change(:author_id, socket.assigns.current_user.id)
 
     socket = assign(socket, exercise: exercise)
-    |> assign(warnings: nil, errors: nil, confirm_modal: false)
+    |> assign(compilation_msg: nil, confirm_modal: false)
     |> assign(test_results: nil, testing: false, success: nil)
     |> assign(submission: changeset)
     {:ok, socket |> assign(page_title: "Exercise Editor")}
@@ -36,14 +36,13 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     |> Ecto.Changeset.cast(%{code: code}, [:code])
     |> Ecto.Changeset.apply_changes
 
-    submission = Grader.test_submission(submission)
+    result = Grader.test_submission(submission)
 
     {:noreply, socket
       |> assign(
-        success: submission.success,
-        test_results: submission.tests |> IO.inspect(),
-        warnings: submission.warnings,
-        errors: submission.errors,
+        success: result.success,
+        test_results: result.tests,
+        compilation_msg: result.compilation_msg,
         testing: false)}
   end
 

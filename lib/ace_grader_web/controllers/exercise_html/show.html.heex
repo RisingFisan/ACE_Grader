@@ -42,7 +42,7 @@
       <:col :let={submission} label={gettext "Date"}><%= NaiveDateTime.to_string(submission.inserted_at) %></:col>
       <:col :if={@current_user.account_type != :student} :let={submission} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
-      <:action :if={@current_user.account_type != :student && @current_user.id == @exercise.author_id} :let={submission}>
+      <:action :if={@show_delete && @current_user.account_type != :student && @current_user.id == @exercise.author_id} :let={submission}>
         <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"} method="delete" data-confirm="Are you sure?">
           <%= gettext "Delete" %>
         </.link>

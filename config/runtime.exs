@@ -63,6 +63,10 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  config :ace_grader,
+    grader_host: System.get_env("GRADER_HOST") || "0.0.0.0",
+    grader_port: String.to_integer(System.get_env("GRADER_PORT") || "5000")
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

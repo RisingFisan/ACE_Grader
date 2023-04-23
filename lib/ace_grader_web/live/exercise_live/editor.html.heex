@@ -42,7 +42,7 @@
   </:actions> --%>
 </.simple_form>
 
-<.compilation_results :if={@success != nil} warnings={@warnings} errors={@errors} />
+<.compilation_results :if={@success != nil} warnings={if @success, do: @compilation_msg, else: nil} errors={if @success == false, do: @compilation_msg, else: nil} />
 <.test_results :if={@success && length(@test_results) > 0} tests={@test_results} editor />
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>

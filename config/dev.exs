@@ -10,6 +10,11 @@ config :ace_grader, AceGrader.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+config :ace_grader,
+  grader_host: "0.0.0.0",
+  grader_port: "5000"
+
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

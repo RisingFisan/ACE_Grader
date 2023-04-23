@@ -15,6 +15,11 @@
 //     import "some-package"
 //
 
+import EasyMDE from "easymde";
+import "easymde/dist/easymde.min.css";
+import "codemirror/theme/dracula.css";
+import "codemirror/theme/eclipse.css";
+
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
@@ -22,10 +27,9 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import ace from "../vendor/ace_editor/ace"
-import EasyMDE from "easymde"
+
 import "../vendor/ace_editor/theme-dracula"
 import "../vendor/ace_editor/mode-c_cpp"
-import { marked } from "marked"
 
 // window.addEventListener(`phx:get_code`, (e) => {
 //     document.getElementById("editor_code").value = editor.getValue();

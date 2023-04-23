@@ -166,7 +166,7 @@ defmodule AceGraderWeb.UserAuth do
     socket = mount_current_user(session, socket)
 
     if socket.assigns.current_user do
-      if socket.assigns.current_user.account_type == :teacher do
+      if socket.assigns.current_user.account_type in [:teacher, :admin] do
         {:cont, socket}
       else
         socket =
@@ -241,27 +241,7 @@ defmodule AceGraderWeb.UserAuth do
 
   def require_teacher_user(conn, _opts) do
     if conn.assigns[:current_user] do
-      if conn.assigns[:current_user].account_type == :teacher do
-        conn
-      else
-        conn
-        |> put_flash(:error, "You must be a teacher to access this page.")
-        |> maybe_store_return_to()
-        |> redirect(to: signed_in_path(conn))
-        |> halt()
-      end
-    else
-      conn
-      |> put_flash(:error, "You must log in to access this page.")
-      |> maybe_store_return_to()
-      |> redirect(to: ~p"/users/log_in")
-      |> halt()
-    end
-  end
-
-  def require_exercise_author(conn, _opts) do
-    if conn.assigns[:current_user] do
-      if conn.assigns[:current_user].account_type == :teacher do
+      if conn.assigns[:current_user].account_type in [:teacher, :admin] do
         conn
       else
         conn

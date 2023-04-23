@@ -44,7 +44,7 @@ defmodule AceGraderWeb.ExerciseController do
         Exercises.get_exercise!(id, conn.assigns.current_user != nil)
       end
     is_owner = Exercise.is_owner?(exercise, conn.assigns.current_user)
-    render(conn, :show, exercise: exercise, is_owner: is_owner)
+    render(conn, :show, exercise: exercise, is_owner: is_owner, show_delete: Application.get_env(:ace_grader, :dev_routes))
   end
 
   def editor(conn, %{"id" => id}) do

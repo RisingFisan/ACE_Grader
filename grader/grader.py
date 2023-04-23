@@ -23,14 +23,14 @@ def compile_code():
     with open('sub.c', 'w') as f:
         f.write(code)
 
-    output = None
-
     try:
         result = subprocess.run(['gcc', 'main.c', 'sub.c', '-o', 'main', '-Wall'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=5, check=True)
         return jsonify({'status': 'success', 'output': result.stdout.decode()})
     except subprocess.TimeoutExpired:
+        clean(path)
         return jsonify({'status': 'timeout'})
     except subprocess.CalledProcessError as e:
+        clean(path)
         return jsonify({'status': 'error', 'output': e.stdout.decode()})
     
 @app.route('/test', methods=['POST'])
@@ -49,15 +49,18 @@ def run_command():
     except subprocess.CalledProcessError as e:
         return jsonify({'status': 'error', 'error': e.stderr.decode()})
 
-@app.route('/clean', methods=['POST'])
-def clean():
+def clean(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
+
+@app.route('/cleanup', methods=['POST'])
+def cleanup():
     data = request.get_json()
     id = data.get('id')
     path = f'/tmp/{id}'
-    if os.path.exists(path):
-        shutil.rmtree(path)
+    clean(path)
     return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     from waitress import serve
-    serve(app, host='0.0.0.0', port=5000)
+    serve(app, host=os.getenv("host", '0.0.0.0'), port=int(os.getenv("port", '5000')))
