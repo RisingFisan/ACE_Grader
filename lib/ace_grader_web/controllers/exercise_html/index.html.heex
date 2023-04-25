@@ -11,15 +11,5 @@
     </:actions>
   </.header>
 
-  <div class="flex flex-col gap-2">
-    <a :for={exercise <- @exercises} phx-click={JS.navigate(~p"/exercises/#{exercise}")} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 space-y-2 cursor-pointer">
-      <div class="flex justify-between">
-        <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
-        <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
-      </div>
-      <div class="text-sm">
-        <%= exercise.description |> Earmark.as_html!() |> raw %>
-      </div>
-    </a>
-  </div>
+  <.exercise_list exercises={@exercises} ex_click={&JS.navigate(~p"/exercises/#{&1}")} />
 </div>

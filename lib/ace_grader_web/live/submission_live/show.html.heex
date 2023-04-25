@@ -9,7 +9,7 @@
 
 <div class="flex justify-between items-center mt-8">
   <div>
-    <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: @submission.user.display_name %><span> (@<%= @submission.user.username %>)</span></p>
+    <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: @submission.user.display_name %><.link href={~p"/users/#{@submission.user}"} class="text-violet-500"> (@<%= @submission.user.username %>)</.link></p>
     <p><%= @submission.inserted_at |> NaiveDateTime.to_string() %></p>
   </div>
   <div class="flex flex-col items-center gap-1">

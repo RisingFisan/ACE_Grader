@@ -38,6 +38,12 @@
         </div>
         <Heroicons.chevron_right class="w-6 h-6 relative"/>
       </div>
+      <.link :if={@current_user} href={~p"/users/#{@current_user}"}>
+        <div class="flex items-center gap-2">
+          <Heroicons.user class="w-6 h-6"/> 
+          <p><%= gettext("My account") %></p>
+        </div>
+      </.link>
       <.link :if={@current_user} href={~p"/users/settings"}>
         <div class="flex items-center gap-2">
           <Heroicons.cog_6_tooth class="w-6 h-6"/> 
@@ -51,6 +57,7 @@
         </div>
       </.link>
     </div>
+
     <div id="language-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
       <div onclick="closeLanguageMenu()" class="self-stretch cursor-pointer flex items-center">
         <Heroicons.chevron_left class="w-6 h-6"/> 
@@ -68,6 +75,7 @@
         </div>
       </div>
     </div>
+
     <div id="theme-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
       <div onclick="closeThemeMenu()" class="self-stretch cursor-pointer flex items-center">
         <Heroicons.chevron_left class="w-6 h-6"/> 
@@ -87,6 +95,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </header>
 <main>

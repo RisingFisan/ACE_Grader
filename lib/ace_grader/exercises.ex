@@ -37,7 +37,11 @@ defmodule AceGrader.Exercises do
 
   """
   def list_public_exercises do
-    Repo.all(from(e in Exercise, where: e.public == true, order_by: e.inserted_at))
+    Repo.all(from(e in Exercise, where: e.public == true, order_by: [desc: e.inserted_at]))
+  end
+
+  def list_exercises_by_user(user_id) do
+    Repo.all(from(e in Exercise, where: e.author_id == ^user_id, order_by: [desc: e.inserted_at]))
   end
 
   @doc """

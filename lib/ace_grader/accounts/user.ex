@@ -14,6 +14,8 @@ defmodule AceGrader.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    has_many :submissions, AceGrader.Submissions.Submission, foreign_key: :author_id
+
     timestamps()
   end
 

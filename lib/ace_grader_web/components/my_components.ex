@@ -4,6 +4,7 @@ defmodule AceGraderWeb.MyComponents do
 
   alias Phoenix.LiveView.JS
   import AceGraderWeb.Gettext
+  import Phoenix.HTML
 
   attr :tests, :list
   attr :success, :boolean, default: true
@@ -103,6 +104,25 @@ defmodule AceGraderWeb.MyComponents do
         </div>
       </div>
       <pre :if={@warnings || @errors} id="compilation_message" class="break-all whitespace-pre-wrap text-lg hidden"><%= String.trim(@warnings || @errors) %></pre>
+    </div>
+    """
+  end
+
+  attr :exercises, :list, default: []
+  attr :ex_click, :any, default: nil, doc: "The function for handling phx-click on each exercise."
+
+  def exercise_list(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-2">
+      <a :for={exercise <- @exercises} phx-click={@ex_click.(exercise)} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 space-y-2 cursor-pointer">
+        <div class="flex justify-between">
+          <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
+          <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
+        </div>
+        <div class="text-sm">
+          <%= exercise.description |> Earmark.as_html!() |> raw %>
+        </div>
+      </a>
     </div>
     """
   end

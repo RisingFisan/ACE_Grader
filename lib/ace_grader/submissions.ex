@@ -23,6 +23,10 @@ defmodule AceGrader.Submissions do
     Repo.all(Submission)
   end
 
+  def list_submissions_by_user(user_id) do
+    Repo.all(from(s in Submission, where: s.author_id == ^user_id, order_by: [desc: s.inserted_at], preload: [:exercise]))
+  end
+
   @doc """
   Gets a single submission.
 
