@@ -123,13 +123,13 @@ defmodule AceGraderWeb.UserSettingsLive do
   def handle_event("validate_info", params, socket) do
     %{"user" => user_params} = params
 
-    acc_form =
+    info_form =
       socket.assigns.current_user
-      |> Accounts.change_user_email(user_params)
+      |> Accounts.change_user_info(user_params)
       |> Map.put(:action, :validate)
       |> to_form()
 
-    {:noreply, assign(socket, acc_form: acc_form)}
+    {:noreply, assign(socket, info_form: info_form)}
   end
 
   def handle_event("update_info", params, socket) do

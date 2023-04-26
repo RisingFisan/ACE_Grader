@@ -4,8 +4,8 @@ defmodule AceGraderWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <div class="h-64 bg-violet-700">
-      <div class="flex flex-col items-center justify-center h-full">
-        <h1 class="text-[6em] text-white font-bold">ACE Grader</h1>
+      <div class="flex flex-col items-center justify-center h-full gap-3">
+        <img src={"/images/ACEGrader_white.svg"} alt="ACE Grader" class="w-64"/>
         <p class="font-light tracking-wider text-xl text-zinc-200"><%= gettext "Automatic Code Evaluator and Grader" %></p>
       </div>
     </div>
