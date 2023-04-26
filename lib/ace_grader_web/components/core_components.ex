@@ -406,7 +406,7 @@ defmodule AceGraderWeb.CoreComponents do
             "border-zinc-300 focus:border-zinc-400 dark:border-zinc-600 focus:ring-zinc-800/5",
             @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10",
           ]}
-          checked={@value == opt_id}
+          checked={to_string(@value) == opt_id}
           {@rest}/>
           <label for={option_id} class="block text-sm font-light leading-6 text-zinc-800 dark:text-zinc-100">
             <%= opt_name %>

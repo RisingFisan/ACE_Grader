@@ -17,7 +17,7 @@ defmodule AceGraderWeb.UserSettingsLive do
         >
           <.input field={@info_form[:username]} type="text" label={gettext("Username")} required />
           <.input field={@info_form[:display_name]} type="text" label={gettext("Display name")} required />
-          <.input field={@info_form[:account_type]} type="radio" label={gettext("Account type")} options={[student: gettext("Student"), teacher: gettext("Teacher")]} required />
+          <.input field={@info_form[:account_type]} type="radio" label={gettext("Account type")} options={Enum.zip(["student", "teacher"], [gettext("Student"), gettext("Teacher")])} required />
           <:actions>
             <.button phx-disable-with="Changing..."><%= gettext "Change Account Information" %></.button>
           </:actions>

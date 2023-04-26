@@ -119,7 +119,7 @@ defmodule AceGraderWeb.MyComponents do
           <div class="flex items-center gap-4">
             <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
             <div class="flex gap-2 items-end">
-              <Heroicons.eye_slash :if={!exercise.public} class="w-6 h-6 hoverToShow" value="Private"/>
+              <Heroicons.eye_slash :if={!exercise.public} class="w-6 h-6 hoverToShow"/>
               <p class="showOnHover"><%= gettext "Private" %></p>
             </div>
           </div>

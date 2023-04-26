@@ -35,7 +35,7 @@ defmodule AceGraderWeb.UserRegistrationLive do
         <.input field={@form[:display_name]} type="text" label={gettext("Display name")} placeholder="Luz Noceda (she/her)" required />
         <.input field={@form[:email]} type="email" label={gettext("Email")} required placeholder="name@email.com" />
         <.input field={@form[:password]} type="password" label={gettext("Password")} required placeholder="*******" />
-        <.input field={@form[:account_type]} type="radio" label={gettext("Account type")} options={[student: gettext("Student"), teacher: gettext("Teacher")]} required />
+        <.input field={@form[:account_type]} type="radio" label={gettext("Account type")} options={Enum.zip(["student", "teacher"], [gettext("Student"), gettext("Teacher")])} required />
         <:actions>
           <.button phx-disable-with={gettext("Creating account...")} class="w-full"><%= gettext "Create an account" %></.button>
         </:actions>
