@@ -11,6 +11,7 @@ defmodule AceGraderWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug AceGraderWeb.Plugs.SetCurrentPath
     plug AceGraderWeb.Plugs.Locale, "en"
   end
 

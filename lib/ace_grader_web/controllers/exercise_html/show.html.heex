@@ -1,5 +1,11 @@
 <.header>
-  <%= @exercise.title %>
+  <div class="flex items-center gap-4">
+    <%= @exercise.title %>
+    <div :if={!@exercise.public} class="flex gap-2 items-end">
+      <Heroicons.eye_slash class="w-8 h-8 hoverToShow" value="Private"/>
+      <p class="showOnHover text-lg font-normal"><%= gettext "Private exercise" %></p>
+    </div>
+  </div>
   <:subtitle>
     <p>Created by:
       <.link href={~p"/users/#{@exercise.user}"} class="text-violet-800 dark:text-violet-500">

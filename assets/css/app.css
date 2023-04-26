@@ -35,3 +35,11 @@ body {
 .editor-toolbar > button {
     @apply dark:hover:bg-zinc-700;
 }
+
+.showOnHover {
+    @apply hidden;
+}
+
+.hoverToShow:hover + .showOnHover {
+    @apply block;
+}

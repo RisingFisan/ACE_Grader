@@ -6,7 +6,7 @@ defmodule AceGraderWeb.UserRegistrationLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-lg">
+    <div class="mx-auto max-w-lg space-y-4">
       <.header class="text-center">
         <%= gettext "Register for an account" %>
         <:subtitle>
@@ -31,11 +31,11 @@ defmodule AceGraderWeb.UserRegistrationLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:username]} type="text" label="Username" required />
-        <.input field={@form[:display_name]} type="text" label="Display name" required />
-        <.input field={@form[:email]} type="email" label="Email" required />
-        <.input field={@form[:password]} type="password" label="Password" required />
-        <.input field={@form[:account_type]} type="radio" label="Account type" options={["student", "teacher"]} required />
+        <.input field={@form[:username]} type="text" label={gettext("Username")} placeholder="A12345" required />
+        <.input field={@form[:display_name]} type="text" label={gettext("Display name")} placeholder="Luz Noceda (she/her)" required />
+        <.input field={@form[:email]} type="email" label={gettext("Email")} required placeholder="name@email.com" />
+        <.input field={@form[:password]} type="password" label={gettext("Password")} required placeholder="*******" />
+        <.input field={@form[:account_type]} type="radio" label={gettext("Account type")} options={[student: gettext("Student"), teacher: gettext("Teacher")]} required />
         <:actions>
           <.button phx-disable-with={gettext("Creating account...")} class="w-full"><%= gettext "Create an account" %></.button>
         </:actions>
@@ -45,7 +45,7 @@ defmodule AceGraderWeb.UserRegistrationLive do
   end
 
   def mount(_params, _session, socket) do
-    changeset = Accounts.change_user_registration(%User{}, %{account_type: "student"})
+    changeset = Accounts.change_user_registration(%User{}, %{account_type: :student})
 
     socket =
       socket

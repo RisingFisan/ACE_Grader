@@ -56,6 +56,7 @@ defmodule AceGraderWeb do
         layout: {AceGraderWeb.Layouts, :app}
 
       on_mount AceGraderWeb.RestoreLocale
+      on_mount AceGraderWeb.SetCurrentPath
       unquote(html_helpers())
     end
   end

@@ -1,16 +1,19 @@
 <header class="w-full px-4 sm:px-6 lg:px-20 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-700">
   <div class="flex items-center justify-between py-3">
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-8 xl:gap-16">
       <a href="/" class="flex items-center h-16">
         <!-- <.ace_grader_logo/> -->
-        <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14"/>
+        <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
         <%!-- <p class="font-bold text-2xl text-violet-700" title="Automatic Code Evaluator and Grader">ACE Grader</p> --%>
       </a>
+      <.link href={~p"/exercises"} class={["text-xl tracking-wider font-extralight text-zinc-200",
+      (if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400")
+      ]}><%= gettext "Exercises" %></.link>
     </div>
     <div class="flex items-center gap-6">
       <div class="flex gap-4 items-center">
         <%= if @current_user do %>
-            <div onclick="toggleOptions(true)" class="flex items-center gap-2 px-4 pr-5 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
+            <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="flex items-center gap-2 px-4 pr-5 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
               <Heroicons.user_circle class="w-8 h-8"/>
               <p class="text-lg"><%= @current_user.display_name %></p>
             </div>
@@ -18,7 +21,7 @@
           <.link href={~p"/users/log_in"}>
             <p class="border-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 duration-200"><%= gettext "Log in" %></p>
           </.link>
-          <div onclick="toggleOptions(true)" class="flex gap-2 px-2 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
+          <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="flex gap-2 px-2 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
             <Heroicons.cog_6_tooth class="w-6 h-6"/>
           </div>
         <% end %>
@@ -111,7 +114,10 @@
 
 <script>
 
-function toggleOptions() {
+locale = "en";
+
+function toggleOptions(userlocale="en") {
+  locale = userlocale;
   if (document.getElementById("options-overlay").classList.contains("hidden")) {
     openOptions(true);
   } else {
@@ -121,7 +127,7 @@ function toggleOptions() {
 
 function openOptions(firstLevel) {
   document.getElementById("options-menu").classList.remove("hidden");
-  setCurrentTheme();
+  setCurrentTheme(locale);
   if(firstLevel) {
     document.getElementById("options-overlay").classList.remove("hidden");
     document.querySelector("main").classList.add("blur-[2px]");
@@ -159,14 +165,18 @@ function openThemeMenu() {
 }
 
 function setCurrentTheme() {
-
+  console.log(locale)
   document.querySelectorAll(".currentThemeName").forEach((item) => {
+    names = {
+      "en": ["System", "Dark", "Light"],
+      "pt": ["Sistema", "Escuro", "Claro"]
+    }
     if (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      item.innerHTML = "System";
+      item.innerHTML = names[locale][0];
     } else if (localStorage.theme === 'dark') {
-      item.innerHTML = "Dark";
+      item.innerHTML = names[locale][1];
     } else {
-      item.innerHTML = "Light";
+      item.innerHTML = names[locale][2];
     }
   })
 

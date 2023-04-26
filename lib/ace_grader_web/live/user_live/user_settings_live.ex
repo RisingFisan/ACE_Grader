@@ -7,7 +7,7 @@ defmodule AceGraderWeb.UserSettingsLive do
     ~H"""
     <div class="flex flex-col gap-16">
       <div>
-        <.header class="mb-6">Change Account Information</.header>
+        <.header class="mb-6"><%= gettext "Change Account Information" %></.header>
 
         <.simple_form
           for={@info_form}
@@ -15,17 +15,17 @@ defmodule AceGraderWeb.UserSettingsLive do
           phx-submit="update_info"
           phx-change="validate_info"
         >
-          <.input field={@info_form[:username]} type="text" label="Username" required />
-          <.input field={@info_form[:display_name]} type="text" label="Display name" required />
-          <.input field={@info_form[:account_type]} type="radio" label="Account type" options={["student", "teacher"]} required />
+          <.input field={@info_form[:username]} type="text" label={gettext("Username")} required />
+          <.input field={@info_form[:display_name]} type="text" label={gettext("Display name")} required />
+          <.input field={@info_form[:account_type]} type="radio" label={gettext("Account type")} options={[student: gettext("Student"), teacher: gettext("Teacher")]} required />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Account Information</.button>
+            <.button phx-disable-with="Changing..."><%= gettext "Change Account Information" %></.button>
           </:actions>
         </.simple_form>
       </div>
 
       <div>
-        <.header  class="mb-6">Change Email</.header>
+        <.header  class="mb-6"><%= gettext "Change Email" %></.header>
 
         <.simple_form
           for={@email_form}
@@ -33,24 +33,24 @@ defmodule AceGraderWeb.UserSettingsLive do
           phx-submit="update_email"
           phx-change="validate_email"
         >
-          <.input field={@email_form[:email]} type="email" label="Email" required />
+          <.input field={@email_form[:email]} type="email" label={gettext("Email")} required />
           <.input
             field={@email_form[:current_password]}
             name="current_password"
             id="current_password_for_email"
             type="password"
-            label="Current password"
+            label={gettext("Current password")}
             value={@email_form_current_password}
             required
           />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Email</.button>
+            <.button phx-disable-with={gettext("Changing...")}><%= gettext "Change Email" %></.button>
           </:actions>
         </.simple_form>
       </div>
 
       <div>
-        <.header class="mb-6">Change Password</.header>
+        <.header class="mb-6"><%= gettext"Change Password" %></.header>
 
         <.simple_form
           for={@password_form}
@@ -63,24 +63,24 @@ defmodule AceGraderWeb.UserSettingsLive do
         >
           <div> <!-- This div is to prevent the space-y-8 of the form from creating space before the password -->
             <.input id="hidden_user_email" field={@password_form[:email]} type="hidden" value={@current_email} />
-            <.input field={@password_form[:password]} type="password" label="New password" required />
+            <.input field={@password_form[:password]} type="password" label={gettext("New password")} required />
           </div>
           <.input
             field={@password_form[:password_confirmation]}
             type="password"
-            label="Confirm new password"
+            label={gettext("Confirm new password")}
           />
           <.input
             field={@password_form[:current_password]}
             name="current_password"
             type="password"
-            label="Current password"
+            label={gettext("Current password")}
             id="current_password_for_password"
             value={@current_password}
             required
           />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Password</.button>
+            <.button phx-disable-with={gettext("Changing...")}><%= gettext"Change Password" %></.button>
           </:actions>
         </.simple_form>
       </div>

@@ -392,13 +392,13 @@ defmodule AceGraderWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
-      <div :for={option <- @options} class="flex items-center mt-2 gap-2">
-        <% option_id = "#{@name}_#{option}" %>
+      <div :for={{opt_id, opt_name} <- @options} class="flex items-center mt-2 gap-2">
+        <% option_id = "#{@name}_#{opt_id}" %>
         <input
           type={@type}
           name={@name}
           id={option_id}
-          value={option}
+          value={opt_id}
           class={[
             "block rounded-lg border-zinc-300",
             "text-violet-700 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
@@ -406,10 +406,10 @@ defmodule AceGraderWeb.CoreComponents do
             "border-zinc-300 focus:border-zinc-400 dark:border-zinc-600 focus:ring-zinc-800/5",
             @errors != [] && "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10",
           ]}
-          checked={to_string(@value) == option}
+          checked={@value == opt_id}
           {@rest}/>
           <label for={option_id} class="block text-sm font-light leading-6 text-zinc-800 dark:text-zinc-100">
-            <%= String.capitalize(option) %>
+            <%= opt_name %>
           </label>
         </div>
       <.error :for={msg <- @errors}><%= msg %></.error>

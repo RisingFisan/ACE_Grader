@@ -40,10 +40,18 @@ defmodule AceGrader.Exercises do
     Repo.all(from(e in Exercise, where: e.public == true, order_by: [desc: e.inserted_at]))
   end
 
-  def list_exercises_by_user(user_id) do
-    Repo.all(from(e in Exercise, where: e.author_id == ^user_id, order_by: [desc: e.inserted_at]))
-  end
+  # def list_exercises_by_user(user_id, only_public \\ true) do
+  #   if only_public do
+  #     Repo.all(from(e in Exercise, where: e.author_id == ^user_id and e.public == true, order_by: [desc: e.inserted_at]))
+  #   else
+  #     Repo.all(from(e in Exercise, where: e.author_id == ^user_id, order_by: [desc: e.inserted_at]))
+  #   end
+  # end
 
+  def list_exercises_by_user(user_id, only_public \\ true) do
+    Repo.all(from(e in Exercise, where: e.author_id == ^user_id and (e.public == true or ^only_public == false), order_by: [desc: e.inserted_at]))
+  end
+  
   @doc """
   Gets a single exercise.
 

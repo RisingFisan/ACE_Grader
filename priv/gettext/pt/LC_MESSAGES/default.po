@@ -25,29 +25,22 @@ msgstr "fechar"
 
 #: lib/ace_grader_web/live/exercise_live/editor.html.heex:6
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:10
-#: lib/ace_grader_web/live/submission_live/show.html.heex:7
+#: lib/ace_grader_web/live/submission_live/show.html.heex:4
 #, elixir-autogen, elixir-format
 msgid "Back to exercise"
 msgstr "Voltar ao exercício"
 
-#: lib/ace_grader_web/controllers/exercise_html/index.html.heex:19
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:47
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:53
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:87
 #, elixir-autogen, elixir-format
 msgid "Delete"
 msgstr "Apagar"
 
-#: lib/ace_grader_web/controllers/exercise_html/index.html.heex:2
-#, elixir-autogen, elixir-format
-msgid "Listing Exercises"
-msgstr "Listando Exercícios"
-
-#: lib/ace_grader_web/controllers/exercise_html/index.html.heex:7
+#: lib/ace_grader_web/controllers/exercise_html/index.html.heex:8
 #, elixir-autogen, elixir-format
 msgid "New Exercise"
 msgstr "Novo Exercício"
 
-#: lib/ace_grader_web/controllers/exercise_html/index.html.heex:15
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:29
 #, elixir-autogen, elixir-format
 msgid "Description"
@@ -58,24 +51,23 @@ msgstr "Descrição"
 msgid "Public"
 msgstr "Público"
 
-#: lib/ace_grader_web/controllers/exercise_html/index.html.heex:14
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:27
 #, elixir-autogen, elixir-format
 msgid "Title"
 msgstr "Título"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:11
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:17
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Back to exercises"
 msgstr "Voltar aos exercícios"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:26
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:32
 #, elixir-autogen, elixir-format
 msgid "Edit exercise"
 msgstr "Editar exercício"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:19
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:25
 #, elixir-autogen, elixir-format
 msgid "Open in Editor"
 msgstr "Abrir no Editor"
@@ -112,66 +104,66 @@ msgstr "Submeter"
 msgid "Yes"
 msgstr "Sim"
 
-#: lib/ace_grader_web/components/my_components.ex:35
+#: lib/ace_grader_web/components/my_components.ex:36
 #, elixir-autogen, elixir-format
 msgid "Actual output"
 msgstr "Output real"
 
-#: lib/ace_grader_web/components/my_components.ex:78
+#: lib/ace_grader_web/components/my_components.ex:79
 #, elixir-autogen, elixir-format
 msgid "Compilation"
 msgstr "Compilação"
 
-#: lib/ace_grader_web/components/my_components.ex:52
-#: lib/ace_grader_web/components/my_components.ex:96
+#: lib/ace_grader_web/components/my_components.ex:53
+#: lib/ace_grader_web/components/my_components.ex:97
 #, elixir-autogen, elixir-format
 msgid "Error"
 msgstr "Erro"
 
-#: lib/ace_grader_web/components/my_components.ex:32
+#: lib/ace_grader_web/components/my_components.ex:33
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:81
 #, elixir-autogen, elixir-format
 msgid "Expected output"
 msgstr "Output esperado"
 
-#: lib/ace_grader_web/components/my_components.ex:29
+#: lib/ace_grader_web/components/my_components.ex:30
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:65
 #, elixir-autogen, elixir-format
 msgid "Input"
 msgstr ""
 
-#: lib/ace_grader_web/components/my_components.ex:82
+#: lib/ace_grader_web/components/my_components.ex:83
 #, elixir-autogen, elixir-format
 msgid "Successful"
 msgstr "Sucesso"
 
-#: lib/ace_grader_web/components/my_components.ex:15
+#: lib/ace_grader_web/components/my_components.ex:16
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:60
 #, elixir-autogen, elixir-format
 msgid "Tests"
 msgstr "Testes"
 
-#: lib/ace_grader_web/components/my_components.ex:88
+#: lib/ace_grader_web/components/my_components.ex:89
 #, elixir-autogen, elixir-format
 msgid "Warning"
 msgstr "Aviso"
 
-#: lib/ace_grader_web/live/submission_live/show.html.heex:17
+#: lib/ace_grader_web/live/submission_live/show.html.heex:16
 #, elixir-autogen, elixir-format
 msgid "Final grade"
 msgstr "Nota final"
 
-#: lib/ace_grader_web/live/submission_live/show.html.heex:13
+#: lib/ace_grader_web/live/submission_live/show.html.heex:12
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Submission by: %{submittor}"
 msgstr "Submissão por: %{submittor}"
 
-#: lib/ace_grader_web/live/submission_live/show.html.heex:25
+#: lib/ace_grader_web/live/submission_live/show.html.heex:24
 #, elixir-autogen, elixir-format
 msgid "Code"
 msgstr "Código"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:39
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:45
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Submissions"
 msgstr "Submissões"
@@ -224,7 +216,7 @@ msgstr "Guardar Exercício"
 msgid "Visible to students before submitting?"
 msgstr "Visível para estudantes antes de submeter?"
 
-#: lib/ace_grader_web/components/my_components.ex:25
+#: lib/ace_grader_web/components/my_components.ex:26
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "noun"
 msgid "Test"
@@ -236,44 +228,47 @@ msgctxt "verb"
 msgid "Test"
 msgstr "Testar"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:39
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:45
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:21
 #, elixir-autogen, elixir-format, fuzzy
 msgid "My submission"
 msgid_plural "My submissions"
 msgstr[0] "Submissões"
 msgstr[1] "Submissões"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:44
+#: lib/ace_grader_web/components/layouts/app.html.heex:54
 #, elixir-autogen, elixir-format
 msgid "Account settings"
 msgstr "Definições da conta"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:42
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:48
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:25
 #, elixir-autogen, elixir-format
 msgid "Date"
 msgstr "Data"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:30
+#: lib/ace_grader_web/components/layouts/app.html.heex:34
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "Idioma"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:50
+#: lib/ace_grader_web/components/layouts/app.html.heex:60
 #, elixir-autogen, elixir-format
 msgid "Log out"
 msgstr "Terminar sessão"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:37
+#: lib/ace_grader_web/components/layouts/app.html.heex:41
 #, elixir-autogen, elixir-format
 msgid "Theme"
 msgstr "Tema"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:44
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:50
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:24
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Total grade"
 msgstr "Nota final"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:43
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:49
 #, elixir-autogen, elixir-format
 msgid "User"
 msgstr "Utilizador"
@@ -283,23 +278,23 @@ msgstr "Utilizador"
 msgid "Add test"
 msgstr "Adicionar teste"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:82
+#: lib/ace_grader_web/components/layouts/app.html.heex:94
 #, elixir-autogen, elixir-format
 msgid "Dark"
 msgstr "Escuro"
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:32
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:38
 #, elixir-autogen, elixir-format
 msgid "Delete exercise"
 msgstr "Apagar exercício"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:86
+#: lib/ace_grader_web/components/layouts/app.html.heex:98
 #, elixir-autogen, elixir-format
 msgid "Light"
 msgstr "Claro"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:18
-#: lib/ace_grader_web/live/home.ex:20
+#: lib/ace_grader_web/components/layouts/app.html.heex:22
+#: lib/ace_grader_web/live/home.ex:25
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr "Iniciar sessão"
@@ -309,7 +304,7 @@ msgstr "Iniciar sessão"
 msgid "Submission template"
 msgstr "Modelo de submissão"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:78
+#: lib/ace_grader_web/components/layouts/app.html.heex:90
 #, elixir-autogen, elixir-format
 msgid "System"
 msgstr "Sistema"
@@ -324,7 +319,7 @@ msgstr "Ficheiro de teste"
 msgid "Already registered?"
 msgstr "Já tens uma conta?"
 
-#: lib/ace_grader_web/controllers/page_html/home.html.heex:43
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:4
 #: lib/ace_grader_web/live/home.ex:9
 #, elixir-autogen, elixir-format
 msgid "Automatic Code Evaluator and Grader"
@@ -345,17 +340,17 @@ msgstr "A criar conta..."
 msgid "Don't have an account?"
 msgstr "Não tens uma conta?"
 
-#: lib/ace_grader_web/components/my_components.ex:56
+#: lib/ace_grader_web/components/my_components.ex:57
 #, elixir-autogen, elixir-format
 msgid "Failed"
 msgstr "Falhou"
 
-#: lib/ace_grader_web/live/user_live/user_login_live.ex:25
+#: lib/ace_grader_web/live/user_live/user_login_live.ex:22
 #, elixir-autogen, elixir-format
 msgid "Forgot your password?"
 msgstr "Esqueceste-te da tua palavra-passe?"
 
-#: lib/ace_grader_web/live/home.ex:15
+#: lib/ace_grader_web/live/home.ex:31
 #, elixir-autogen, elixir-format
 msgid "Go to Exercises"
 msgstr "Ir para Exercícios"
@@ -370,7 +365,7 @@ msgstr "Se o teu email estiver no nosso sistema e ainda não tiver sido confirma
 msgid "If your email is in our system, you will receive instructions to reset your password shortly."
 msgstr "Se o teu email estiver no nosso sistema, receberás instruções para redefinir a tua palavra-passe brevemente."
 
-#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:21
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:27
 #, elixir-autogen, elixir-format
 msgid "Only registered users can use the online editor."
 msgstr "Apenas utilizadores registados podem usar o editor online."
@@ -386,7 +381,7 @@ msgstr "Regista-te para uma conta"
 msgid "Resend confirmation instructions"
 msgstr "Reenviar instruções de confirmação"
 
-#: lib/ace_grader_web/live/user_live/user_login_live.ex:30
+#: lib/ace_grader_web/live/user_live/user_login_live.ex:29
 #, elixir-autogen, elixir-format
 msgid "Sign in"
 msgstr "Iniciar sessão"
@@ -396,7 +391,7 @@ msgstr "Iniciar sessão"
 msgid "Sign in to account"
 msgstr "Inicia sessão na conta"
 
-#: lib/ace_grader_web/components/my_components.ex:60
+#: lib/ace_grader_web/components/my_components.ex:61
 #, elixir-autogen, elixir-format
 msgid "Timeout"
 msgstr "Limite de tempo"
@@ -469,3 +464,141 @@ msgstr "verifica se o output real contém todos os valores especificados no outp
 #, elixir-autogen, elixir-format
 msgid "verifies if the real output matches the regular expression specified in the expected output."
 msgstr "verifica se o output real coincide com a expressão regular especificada no output esperado."
+
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:11
+#, elixir-autogen, elixir-format
+msgid "Administrator"
+msgstr "Administrador"
+
+#: lib/ace_grader_web/controllers/exercise_html/index.html.heex:3
+#, elixir-autogen, elixir-format
+msgid "Exercise List"
+msgstr "Lista de Exercícios"
+
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:23
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Exercise name"
+msgstr "Nome do exercício"
+
+#: lib/ace_grader_web/components/layouts/app.html.heex:11
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Exercises"
+msgstr "Exercícios"
+
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:16
+#, elixir-autogen, elixir-format
+msgid "Exercises created by"
+msgstr "Exercícios criados por"
+
+#: lib/ace_grader_web/live/user_live/user_login_live.ex:25
+#, elixir-autogen, elixir-format
+msgid "Keep me logged in"
+msgstr "Manter a minha sessão iniciada"
+
+#: lib/ace_grader_web/components/layouts/app.html.heex:48
+#, elixir-autogen, elixir-format
+msgid "My account"
+msgstr "A minha conta"
+
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:9
+#: lib/ace_grader_web/live/user_live/user_registration_live.ex:38
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:20
+#, elixir-autogen, elixir-format
+msgid "Student"
+msgstr "Estudante"
+
+#: lib/ace_grader_web/controllers/user_html/show.html.heex:10
+#: lib/ace_grader_web/live/user_live/user_registration_live.ex:38
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:20
+#, elixir-autogen, elixir-format
+msgid "Teacher"
+msgstr "Docente"
+
+#: lib/ace_grader_web/live/user_live/user_registration_live.ex:38
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:20
+#, elixir-autogen, elixir-format
+msgid "Account type"
+msgstr "Tipo de conta"
+
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:10
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:22
+#, elixir-autogen, elixir-format
+msgid "Change Account Information"
+msgstr "Alterar Informação da Conta"
+
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:28
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:47
+#, elixir-autogen, elixir-format
+msgid "Change Email"
+msgstr "Alterar Email"
+
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:53
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:83
+#, elixir-autogen, elixir-format
+msgid "Change Password"
+msgstr "Alterar Palavra-passe"
+
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:47
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:83
+#, elixir-autogen, elixir-format
+msgid "Changing..."
+msgstr "Alterando..."
+
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:71
+#, elixir-autogen, elixir-format
+msgid "Confirm new password"
+msgstr "Confirmar nova palavra-passe"
+
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:42
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:77
+#, elixir-autogen, elixir-format
+msgid "Current password"
+msgstr "Palavra-passe atual"
+
+#: lib/ace_grader_web/live/user_live/user_registration_live.ex:35
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:19
+#, elixir-autogen, elixir-format
+msgid "Display name"
+msgstr "Alcunha"
+
+#: lib/ace_grader_web/live/user_live/user_registration_live.ex:36
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:36
+#, elixir-autogen, elixir-format
+msgid "Email"
+msgstr "Email"
+
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:66
+#, elixir-autogen, elixir-format
+msgid "New password"
+msgstr "Nova palavra-passe"
+
+#: lib/ace_grader_web/live/user_live/user_registration_live.ex:34
+#: lib/ace_grader_web/live/user_live/user_settings_live.ex:18
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Username"
+msgstr "Nome de identificação da conta (Username)"
+
+#: lib/ace_grader_web/live/home.ex:18
+#, elixir-autogen, elixir-format
+msgid "Go to my account"
+msgstr "Ir para a minha conta"
+
+#: lib/ace_grader_web/live/user_live/user_registration_live.ex:37
+#, elixir-autogen, elixir-format
+msgid "Password"
+msgstr "Palavra-passe"
+
+#: lib/ace_grader_web/live/home.ex:15
+#, elixir-autogen, elixir-format
+msgid "Welcome back, %{name}!"
+msgstr "Olá de novo, %{name}!"
+
+#: lib/ace_grader_web/components/my_components.ex:123
+#, elixir-autogen, elixir-format
+msgid "Private"
+msgstr "Privado"
+
+#: lib/ace_grader_web/controllers/exercise_html/show.html.heex:6
+#, elixir-autogen, elixir-format
+msgid "Private exercise"
+msgstr "Exercício privado"
