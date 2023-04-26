@@ -1,15 +1,25 @@
 <div class="space-y-12">
-  <div class="flex gap-4">
-    <Heroicons.user class="h-36 w-36 border-4 border-black dark:border-white p-6"/>
-    <div class="flex flex-col justify-between">
-      <div>
-        <p class="text-4xl font-bold"><%= @user.display_name %></p>
-        <p class="text-xl font-light"><%= "(@#{@user.username})" %></p>
+  <div class="flex justify-between items-start">
+    <div class="flex gap-4">
+      <Heroicons.user class="h-36 w-36 border-4 border-black dark:border-white p-6"/>
+      <div class="flex flex-col justify-between">
+        <div>
+          <p class="text-4xl font-bold"><%= @user.display_name %></p>
+          <p class="text-xl font-light"><%= "(@#{@user.username})" %></p>
+        </div>
+        <p class="text-xl" :if={@user.account_type == :student}><%= gettext("Student") %></p>
+        <p class="text-xl" :if={@user.account_type == :teacher}><%= gettext("Teacher") %></p>
+        <p class="text-xl" :if={@user.account_type == :admin}><%= gettext("Administrator") %></p>
       </div>
-      <p class="text-xl" :if={@user.account_type == :student}><%= gettext("Student") %></p>
-      <p class="text-xl" :if={@user.account_type == :teacher}><%= gettext("Teacher") %></p>
-      <p class="text-xl" :if={@user.account_type == :admin}><%= gettext("Administrator") %></p>
     </div>
+    <.link
+      :if={@current_user.id == @user.id}
+      navigate={~p"/users/settings"}
+      class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-100 outline-zinc-900 dark:outline-zinc-200 outline rounded-full px-4 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 flex items-center gap-2"
+      >
+      <Heroicons.pencil class="w-5 h-5 stroke-current inline" />
+      <%= gettext("Edit account") %>
+    </.link>
   </div>
 
   <div :if={@user.account_type == :teacher} class="space-y-4">
@@ -17,8 +27,12 @@
     <.exercise_list exercises={@exercises} ex_click={&JS.navigate(~p"/exercises/#{&1}")}/>
   </div>
 
-  <div :if={@current_user && @current_user.account_type == :student && @current_user.id == @user.id} class="space-y-4">
-    <h2 class="text-3xl font-bold"><%= ngettext "My submission", "My submissions", length(@submissions) %></h2>
+  <div :if={@current_user && @user.account_type == :student && (@current_user.id == @user.id || @current_user.account_type != :student)} class="space-y-4">
+    <%= if @current_user.id == @user.id do %>
+      <h2 class="text-3xl font-bold"><%= ngettext "My submission", "My submissions", length(@submissions) %></h2>
+    <% else %>
+      <h2 class="text-3xl font-bold"><%= ngettext("%{name}'s submission", "%{name}'s submissions", length(@submissions), name: @user.display_name) %></h2>
+    <% end %>
     <.table id="submissions-table" rows={@submissions} row_click={&JS.navigate(~p"/exercises/#{&1.exercise}/submissions/#{&1}")}>
       <:col :let={submission} label={gettext "Exercise name"}><%= submission.exercise.title %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>

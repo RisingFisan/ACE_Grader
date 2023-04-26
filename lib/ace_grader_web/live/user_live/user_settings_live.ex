@@ -7,7 +7,12 @@ defmodule AceGraderWeb.UserSettingsLive do
     ~H"""
     <div class="flex flex-col gap-16">
       <div>
-        <.header class="mb-6"><%= gettext "Change Account Information" %></.header>
+        <.header class="mb-6">
+        <%= gettext "Change Account Information" %>
+          <:actions>
+            <.back navigate={~p"/users/#{@current_user}"}><%= gettext "Back to account" %></.back>
+          </:actions>
+        </.header>
 
         <.simple_form
           for={@info_form}
