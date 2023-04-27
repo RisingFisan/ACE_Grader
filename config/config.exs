@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+config :elixir, :time_zone_database, Tz.TimeZoneDatabase
+
 config :ace_grader,
   ecto_repos: [AceGrader.Repo],
   generators: [binary_id: true]

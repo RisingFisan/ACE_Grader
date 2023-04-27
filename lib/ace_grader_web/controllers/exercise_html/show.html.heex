@@ -8,7 +8,7 @@
   </div>
   <:subtitle>
     <p>Created by:
-      <.link href={~p"/users/#{@exercise.user}"} class="text-violet-800 dark:text-violet-500">
+      <.link href={~p"/users/#{@exercise.user.username}"} class="text-violet-800 dark:text-violet-500">
         @<%= if @exercise.author_id, do: @exercise.user.username, else: "[DELETED]" %>
       </.link>
     </p>
@@ -45,7 +45,7 @@
   <h2 class="font-bold text-2xl"><%= (if @current_user.account_type == :student, do: (ngettext "My submission", "My submissions", length(@exercise.submissions)), else: gettext("Submissions")) %></h2>
   <%= if length(@exercise.submissions) > 0 do %>
     <.table id="submissions-table" rows={@exercise.submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
-      <:col :let={submission} label={gettext "Date"}><%= NaiveDateTime.to_string(submission.inserted_at) %></:col>
+      <:col :let={submission} label={gettext "Date"}><time class="datetime" datetime={submission.inserted_at |> DateTime.from_naive!("Etc/UTC") |> to_string()}></time></:col>
       <:col :if={@current_user.account_type != :student} :let={submission} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
       <:action :if={@show_delete && @current_user.account_type != :student && @current_user.id == @exercise.author_id} :let={submission}>

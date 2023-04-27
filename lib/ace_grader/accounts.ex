@@ -63,6 +63,11 @@ defmodule AceGrader.Accounts do
     |> Repo.preload(preloads)
   end
 
+  def get_user_by_username!(username, preloads \\ []) do
+    Repo.get_by!(User, username: username)
+    |> Repo.preload(preloads)
+  end
+
   ## User registration
 
   @doc """

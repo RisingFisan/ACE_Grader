@@ -36,7 +36,7 @@
     <.table id="submissions-table" rows={@submissions} row_click={&JS.navigate(~p"/exercises/#{&1.exercise}/submissions/#{&1}")}>
       <:col :let={submission} label={gettext "Exercise name"}><%= submission.exercise.title %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
-      <:col :let={submission} label={gettext "Date"}><%= NaiveDateTime.to_string(submission.inserted_at) %></:col>
+      <:col :let={submission} label={gettext "Date"}><time class="datetime" datetime={submission.inserted_at |> DateTime.from_naive!("Etc/UTC") |> to_string()}></time></:col>
     </.table>
   </div>
 </div>

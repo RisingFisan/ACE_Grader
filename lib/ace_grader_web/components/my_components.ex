@@ -27,24 +27,31 @@ defmodule AceGraderWeb.MyComponents do
             <p :if={!@editor}><%= "(#{test.grade}%)" %></p>
           </div>
           <div class="pl-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 gap-x-4 items-start border-l border-zinc-400 dark:border-zinc-700">
-            <p><%= gettext "Input" %></p>
-            <pre><%= test.input %></pre>
+            <%= if test.description |> IO.inspect() do %>
+              <p><%= gettext "Description" %></p>
+              <p><%= test.description %></p>
+            <% else %>
+              <p><%= gettext "Input" %></p>
+              <pre><%= test.input %></pre>
+            <% end %>
 
             <p><%= gettext "Expected output" %></p>
             <pre><%= test.expected_output %></pre>
 
-            <p><%= gettext "Actual output" %></p>
-            <%= if test.actual_output != nil do %>
-              <pre><%= test.actual_output %></pre>
+            <%= if test.status != :error do %>
+              <p><%= gettext "Actual output" %></p>
+              <%= if test.actual_output != nil do %>
+                <pre><%= test.actual_output %></pre>
+              <% else %>
+                <%= if test.status == :pending do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 self-center fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
+                  </svg>
+                <% end %>
+              <% end %>
             <% else %>
-              <%= if test.status == :pending do %>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 self-center fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                  <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
-                </svg>
-              <% end %>
-              <%= if test.status in [:error, :failed] do %>
-                <Heroicons.x_mark class="w-6 h-6 self-center text-red-600" />
-              <% end %>
+              <p><%= gettext "Error message" %></p>
+              <pre><%= test.actual_output %></pre>
             <% end %>
           </div>
           <div class="justify-self-end pr-4">

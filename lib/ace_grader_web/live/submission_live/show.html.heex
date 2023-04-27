@@ -9,8 +9,8 @@
 
 <div class="flex justify-between items-center mt-8">
   <div>
-    <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: @submission.user.display_name %><.link href={~p"/users/#{@submission.user}"} class="text-violet-500"> (@<%= @submission.user.username %>)</.link></p>
-    <p><%= @submission.inserted_at |> NaiveDateTime.to_string() %></p>
+    <p class="text-2xl"><%= gettext "Submission by: %{submittor}", submittor: @submission.user.display_name %><.link href={~p"/users/#{@submission.user.username}"} class="text-violet-500"> (@<%= @submission.user.username %>)</.link></p>
+    <time id="datetime" phx-update="ignore" class="datetime" datetime={@submission.inserted_at |> DateTime.from_naive!("Etc/UTC") |> to_string()}></time>
   </div>
   <div class="flex flex-col items-center gap-1">
     <p class="font-light tracking-wide text-lg"><%= gettext "Final grade" %></p>

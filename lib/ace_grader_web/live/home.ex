@@ -13,7 +13,7 @@ defmodule AceGraderWeb.HomeLive do
       <%= if @current_user do %>
         <div class="flex flex-col items-center md:items-start gap-3">
           <h2 class="text-2xl md:text-4xl font-bold"><%= gettext("Welcome back, %{name}!", name: @current_user.display_name) %></h2>
-          <.link href={~p"/users/#{@current_user}"}>
+          <.link href={~p"/users/#{@current_user.username}"}>
             <.button>
               <%= gettext "Go to my account" %>
             </.button>

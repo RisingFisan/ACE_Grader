@@ -64,6 +64,10 @@ defmodule AceGrader.Submissions do
     |> Repo.insert()
   end
 
+  def create_submission_from_changeset(changeset) do
+    Repo.insert(changeset)
+  end
+
   @doc """
   Updates a submission.
 

@@ -6,19 +6,23 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
   def mount(_params = %{"id" => id}, _session, socket) do
     exercise = Exercises.get_exercise!(id, false)
-    submission = %Submissions.Submission{exercise: exercise}
-    changeset = Submissions.change_submission(submission)
-    |> Ecto.Changeset.put_assoc(:tests, (for test <- exercise.tests do
-      struct(%Submissions.Test{}, test
-        |> Map.from_struct()
-        |> Map.take([:grade, :input, :type, :expected_output, :visible]))
-    end))
-    |> Ecto.Changeset.put_change(:author_id, socket.assigns.current_user.id)
+    submission = %Submissions.Submission{}
+    attrs = %{
+      exercise_id: exercise.id,
+      author_id: socket.assigns.current_user.id,
+      tests: Enum.map(exercise.tests, fn test -> Map.from_struct(test) end)
+    }
+    # |> Ecto.Changeset.put_assoc(:tests, (for test <- exercise.tests do
+    #   struct(%Submissions.Test{}, test
+    #     |> Map.from_struct()
+    #     |> Map.take([:grade, :input, :type, :expected_output, :visible, :description]))
+    # end))
 
     socket = assign(socket, exercise: exercise)
     |> assign(compilation_msg: nil, confirm_modal: false)
     |> assign(test_results: nil, testing: false, success: nil)
-    |> assign(submission: changeset)
+    |> assign(attrs: attrs |> IO.inspect())
+    |> assign(changeset: Submissions.change_submission(submission, attrs))
     {:ok, socket |> assign(page_title: "Exercise Editor")}
   end
 
@@ -32,9 +36,10 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
   end
 
   def handle_event("test_code", %{"code" => code}, socket) do
-    submission = socket.assigns.submission
+    submission = Submissions.change_submission(%Submissions.Submission{}, socket.assigns.attrs)
     |> Ecto.Changeset.cast(%{code: code}, [:code])
     |> Ecto.Changeset.apply_changes
+    |> Map.put(:exercise, socket.assigns.exercise)
 
     result = Grader.test_submission(submission)
 
@@ -46,13 +51,13 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
         testing: false)}
   end
 
-  def handle_event("submit_code", %{"submission" => submission_params} = _params, socket) do
-    submission_params = Map.put(submission_params, "author_id", socket.assigns.current_user.id)
-    case Submissions.create_submission(submission_params) do
+  def handle_event("submit_code", %{"submission" => %{"code" => code}} = _params, socket) do
+    case Submissions.create_submission(Map.put(socket.assigns.attrs, :code, code)) do
       {:ok, submission} ->
         {:noreply, push_navigate(socket, to: ~p"/exercises/#{submission.exercise_id}/submissions/#{submission}")}
-      {:error, %Ecto.Changeset{} = _changeset} ->
-        {:noreply, socket |> put_flash(:error, "Error creating submission")}
+      {:error, %Ecto.Changeset{} = changeset} ->
+        IO.inspect(changeset.errors)
+        {:noreply, socket |> put_flash(:error, "Error creating submission!")}
     end
   end
 

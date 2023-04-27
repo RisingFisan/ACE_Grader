@@ -90,7 +90,7 @@ defmodule AceGraderWeb.Router do
     pipe_through [:browser]
 
     resources "/exercises", ExerciseController, only: [:index, :show]
-    resources "/users", UserController, only: [:show]
+    get "/users/:username", UserController, :show
 
     delete "/users/log_out", UserSessionController, :delete
 

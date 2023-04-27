@@ -27,19 +27,8 @@
   </div>
 </div>
 
-<.simple_form :let={f} hidden for={@submission} phx-submit="submit_code" id="submit_form" phx-update="ignore">
-  <.input hidden type="hidden" field={f[:exercise_id]} phx-update="ignore" value={@exercise.id}></.input>
+<.simple_form :let={f} hidden for={@changeset} phx-submit="submit_code" id="submit_form" phx-update="ignore">
   <.input hidden type="hidden" field={f[:code]} id="editor-code" phx-update="ignore"></.input>
-  <.inputs_for :let={tf} field={f[:tests]}>
-    <.input field={tf[:input]} type="hidden" label="Input" />
-    <.input field={tf[:type]} type="hidden" options={["Exact": "exact", "Regex": "regex", "Items": "items"]} label="Output Type" />
-    <.input field={tf[:expected_output]} type="hidden" label="Output Value" />
-    <.input field={tf[:grade]} type="hidden" label="Grade %" />
-  </.inputs_for>
-  <%!-- <textarea hidden id="editor_code"></textarea> --%>
-  <%!-- <:actions>
-    <.button id="submit_button">Submit</.button>
-  </:actions> --%>
 </.simple_form>
 
 <.compilation_results :if={@success != nil} warnings={if @success, do: @compilation_msg, else: nil} errors={if @success == false, do: @compilation_msg, else: nil} />

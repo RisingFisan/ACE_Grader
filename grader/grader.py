@@ -47,7 +47,7 @@ def run_command():
     except subprocess.TimeoutExpired:
         return jsonify({'status': 'timeout'})
     except subprocess.CalledProcessError as e:
-        return jsonify({'status': 'error', 'error': e.stderr.decode()})
+        return jsonify({'status': 'error', 'output': e.stderr.decode(), 'code': abs(e.returncode)})
 
 def clean(path):
     if os.path.exists(path):

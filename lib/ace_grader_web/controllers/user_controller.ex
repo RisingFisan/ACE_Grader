@@ -5,8 +5,8 @@ defmodule AceGraderWeb.UserController do
   alias AceGrader.Exercises
   alias AceGrader.Submissions
 
-  def show(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
+  def show(conn, %{"username" => username}) do
+    user = Accounts.get_user_by_username!(username)
     assigns = %{
       user: user,
       page_title: "#{user.username}",

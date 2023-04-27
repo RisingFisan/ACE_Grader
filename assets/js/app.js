@@ -119,6 +119,10 @@ function getCurrentTheme() {
   }
 }
 
+document.querySelectorAll(".datetime").forEach((el) => {
+  el.innerHTML = new Date(el.getAttribute("datetime")).toLocaleString("sv-SE", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
+})
+
 // document.querySelectorAll(".md-text").forEach((el) => {
 //   el.innerHTML = marked.parse(el.innerHTML);
 // })

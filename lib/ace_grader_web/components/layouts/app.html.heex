@@ -42,7 +42,7 @@
         </div>
         <Heroicons.chevron_right class="w-6 h-6 relative"/>
       </div>
-      <.link :if={@current_user} href={~p"/users/#{@current_user}"}>
+      <.link :if={@current_user} href={~p"/users/#{@current_user.username}"}>
         <div class="flex items-center gap-2">
           <Heroicons.user class="w-6 h-6"/> 
           <p><%= gettext("My account") %></p>

@@ -130,7 +130,7 @@ msgstr "Output esperado"
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:65
 #, elixir-autogen, elixir-format
 msgid "Input"
-msgstr ""
+msgstr "Input"
 
 #: lib/ace_grader_web/components/my_components.ex:83
 #, elixir-autogen, elixir-format
@@ -199,7 +199,7 @@ msgstr "Expressão regular"
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:82
 #, elixir-autogen, elixir-format
 msgid "Grade %"
-msgstr ""
+msgstr "% da nota"
 
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:68
 #, elixir-autogen, elixir-format

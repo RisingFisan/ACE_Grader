@@ -24,8 +24,11 @@ defmodule AceGrader.Grader do
   defp process_output(_test, %{"status" => "timeout"}) do
     {:timeout, ""}
   end
-  defp process_output(_test, %{"status" => "error", "output" => error_msg}) do
-    {:error, error_msg}
+  defp process_output(_test, %{"status" => "error", "output" => error_msg, "code" => error_code}) do
+    case error_code do
+      11 -> {:error, "Segmentation fault"}
+      _ -> {:error, error_msg}
+    end
   end
 
   defp compile(submission, id) do
@@ -90,7 +93,7 @@ defmodule AceGrader.Grader do
         tests = for test <- submission.tests, test.visible do
           Task.async(fn ->
             {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.author_id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
-            {status, output} = process_output(test, Jason.decode!(response.body))
+            {status, output} = process_output(test, Jason.decode!(response.body |> IO.inspect()))
             %{ Map.from_struct(test) | actual_output: output, status: status }
           end)
         end

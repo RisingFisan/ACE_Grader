@@ -10,7 +10,7 @@ defmodule AceGraderWeb.UserSettingsLive do
         <.header class="mb-6">
         <%= gettext "Change Account Information" %>
           <:actions>
-            <.back navigate={~p"/users/#{@current_user}"}><%= gettext "Back to account" %></.back>
+            <.back navigate={~p"/users/#{@current_user.username}"}><%= gettext "Back to account" %></.back>
           </:actions>
         </.header>
 
