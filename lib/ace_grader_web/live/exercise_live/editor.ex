@@ -21,7 +21,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     socket = assign(socket, exercise: exercise)
     |> assign(compilation_msg: nil, confirm_modal: false)
     |> assign(test_results: nil, testing: false, success: nil)
-    |> assign(attrs: attrs |> IO.inspect())
+    |> assign(attrs: attrs)
     |> assign(changeset: Submissions.change_submission(submission, attrs))
     {:ok, socket |> assign(page_title: "Exercise Editor")}
   end
@@ -41,7 +41,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     |> Ecto.Changeset.apply_changes
     |> Map.put(:exercise, socket.assigns.exercise)
 
-    result = Grader.test_submission(submission)
+    result = Grader.test_submission(submission, socket.assigns.current_user)
 
     {:noreply, socket
       |> assign(
@@ -55,8 +55,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     case Submissions.create_submission(Map.put(socket.assigns.attrs, :code, code)) do
       {:ok, submission} ->
         {:noreply, push_navigate(socket, to: ~p"/exercises/#{submission.exercise_id}/submissions/#{submission}")}
-      {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset.errors)
+      {:error, %Ecto.Changeset{} = _changeset} ->
         {:noreply, socket |> put_flash(:error, "Error creating submission!")}
     end
   end

@@ -1,110 +1,48 @@
 <header class="w-full px-4 sm:px-6 lg:px-20 dark:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-700">
-  <div class="flex items-center justify-between py-3">
-    <div class="flex items-center gap-8 xl:gap-16">
-      <a href="/" class="flex items-center h-16">
-        <!-- <.ace_grader_logo/> -->
-        <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
-        <%!-- <p class="font-bold text-2xl text-violet-700" title="Automatic Code Evaluator and Grader">ACE Grader</p> --%>
-      </a>
-      <.link href={~p"/exercises"} class={["text-xl tracking-wider font-extralight text-zinc-200",
-      (if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400")
-      ]}><%= gettext "Exercises" %></.link>
+  <div class="flex items-center gap-3 justify-between py-3">
+    <div class="md:hidden w-0 flex-1">
+      <Heroicons.bars_3 class="w-8 h-8 cursor-pointer" onclick="toggleMobileMenu()"/>
     </div>
-    <div class="flex items-center gap-6">
-      <div class="flex gap-4 items-center">
+    <div class="flex flex-0 items-center gap-8 xl:gap-16 w-0 flex-1">
+      <a href="/" class="flex items-center h-16">
+        <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
+      </a>
+      <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-extralight text-zinc-200",
+        (if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400")
+      ]}>
+        <%= gettext "Exercises" %>
+      </.link>
+    </div>
+    <div class="items-center gap-6 w-0 flex-1">
+      <div class="flex gap-4 items-center justify-end max-w-full">
         <%= if @current_user do %>
-            <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="flex items-center gap-2 px-4 pr-5 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
+            <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="flex max-w-full items-center gap-2 md:px-4 md:pr-5 md:py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
               <Heroicons.user_circle class="w-8 h-8"/>
-              <p class="text-lg"><%= @current_user.display_name %></p>
+              <p class="text-lg text-ellipsis whitespace-nowrap overflow-hidden hidden md:block"><%= @current_user.display_name %></p>
             </div>
         <% else %>
-          <.link href={~p"/users/log_in"}>
+          <.link href={~p"/users/log_in"} class="hidden md:block">
             <p class="border-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 duration-200"><%= gettext "Log in" %></p>
           </.link>
-          <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="flex gap-2 px-2 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
+          <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="gap-2 px-2 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
             <Heroicons.cog_6_tooth class="w-6 h-6"/>
           </div>
         <% end %>
       </div>
     </div>
-    <div id="options-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl grid grid-cols-1 divide-y divide-inherit [&>*]:px-4 [&>*]:py-2 hover:[&>*]:bg-zinc-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200 [&>*]:flex [&>*]:items-center [&>*]:justify-between hidden">
-      <div onclick="openLanguageMenu()" class="cursor-pointer rounded-t-xl">
-        <div class="flex items-center gap-2">
-          <Heroicons.language class="w-6 h-6"/> 
-          <p><%= gettext("Language") <> ": " %><span class="font-light"><%= Gettext.get_locale(AceGraderWeb.Gettext) %></span></p>
-        </div>
-        <Heroicons.chevron_right class="w-6 h-6 relative"/>
-      </div>
-      <div onclick="openThemeMenu()" class="cursor-pointer">
-        <div class="flex items-center gap-2">
-          <Heroicons.moon class="w-6 h-6"/> 
-          <p><%= gettext("Theme") <> ": " %><span class="font-light currentThemeName"></span></p>
-        </div>
-        <Heroicons.chevron_right class="w-6 h-6 relative"/>
-      </div>
-      <.link :if={@current_user} href={~p"/users/#{@current_user.username}"}>
-        <div class="flex items-center gap-2">
-          <Heroicons.user class="w-6 h-6"/> 
-          <p><%= gettext("My account") %></p>
-        </div>
-      </.link>
-      <.link :if={@current_user} href={~p"/users/settings"}>
-        <div class="flex items-center gap-2">
-          <Heroicons.cog_6_tooth class="w-6 h-6"/> 
-          <p><%= gettext("Account settings") %></p>
-        </div>
-      </.link>
-      <.link :if={@current_user} href={~p"/users/log_out"} method="delete" class="rounded-b-xl">
-        <div class="flex items-center gap-2">
-          <Heroicons.arrow_right_on_rectangle class="w-6 h-6"/> 
-          <p><%= gettext("Log out") %></p>
-        </div>
-      </.link>
-    </div>
-
-    <div id="language-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
-      <div onclick="closeLanguageMenu()" class="self-stretch cursor-pointer flex items-center">
-        <Heroicons.chevron_left class="w-6 h-6"/> 
-      </div>
-      <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
-        <div :for={{language_name, language_abbr} <- ["English": "en", "Português": "pt"]} class="first:rounded-tr-xl last:rounded-br-xl">
-          <.link href={"?locale=#{language_abbr}"} class="cursor-pointer flex items-center gap-2 w-full px-4 py-2">
-            <%= if Gettext.get_locale(AceGraderWeb.Gettext) == language_abbr do %>
-              <Heroicons.check class="w-6 h-6"/>
-              <p class="font-bold"><%= language_name %></p>
-            <% else %>
-              <p><%= language_name %></p>
-            <% end %>
-          </.link>
-        </div>
-      </div>
-    </div>
-
-    <div id="theme-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
-      <div onclick="closeThemeMenu()" class="self-stretch cursor-pointer flex items-center">
-        <Heroicons.chevron_left class="w-6 h-6"/> 
-      </div>
-      <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
-        <div onclick="enableSystemMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-tr-xl">
-          <Heroicons.cog class="w-6 h-6"/>
-          <%= gettext("System") %>
-        </div>
-        <div onclick="enableDarkMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer">
-          <Heroicons.moon class="w-6 h-6"/>
-          <%= gettext("Dark") %>
-        </div>
-        <div onclick="enableLightMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-br-xl">
-          <Heroicons.sun class="w-6 h-6"/>
-          <%= gettext("Light") %>
-        </div>
-      </div>
-    </div>
-
   </div>
 </header>
 <main>
   <div id="options-overlay" onclick="closeOptions(true)" class="w-full h-full absolute z-10 hidden"></div>
-  <div class="px-4 py-20 sm:px-6 lg:px-8">
+  <div id="mobile-menu" class="hidden h-min w-full bg-white dark:bg-zinc-800 px-4 py-2 flex flex-col divide-y [&>*]:border-zinc-500 [&>*]:py-1 text-xl tracking-wider font-extralight text-zinc-200 ">
+    <.link href={~p"/exercises"} class={(if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400")}>
+      <%= gettext "Exercises" %>
+    </.link>
+    <.link :if={!@current_user} href={~p"/users/log_in"} class="font-bold">
+      <%= gettext "Log in" %>
+    </.link>
+  </div>
+  <div class="px-4 py-8 sm:px-6 lg:px-8 md:py-20">
     <div class="mx-auto lg:max-w-[66%] ">
       <.flash_group flash={@flash} />
       <%= @inner_content %>
@@ -112,9 +50,98 @@
   </div>
 </main>
 
+<div id="options-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl grid grid-cols-1 divide-y divide-inherit [&>*]:px-4 [&>*]:py-2 hover:[&>*]:bg-zinc-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200 [&>*]:flex [&>*]:items-center [&>*]:justify-between hidden">
+  <div onclick="openLanguageMenu()" class="cursor-pointer rounded-t-xl">
+    <div class="flex items-center gap-2">
+      <Heroicons.language class="w-6 h-6"/> 
+      <p><%= gettext("Language") <> ": " %><span class="font-light"><%= Gettext.get_locale(AceGraderWeb.Gettext) %></span></p>
+    </div>
+    <Heroicons.chevron_right class="w-6 h-6 relative"/>
+  </div>
+  <div onclick="openThemeMenu()" class="cursor-pointer">
+    <div class="flex items-center gap-2">
+      <Heroicons.moon class="w-6 h-6"/> 
+      <p><%= gettext("Theme") <> ": " %><span class="font-light currentThemeName"></span></p>
+    </div>
+    <Heroicons.chevron_right class="w-6 h-6 relative"/>
+  </div>
+  <.link :if={@current_user} href={~p"/users/#{@current_user.username}"}>
+    <div class="flex items-center gap-2">
+      <Heroicons.user class="w-6 h-6"/> 
+      <p><%= gettext("My account") %></p>
+    </div>
+  </.link>
+  <.link :if={@current_user} href={~p"/users/settings"}>
+    <div class="flex items-center gap-2">
+      <Heroicons.cog_6_tooth class="w-6 h-6"/> 
+      <p><%= gettext("Account settings") %></p>
+    </div>
+  </.link>
+  <.link :if={@current_user} href={~p"/users/log_out"} method="delete" class="rounded-b-xl">
+    <div class="flex items-center gap-2">
+      <Heroicons.arrow_right_on_rectangle class="w-6 h-6"/> 
+      <p><%= gettext("Log out") %></p>
+    </div>
+  </.link>
+</div>
+
+<div id="language-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
+  <div onclick="closeLanguageMenu()" class="self-stretch cursor-pointer flex items-center">
+    <Heroicons.chevron_left class="w-6 h-6"/> 
+  </div>
+  <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
+    <div :for={{language_name, language_abbr} <- ["English": "en", "Português": "pt"]} class="first:rounded-tr-xl last:rounded-br-xl">
+      <.link href={"?locale=#{language_abbr}"} class="cursor-pointer flex items-center gap-2 w-full px-4 py-2">
+        <%= if Gettext.get_locale(AceGraderWeb.Gettext) == language_abbr do %>
+          <Heroicons.check class="w-6 h-6"/>
+          <p class="font-bold"><%= language_name %></p>
+        <% else %>
+          <p><%= language_name %></p>
+        <% end %>
+      </.link>
+    </div>
+  </div>
+</div>
+
+<div id="theme-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
+  <div onclick="closeThemeMenu()" class="self-stretch cursor-pointer flex items-center">
+    <Heroicons.chevron_left class="w-6 h-6"/> 
+  </div>
+  <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
+    <div onclick="enableSystemMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-tr-xl">
+      <Heroicons.cog class="w-6 h-6"/>
+      <%= gettext("System") %>
+    </div>
+    <div onclick="enableDarkMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer">
+      <Heroicons.moon class="w-6 h-6"/>
+      <%= gettext("Dark") %>
+    </div>
+    <div onclick="enableLightMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-br-xl">
+      <Heroicons.sun class="w-6 h-6"/>
+      <%= gettext("Light") %>
+    </div>
+  </div>
+</div>
+
 <script>
 
 locale = "en";
+
+function toggleMobileMenu() {
+  if (document.getElementById("mobile-menu").classList.contains("hidden")) {
+    openMobileMenu();
+  } else {
+    closeMobileMenu();
+  }
+}
+
+function openMobileMenu() {
+  document.getElementById("mobile-menu").classList.remove("hidden");
+}
+
+function closeMobileMenu() {
+  document.getElementById("mobile-menu").classList.add("hidden");
+}
 
 function toggleOptions(userlocale="en") {
   locale = userlocale;

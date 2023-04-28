@@ -45,7 +45,7 @@ defmodule AceGrader.Grader do
             {:error, error_msg}
         end
       {:error, error} ->
-        {:error, to_string(error.reason)}
+        {:error, "Internal server error. Please try again later."}
     end
 
     # File.write("#{path}/sub.c", submission.code)
@@ -87,13 +87,13 @@ defmodule AceGrader.Grader do
     end
   end
 
-  def test_submission(submission) do
+  def test_submission(submission, user) do
     case compile(submission, submission.author_id) do
       {:ok, warnings} ->
-        tests = for test <- submission.tests, test.visible do
+        tests = for test <- submission.tests, test.visible || submission.author_id == user.id do
           Task.async(fn ->
             {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.author_id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
-            {status, output} = process_output(test, Jason.decode!(response.body |> IO.inspect()))
+            {status, output} = process_output(test, Jason.decode!(response.body))
             %{ Map.from_struct(test) | actual_output: output, status: status }
           end)
         end
