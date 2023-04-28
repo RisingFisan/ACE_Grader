@@ -5,12 +5,12 @@ defmodule AceGraderWeb.ExerciseController do
   alias AceGrader.Exercises.Exercise
 
   def index(conn, _params) do
-    exercises =
-      if !conn.assigns.current_user || conn.assigns.current_user.account_type == :student do
-        Exercises.list_public_exercises()
-      else
-        Exercises.list_exercises()
-      end
+    exercises = Exercises.list_public_exercises()
+      # if !conn.assigns.current_user || conn.assigns.current_user.account_type == :student do
+      #   Exercises.list_public_exercises()
+      # else
+      #   Exercises.list_exercises()
+      # end
     render(conn, :index, exercises: exercises, page_title: "Exercises")
   end
 
