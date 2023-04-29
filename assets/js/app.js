@@ -15,11 +15,6 @@
 //     import "some-package"
 //
 
-import EasyMDE from "easymde";
-import "easymde/dist/easymde.min.css";
-import "codemirror/theme/dracula.css";
-import "codemirror/theme/eclipse.css";
-
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
@@ -29,7 +24,12 @@ import topbar from "../vendor/topbar"
 import ace from "../vendor/ace_editor/ace"
 
 import "../vendor/ace_editor/theme-dracula"
+import "../vendor/ace_editor/theme-eclipse"
 import "../vendor/ace_editor/mode-c_cpp"
+import "../vendor/ace_editor/mode-markdown"
+import "../vendor/ace_editor/ext-searchbox"
+
+import Prism from "../vendor/prism"
 
 // window.addEventListener(`phx:get_code`, (e) => {
 //     document.getElementById("editor_code").value = editor.getValue();
@@ -53,9 +53,7 @@ Hooks.Editor = {
     document.getElementById(`${editor_id}-code`).value = editor.getValue();
     editor.session.on('change', function(delta) {
         // delta.start, delta.end, delta.lines, delta.action
-        // document.getElementById("submit_button").disabled = true;
         document.getElementById(`${editor_id}-code`).value = editor.getValue();
-        // document.getElementById("submit_button").disabled = false;
     });
   }
 }
@@ -78,9 +76,26 @@ Hooks.TestButton = {
 
 Hooks.MdEditor = {
   mounted() {
-    let theme = "dracula";
-    if (getCurrentTheme() == "Light") { theme = "eclipse"; }
-    let easyMDE = new EasyMDE({element: this.el, status: false, spellChecker: false, sideBySideFullscreen: false, toolbar: ["bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "|", "guide"], theme: theme });
+    var editor = ace.edit(this.el.id, {
+      maxLines: 20,
+      wrap: "free",
+      showLineNumbers: false,
+      showPrintMargin: false,
+      showGutter: false,
+    });
+    if (getCurrentTheme() == "Light") { 
+      editor.setTheme("ace/theme/eclipse");
+    } else {
+      editor.setTheme("ace/theme/dracula");
+    }
+    var cMode = ace.require("ace/mode/markdown").Mode;
+    editor.session.setMode(new cMode());
+    editor.session.on('change', function(delta) {
+      document.getElementById("description-form").value = editor.getValue();
+  });
+    // let theme = "dracula";
+    // if (getCurrentTheme() == "Light") { theme = "eclipse"; }
+    // let easyMDE = new EasyMDE({element: this.el, status: false, spellChecker: false, sideBySideFullscreen: false, toolbar: ["bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "|", "guide"], theme: theme });
   }
 }
 

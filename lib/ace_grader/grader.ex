@@ -44,7 +44,7 @@ defmodule AceGrader.Grader do
           %{"status" => "error", "output" => error_msg} ->
             {:error, error_msg}
         end
-      {:error, error} ->
+      {:error, _error} ->
         {:error, "Internal server error. Please try again later."}
     end
 

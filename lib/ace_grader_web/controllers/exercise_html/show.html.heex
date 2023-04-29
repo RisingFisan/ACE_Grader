@@ -18,7 +18,9 @@
   </:actions>
 </.header>
 
-<p class="mt-6 md-text"><%= @exercise.description |> Earmark.as_html!() |> raw %></p>
+<div class="my-4">
+  <.markdown_text content={@exercise.description}/>
+</div>
 
 <div class="flex flex-col items-center py-4 gap-2">
   <.link href={~p"/exercises/#{@exercise}/editor"}>

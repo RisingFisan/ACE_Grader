@@ -140,6 +140,14 @@ defmodule AceGraderWeb.MyComponents do
     """
   end
 
+  attr :content, :string, default: ""
+
+  def markdown_text(assigns) do
+    ~H"""
+    <div class="space-y-3 md-text"><%= @content |> Earmark.as_html!(code_class_prefix: "language-") |> raw %></div>
+    """
+  end
+
   attr :class, :string, default: nil
 
   def ace_grader_logo(assigns) do

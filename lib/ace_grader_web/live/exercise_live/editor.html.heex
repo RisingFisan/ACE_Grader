@@ -6,7 +6,9 @@
   <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
 </div>
 
-<p><%= @exercise.description |> Earmark.as_html!() |> raw %></p>
+<div id="description" phx-update="ignore">
+  <.markdown_text content={@exercise.description} />
+</div>
 
 <div class="space-y-4">
   <div id="editor-container" class="editor-container" phx-update="ignore">

@@ -26,12 +26,13 @@
   </.error> --%>
   <.input field={f[:title]} type="text" label={gettext "Title"} />
   <div id="desc-container" phx-update="ignore">
-    <.input id="description" field={f[:description]} type="textarea" phx-hook="MdEditor" label={gettext "Description" } />
+    <.input id="description-form" field={f[:description]} type="hidden" label={gettext("Description") <> " (Markdown)"}/>
+    <div id="description" class="text-lg border-2 dark:border-zinc-800" phx-hook="MdEditor"><p class="hidden"><%= f[:description].value %></p></div>
   </div>
   <.input field={f[:public]} type="checkbox" label={gettext "Public"} />
   <div>
     <.label>
-      <%= gettext("Test file") %>
+      <%= gettext("Test file") <> " (main.c)" %>
     </.label>
     <div id="editor1-container" class="editor-container" phx-update="ignore">
       <div id="editor1-loading" class="editor-loading">
@@ -45,7 +46,7 @@
    </div>
   <div>
     <.label>
-      <%= gettext("Submission template") %>
+      <%= gettext("Submission template") <> " (sub.c)" %>
     </.label>
     <div id="editor2-container" class="editor-container" phx-update="ignore">
       <div id="editor2-loading" class="editor-loading">
