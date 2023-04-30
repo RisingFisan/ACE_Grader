@@ -77,11 +77,13 @@ Hooks.TestButton = {
 Hooks.MdEditor = {
   mounted() {
     var editor = ace.edit(this.el.id, {
+      minLines: 3,
       maxLines: 20,
       wrap: "free",
       showLineNumbers: false,
       showPrintMargin: false,
       showGutter: false,
+      highlightActiveLine: false,
     });
     if (getCurrentTheme() == "Light") { 
       editor.setTheme("ace/theme/eclipse");

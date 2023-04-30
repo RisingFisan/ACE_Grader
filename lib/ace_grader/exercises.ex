@@ -7,6 +7,7 @@ defmodule AceGrader.Exercises do
   alias AceGrader.Repo
 
   alias AceGrader.Exercises.Exercise
+  alias AceGrader.Exercises.Test
   alias AceGrader.Submissions.Submission
 
   @doc """
@@ -51,7 +52,7 @@ defmodule AceGrader.Exercises do
   def list_exercises_by_user(user_id, only_public \\ true) do
     Repo.all(from(e in Exercise, where: e.author_id == ^user_id and (e.public == true or ^only_public == false), order_by: [desc: e.inserted_at]))
   end
-  
+
   @doc """
   Gets a single exercise.
 
@@ -68,7 +69,7 @@ defmodule AceGrader.Exercises do
   """
   def get_exercise!(id, preloads \\ true) do
     Repo.get!(Exercise, id)
-    |> Repo.preload([:user, :tests])
+    |> Repo.preload([:user, tests: from(t in Test, order_by: [asc: t.position])])
     |> Repo.preload(if preloads, do: [submissions: from(s in Submission, order_by: [desc: s.inserted_at], preload: [:user])], else: [])
   end
 

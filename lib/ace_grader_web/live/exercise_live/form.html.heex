@@ -61,6 +61,7 @@
   <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
   <.inputs_for :let={tf} field={f[:tests]}>
     <.input :if={is_nil(tf.data.temp_id)} field={tf[:id]} type="hidden" />
+    <input type="hidden" name="exercise[tests_order][]" value={tf.index} />
     <div class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-xl border-2 border-zinc-300 dark:border-zinc-700">
       <div class={["space-y-2", (if tf[:delete].value, do: "blur-sm")]}>
         <.input field={tf[:description]} type="text" label={gettext "Description"} placeholder={gettext("If left empty, the input will be used as the description.")} />
@@ -83,8 +84,14 @@
         <.input field={tf[:expected_output]} type="textarea" label={gettext "Expected output"} mono />
         <.input field={tf[:grade]} type="text" label={ gettext "Grade %" }/>
         <.input field={tf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
-        <.input field={tf[:index]} type="hidden" value={tf.index} />
       </div>
+      <%!-- <label class="cursor-pointer">
+        <input id={"checkbox#{tf.index}"} type="checkbox" name="exercise[tests_delete][]" class="" value={tf.index}/>
+        <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
+          <Heroicons.trash class="w-6 h-6"/>
+          <p class="text-red-600"><%= gettext "Delete" %></p>
+        </div>
+      </label> --%>
       <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
         <%= if is_nil(tf.data.temp_id) do %>
           <p><%= gettext "Delete" %></p>
@@ -92,11 +99,18 @@
           <.input field={tf[:delete]} type="checkbox" />
         <% else %>
           <.input field={tf[:temp_id]} type="hidden"/>
-          <a href="#" phx-click="remove-test" phx-value-remove={tf[:temp_id].value}><Heroicons.x_mark class="w-6 h-6" /></a>
+          <a href="#" phx-click="remove-test" phx-value-remove={tf.data.temp_id}><Heroicons.x_mark class="w-6 h-6" /></a>
         <% end %>
       </div>
     </div>
   </.inputs_for>
+  <%!-- <label class="cursor-pointer flex flex-col items-center">
+    <input type="checkbox" name="exercise[tests_order][]" class="hidden" />
+    <div class="flex items-center gap-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500 px-4 py-2 rounded-lg duration-200">
+      <Heroicons.plus_circle class="w-6 h-6"/>
+      <p><%= gettext "Add test" %></p>
+    </div>
+  </label> --%>
   <div class="flex flex-col items-center">
     <button type="button" phx-click="add-test" class="mx-auto bg-zinc-300 dark:bg-zinc-500 hover:bg-zinc-400 dark:hover:bg-zinc-400 px-4 py-2 rounded-lg duration-200"><%= "+ " <> gettext "Add test" %></button>
   </div>

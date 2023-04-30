@@ -11,6 +11,7 @@ defmodule AceGrader.Exercises.Test do
     field :expected_output, :string
     field :visible, :boolean, default: false
     field :description, :string
+    field :position, :integer
 
     field :actual_output, :string, virtual: true
     field :temp_id, :string, virtual: true
@@ -25,7 +26,7 @@ defmodule AceGrader.Exercises.Test do
   def changeset(test, attrs) do
     test
     |> Map.put(:temp_id, (test.temp_id || attrs["temp_id"]))
-    |> cast(attrs, [:type, :input, :expected_output, :grade, :visible, :delete, :description])
+    |> cast(attrs, [:type, :input, :expected_output, :grade, :visible, :delete, :description, :position])
     |> validate_required([:type, :expected_output, :grade, :visible])
     |> validate_inclusion(:grade, 0..100)
     |> maybe_mark_for_deletion()

@@ -17,7 +17,7 @@ defmodule AceGrader.Exercises.Exercise do
     belongs_to :user, AceGrader.Accounts.User, foreign_key: :author_id
 
     has_many :submissions, AceGrader.Submissions.Submission
-    has_many :tests, AceGrader.Exercises.Test
+    has_many :tests, AceGrader.Exercises.Test, on_replace: :delete
 
     timestamps()
   end
@@ -38,8 +38,21 @@ defmodule AceGrader.Exercises.Exercise do
     exercise
     |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
     |> validate_required([:title, :description, :public])
-    |> cast_assoc(:tests)
+    |> cast_assoc(:tests, sort_param: :tests_order, drop_param: :tests_delete)
+    |> copy_test_positions()
     |> (& if validate_grade, do: validate_number(&1, :total_grade, equal_to: 100), else: &1).()
+  end
+
+  defp copy_test_positions(changeset) do
+    if tests = Ecto.Changeset.get_change(changeset, :tests) do
+      tests
+      |> Enum.with_index(fn test, index ->
+        Ecto.Changeset.put_change(test, :position, index)
+      end)
+      |> then(&Ecto.Changeset.put_change(changeset, :tests, &1))
+    else
+      changeset
+    end
   end
 
   def is_owner?(exercise, user) do

@@ -43,7 +43,7 @@ defmodule AceGrader.Submissions do
   """
   def get_submission!(id) do
     Repo.get!(Submission, id)
-    |> Repo.preload([:tests, :user, :exercise])
+    |> Repo.preload([:user, :exercise, tests: from(t in Test, order_by: [asc: t.position])])
   end
 
   @doc """
