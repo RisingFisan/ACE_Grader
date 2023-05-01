@@ -36,7 +36,9 @@ import Prism from "../vendor/prism"
 // })
 
 function start_editor(editor_id) {
-  var editor = ace.edit(editor_id);
+  var editor = ace.edit(editor_id, {
+    maxLines: 20,
+  });
   editor.setTheme("ace/theme/dracula");
   var cMode = ace.require("ace/mode/c_cpp").Mode;
   editor.session.setMode(new cMode());
@@ -55,6 +57,13 @@ Hooks.Editor = {
         // delta.start, delta.end, delta.lines, delta.action
         document.getElementById(`${editor_id}-code`).value = editor.getValue();
     });
+    this.handleEvent("expand_editor", (data) => {
+      console.log(data.expand);
+      if(data.expand == "true")
+        editor.setOptions({minLines: 20, maxLines: 100});
+      else
+        editor.setOptions({minLines: 0, maxLines: 20});
+    })
   }
 }
 

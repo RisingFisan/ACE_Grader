@@ -23,7 +23,7 @@ body {
 }
 
 .editor {
-    @apply relative w-full h-[384px] text-lg;
+    @apply relative w-full text-lg;
 }
 
 .editor-preview {
@@ -48,4 +48,8 @@ body {
 
 .md-text code.inline {
     @apply text-violet-900 dark:text-violet-300;
+}
+
+.md-text ul {
+    @apply list-disc list-inside;
 }

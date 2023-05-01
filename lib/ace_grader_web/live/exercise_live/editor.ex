@@ -19,7 +19,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     # end))
 
     socket = assign(socket, exercise: exercise)
-    |> assign(compilation_msg: nil, confirm_modal: false)
+    |> assign(compilation_msg: nil, confirm_modal: false, expanded: false, description: true)
     |> assign(test_results: nil, testing: false, success: nil)
     |> assign(attrs: attrs)
     |> assign(changeset: Submissions.change_submission(submission, attrs))
@@ -66,5 +66,13 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
   def handle_event("hide_confirm", _params, socket) do
     {:noreply, assign(socket, confirm_modal: false)}
+  end
+
+  def handle_event("expand_editor", %{"expand" => expand?} = _assigns, socket) do
+    if expand? == "true" do
+      {:noreply, socket |> push_event("expand_editor", %{"expand" => expand?}) |> assign(expanded: true)}
+    else
+      {:noreply, socket |> push_event("expand_editor", %{"expand" => expand?}) |> assign(expanded: false)}
+    end
   end
 end

@@ -2,12 +2,12 @@
   <div class="flex items-center gap-4">
     <%= @exercise.title %>
     <div :if={!@exercise.public} class="flex gap-2 items-end">
-      <Heroicons.eye_slash class="w-8 h-8 hoverToShow" value="Private"/>
+      <Heroicons.eye_slash class="w-8 h-8 hoverToShow"/>
       <p class="showOnHover text-lg font-normal"><%= gettext "Private exercise" %></p>
     </div>
   </div>
   <:subtitle>
-    <p>Created by:
+    <p><%= pgettext("exercise", "Created by") <> ":" %>
       <.link href={~p"/users/#{@exercise.user.username}"} class="text-violet-800 dark:text-violet-500">
         @<%= if @exercise.author_id, do: @exercise.user.username, else: "[DELETED]" %>
       </.link>

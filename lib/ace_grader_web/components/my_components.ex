@@ -41,7 +41,7 @@ defmodule AceGraderWeb.MyComponents do
             <%= if test.status != :error do %>
               <p><%= gettext "Actual output" %></p>
               <%= if test.actual_output != nil do %>
-                <pre><%= test.actual_output %></pre>
+                <pre class="whitespace-pre-wrap"><%= test.actual_output %></pre>
               <% else %>
                 <%= if test.status == :pending do %>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 self-center fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -51,7 +51,7 @@ defmodule AceGraderWeb.MyComponents do
               <% end %>
             <% else %>
               <p><%= gettext "Error message" %></p>
-              <pre><%= test.actual_output %></pre>
+              <pre class="whitespace-pre-wrap"><%= test.actual_output %></pre>
             <% end %>
           </div>
           <div class="justify-self-center md:justify-self-end pr-4">
@@ -133,7 +133,7 @@ defmodule AceGraderWeb.MyComponents do
           <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
         </div>
         <div class="text-sm line-clamp-2">
-          <%= exercise.description |> Earmark.as_html!() |> raw %>
+          <p class="whitespace-pre-line"><%= exercise.description %></p>
         </div>
       </a>
     </div>

@@ -6,8 +6,29 @@
   <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
 </div>
 
-<div id="description" phx-update="ignore">
+<div id="description" class="description" phx-update="ignore">
   <.markdown_text content={@exercise.description} />
+</div>
+
+<div class="flex flex-col items-center">
+  <button class="bg-zinc-600 px-4 py-2 rounded-lg description" phx-click={JS.toggle(to: ".description")}>
+    <div class="flex items-center gap-1">
+    <Heroicons.chevron_double_up class="w-4" />
+    <p class="tracking-wide">
+      <%= gettext("Hide description") %>
+    </p>
+    <Heroicons.chevron_double_up class="w-4" />
+    </div>
+  </button>
+  <button class="bg-zinc-600 px-4 py-2 rounded-lg description" hidden phx-click={JS.toggle(to: ".description")}>
+    <div class="flex items-center gap-1">
+    <Heroicons.chevron_double_down class="w-4" />
+    <p class="tracking-wide">
+      <%= gettext("Show description") %>
+    </p>
+    <Heroicons.chevron_double_down class="w-4" />
+    </div>
+  </button>
 </div>
 
 <div class="space-y-4">
@@ -18,6 +39,17 @@
     </div>
 
     <div id="editor" class="editor" phx-hook="Editor"><%= @exercise.template || "" %></div>
+  </div>
+  <div class="flex justify-end">
+    <%= if @expanded do %>
+      <button phx-click="expand_editor" phx-value-expand="false">
+        <Heroicons.arrows_pointing_in class="w-6"/>
+      </button>
+    <% else %>
+      <button phx-click="expand_editor" phx-value-expand="true">
+        <Heroicons.arrows_pointing_out class="w-6"/>
+      </button>
+    <% end %>
   </div>
 
   <div class="grid grid-cols-[1fr_min-content_1fr] justify-center">
