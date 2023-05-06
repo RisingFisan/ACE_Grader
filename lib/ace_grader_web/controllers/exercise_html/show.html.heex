@@ -27,17 +27,25 @@
     <.button disabled={@current_user == nil}><%= gettext "Open in Editor" %></.button>
   </.link>
   <p :if={@current_user == nil} class="font-light text-sm"><%= gettext "Only registered users can use the online editor." %></p>
-  <div :if={@current_user && @is_owner} class="flex gap-3 border-t border-zinc-500 pt-2">
-    <.link href={~p"/exercises/#{@exercise}/edit"}>
+  <div :if={@current_user.account_type != :student} class="flex flex-col items-center gap-3 border-t border-zinc-500 pt-2">
+    <div :if={@is_owner} class="flex gap-3">
+      <.link href={~p"/exercises/#{@exercise}/edit"}>
+        <.button kind={:teacher} class="flex items-center">
+          <Heroicons.pencil solid class="w-5 h-5 mr-2" />
+          <%= gettext "Edit exercise" %>
+        </.button>
+      </.link>
+      <.link href={~p"/exercises/#{@exercise}/"} method="delete" data-confirm="Are you sure?">
+        <.button kind={:delete} class="flex items-center">
+          <Heroicons.trash solid class="w-5 h-5 mr-2" />
+          <%= gettext "Delete exercise" %>
+        </.button>
+      </.link>
+    </div>
+    <.link href={~p"/exercises/#{@exercise}/duplicate"} method="post">
       <.button kind={:teacher} class="flex items-center">
-        <Heroicons.pencil solid class="w-5 h-5 mr-2" />
-        <%= gettext "Edit exercise" %>
-      </.button>
-    </.link>
-    <.link href={~p"/exercises/#{@exercise}/"} method="delete" data-confirm="Are you sure?">
-      <.button kind={:delete} class="flex items-center">
-        <Heroicons.trash solid class="w-5 h-5 mr-2" />
-        <%= gettext "Delete exercise" %>
+        <Heroicons.document_duplicate solid class="w-5 h-5 mr-2" />
+        <%= gettext "Duplicate exercise" %>
       </.button>
     </.link>
   </div>

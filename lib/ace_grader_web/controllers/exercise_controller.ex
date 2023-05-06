@@ -47,6 +47,21 @@ defmodule AceGraderWeb.ExerciseController do
     render(conn, :show, exercise: exercise, is_owner: is_owner, show_delete: Application.get_env(:ace_grader, :dev_routes))
   end
 
+  def duplicate(conn, %{"id" => id}) do
+    exercise = Exercises.get_exercise!(id)
+    case Exercises.duplicate_exercise(exercise, conn.assigns.current_user.id) do
+      {:ok, exercise} ->
+        conn
+        |> put_flash(:info, "Exercise duplicated successfully.")
+        |> redirect(to: ~p"/exercises/#{exercise}")
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_flash(:error, "Error duplicating exercise.")
+        |> redirect(to: ~p"/exercises/#{exercise}")
+    end
+  end
+
   # def edit(conn, %{"id" => id}) do
   #   exercise = Exercises.get_exercise!(id)
   #   changeset = Exercises.change_exercise(exercise)

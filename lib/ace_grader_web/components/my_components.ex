@@ -12,8 +12,8 @@ defmodule AceGraderWeb.MyComponents do
 
   def test_results(assigns) do
     ~H"""
-    <div class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-4 md:px-8 py-2 md:py-4">
-      <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
+    <div class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4">
+      <h2 class="text-xl md:text-2xl font-bold"><%= gettext "Tests" %></h2>
       <div class="space-y-4">
         <div :for={{test, i} <- @tests |> Enum.with_index(1)}
           class={["grid grid-cols-1 md:grid-cols-[92px_1fr_128px] items-center text-lg rounded-xl border-2 border-zinc-400 dark:border-zinc-600",
@@ -54,7 +54,7 @@ defmodule AceGraderWeb.MyComponents do
               <pre class="whitespace-pre-wrap"><%= test.actual_output %></pre>
             <% end %>
           </div>
-          <div class="justify-self-center md:justify-self-end pr-4">
+          <div class="justify-self-center md:justify-self-end md:pr-4">
             <Heroicons.check_circle :if={test.status == :success} class="w-12 h-12 text-green-600" />
             <div :if={test.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Error" %></p>
@@ -81,7 +81,7 @@ defmodule AceGraderWeb.MyComponents do
 
   def compilation_results(assigns) do
     ~H"""
-    <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-4 md:px-8 py-2 md:py-4 text-2xl space-y-2 md:space-y-4">
+    <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4 text-xl md:text-2xl space-y-2 md:space-y-4">
       <div class="flex justify-between" phx-click={if @warnings != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
         <p class="font-bold"><%= gettext "Compilation" %></p>
         <div>
@@ -144,7 +144,7 @@ defmodule AceGraderWeb.MyComponents do
 
   def markdown_text(assigns) do
     ~H"""
-    <div class="space-y-3 md-text"><%= @content |> Earmark.as_html!(code_class_prefix: "language-") |> raw %></div>
+    <div class="space-y-3 md-text leading-relaxed"><%= @content |> Earmark.as_html!(code_class_prefix: "language-") |> raw %></div>
     """
   end
 

@@ -19,8 +19,8 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     # end))
 
     socket = assign(socket, exercise: exercise)
-    |> assign(compilation_msg: nil, confirm_modal: false, expanded: false, description: true)
-    |> assign(test_results: nil, testing: false, success: nil)
+    |> assign(compilation_msg: nil, confirm_modal: false, expanded: 0, description: true)
+    |> assign(test_results: nil, testing: false, success: nil, wrapped: 0)
     |> assign(attrs: attrs)
     |> assign(changeset: Submissions.change_submission(submission, attrs))
     {:ok, socket |> assign(page_title: "Exercise Editor")}
@@ -68,11 +68,13 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     {:noreply, assign(socket, confirm_modal: false)}
   end
 
-  def handle_event("expand_editor", %{"expand" => expand?} = _assigns, socket) do
-    if expand? == "true" do
-      {:noreply, socket |> push_event("expand_editor", %{"expand" => expand?}) |> assign(expanded: true)}
-    else
-      {:noreply, socket |> push_event("expand_editor", %{"expand" => expand?}) |> assign(expanded: false)}
-    end
+  def handle_event("expand_editor", %{"expand" => expand} = _assigns, socket) do
+    expand? = expand == "0"
+    {:noreply, socket |> push_event("expand_editor", %{"expand" => expand?}) |> assign(expanded: (if expand?, do: 1, else: 0))}
+  end
+
+  def handle_event("text_wrap", %{"wrap" => wrap} = _assigns, socket) do
+    wrap? = wrap == "0"
+    {:noreply, socket |> push_event("text_wrap", %{"wrap" => wrap?}) |> assign(wrapped: (if wrap?, do: 1, else: 0))}
   end
 end

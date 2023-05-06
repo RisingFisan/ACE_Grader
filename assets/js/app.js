@@ -51,6 +51,9 @@ Hooks.Editor = {
   mounted() {
     let editor_id = this.el.id;
     let editor = start_editor(editor_id);
+    if (this.el.getAttribute("data-form") || false) {
+      editor.setOptions({maxLines: Infinity, wrap: "free"});
+    }
     document.getElementById(`${editor_id}-loading`).style.display = "none";
     document.getElementById(`${editor_id}-code`).value = editor.getValue();
     editor.session.on('change', function(delta) {
@@ -58,19 +61,30 @@ Hooks.Editor = {
         document.getElementById(`${editor_id}-code`).value = editor.getValue();
     });
     this.handleEvent("expand_editor", (data) => {
-      console.log(data.expand);
-      if(data.expand == "true")
+      if(data.expand)
         editor.setOptions({minLines: 20, maxLines: 100});
       else
         editor.setOptions({minLines: 0, maxLines: 20});
+    })
+    this.handleEvent("text_wrap", (data) => {
+      if(data.wrap)
+        editor.setOptions({wrap: "free"});
+      else
+        editor.setOptions({wrap: "off"});
     })
   }
 }
 
 Hooks.EditorReadOnly = {
   mounted() {
-    let editor = start_editor(this.el.id);
+    let editor = start_editor(this.el.id, {wrap: "free"});
     editor.setReadOnly(true);
+    this.handleEvent("expand_editor", (data) => {
+      if(data.expand == "true")
+        editor.setOptions({minLines: 20, maxLines: 100});
+      else
+        editor.setOptions({minLines: 0, maxLines: 20});
+    })
   }
 }
 

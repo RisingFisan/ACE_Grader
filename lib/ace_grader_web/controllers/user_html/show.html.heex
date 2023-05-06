@@ -1,5 +1,5 @@
 <div class="space-y-12">
-  <div class="flex justify-between items-start">
+  <div class="flex flex-col sm:flex-row gap-6 justify-between items-start">
     <div class="flex gap-4">
       <Heroicons.user class="h-36 w-36 border-4 border-black dark:border-white p-6"/>
       <div class="flex flex-col justify-between">
@@ -15,7 +15,7 @@
     <.link
       :if={@current_user.id == @user.id}
       navigate={~p"/users/settings"}
-      class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-100 outline-zinc-900 dark:outline-zinc-200 outline rounded-full px-4 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 flex items-center gap-2"
+      class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-100 outline-zinc-900 dark:outline-zinc-200 outline rounded-full px-4 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 flex items-center gap-2 self-end sm:self-start"
       >
       <Heroicons.pencil class="w-5 h-5 stroke-current inline" />
       <%= gettext("Edit account") %>

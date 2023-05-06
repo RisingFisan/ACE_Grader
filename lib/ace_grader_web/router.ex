@@ -60,6 +60,7 @@ defmodule AceGraderWeb.Router do
   scope "/", AceGraderWeb do
     pipe_through [:browser, :require_teacher_user]
 
+    post "/exercises/:id/duplicate", ExerciseController, :duplicate
     delete "/exercises/:id", ExerciseController, :delete
     if Application.compile_env(:ace_grader, :dev_routes) do
       delete "/exercises/:exercise_id/submissions/:id", SubmissionController, :delete

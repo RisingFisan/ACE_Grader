@@ -1,5 +1,5 @@
 <div class="space-y-8">
-<div class="flex items-center justify-between">
+<div class="flex items-center justify-between gap-4">
   <div>
     <h1 class="text-3xl font-bold"><%= @exercise.title %></h1>
   </div>
@@ -40,16 +40,21 @@
 
     <div id="editor" class="editor" phx-hook="Editor"><%= @exercise.template || "" %></div>
   </div>
-  <div class="flex justify-end">
-    <%= if @expanded do %>
-      <button phx-click="expand_editor" phx-value-expand="false">
-        <Heroicons.arrows_pointing_in class="w-6"/>
-      </button>
-    <% else %>
-      <button phx-click="expand_editor" phx-value-expand="true">
+  <div class="flex justify-end gap-2">
+    <button class={["border border-zinc-500 rounded-lg px-2 py-1",
+    (if @wrapped == 1, do: "bg-zinc-200 dark:bg-zinc-500")
+    ]
+    } phx-click="text_wrap" phx-value-wrap={@wrapped}>Text wrap</button>
+    <button class={["border border-zinc-500 rounded-lg px-1 py-1",
+    (if @expanded == 1, do: "bg-zinc-200 dark:bg-zinc-500")
+    ]
+    } phx-click="expand_editor" phx-value-expand={@expanded}>
+      <%= if @expanded == 0 do %>
         <Heroicons.arrows_pointing_out class="w-6"/>
-      </button>
-    <% end %>
+      <% else %>
+        <Heroicons.arrows_pointing_in class="w-6"/>
+      <% end %>
+    </button>
   </div>
 
   <div class="grid grid-cols-[1fr_min-content_1fr] justify-center">

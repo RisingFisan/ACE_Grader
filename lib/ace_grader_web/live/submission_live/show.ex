@@ -16,7 +16,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
         Task.async(fn -> Grader.grade_submission(submission, liveview) end)
       end
 
-      {:ok, socket}
+      {:ok, socket |> assign(:expanded, false)}
     end
   end
 
@@ -33,6 +33,14 @@ defmodule AceGraderWeb.SubmissionLive.Show do
     case result do
       {:ok, submission} -> {:noreply, socket |> assign(submission: submission)}
       {:error, _changeset} -> {:noreply, socket |> put_flash(:error, "Error grading submission! Please reload the page.")}
+    end
+  end
+
+  def handle_event("expand_editor", %{"expand" => expand?} = _assigns, socket) do
+    if expand? == "true" do
+      {:noreply, socket |> push_event("expand_editor", %{"expand" => expand?}) |> assign(expanded: true)}
+    else
+      {:noreply, socket |> push_event("expand_editor", %{"expand" => expand?}) |> assign(expanded: false)}
     end
   end
 end

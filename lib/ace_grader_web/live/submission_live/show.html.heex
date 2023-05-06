@@ -5,7 +5,30 @@
   </:actions>
 </.header>
 
-<p><%= @submission.exercise.description |> Earmark.as_html!() |> raw() %></p>
+<div id="description" class="description" phx-update="ignore">
+  <.markdown_text content={@submission.exercise.description}/>
+</div>
+
+<div class="flex flex-col items-center pt-4">
+  <button class="bg-zinc-600 px-4 py-2 rounded-lg description" phx-click={JS.toggle(to: ".description")}>
+    <div class="flex items-center gap-1">
+    <Heroicons.chevron_double_up class="w-4" />
+    <p class="tracking-wide">
+      <%= gettext("Hide description") %>
+    </p>
+    <Heroicons.chevron_double_up class="w-4" />
+    </div>
+  </button>
+  <button class="bg-zinc-600 px-4 py-2 rounded-lg description" hidden phx-click={JS.toggle(to: ".description")}>
+    <div class="flex items-center gap-1">
+    <Heroicons.chevron_double_down class="w-4" />
+    <p class="tracking-wide">
+      <%= gettext("Show description") %>
+    </p>
+    <Heroicons.chevron_double_down class="w-4" />
+    </div>
+  </button>
+</div>
 
 <div class="flex flex-col gap-4 md:flex-row justify-between items-center mt-4 md:mt-8">
   <div>
@@ -20,15 +43,29 @@
 
 <div class="space-y-6 py-4 w-full">
 
-  <div id="editor_container" phx-update="ignore" class="space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[32px] px-8 pt-4 pb-8 text-2xl">
-    <h2 class="text-2xl font-bold"><%= gettext "Code" %></h2>
+  <div class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4">
+    <h2 class="text-xl md:text-2xl font-bold"><%= gettext "Code" %></h2>
     <%!-- <pre class="bg-gray-800 text-gray-100 px-2 py-1"><%= @submission.code %></pre> --%>
-    <div 
-      id="editor"
-      phx-hook="EditorReadOnly" 
-      class="editor"
-    ><%= @submission.code %></div>
+    <div id="editor_container" phx-update="ignore">
+      <div 
+        id="editor"
+        phx-hook="EditorReadOnly" 
+        class="editor"
+      ><%= @submission.code %></div>
+    </div>
+    <div class="flex justify-end">
+      <%= if @expanded do %>
+        <button phx-click="expand_editor" phx-value-expand="false">
+          <Heroicons.arrows_pointing_in class="w-6"/>
+        </button>
+      <% else %>
+        <button phx-click="expand_editor" phx-value-expand="true">
+          <Heroicons.arrows_pointing_out class="w-6"/>
+        </button>
+      <% end %>
+    </div>
   </div>
+
 
   <%!-- <h3 class="text-2xl font-bold">Output</h3>
   <%= if @submission.executed do %>

@@ -29,7 +29,7 @@
     <.input id="description-form" field={f[:description]} type="hidden" label={gettext("Description") <> " (Markdown)"}/>
     <div id="description" class="text-lg border-2 dark:border-zinc-800" phx-hook="MdEditor"><p class="hidden"><%= f[:description].value %></p></div>
   </div>
-  <.input field={f[:public]} type="checkbox" label={gettext "Public"} />
+  <.input field={f[:public]} type="checkbox" label={gettext("Public") <> "?"} />
   <div>
     <.label>
       <%= gettext("Test file") <> " (main.c)" %>
@@ -40,7 +40,7 @@
         <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
-      <div id="editor1" class="editor" phx-hook="Editor"><%= f[:test_file].value %></div>
+      <div id="editor1" class="editor" phx-hook="Editor" data-form="true"><%= f[:test_file].value %></div>
     </div>
     <.input hidden type="hidden" field={f[:test_file]} id="editor1-code" phx-update="ignore"></.input>
    </div>
@@ -54,7 +54,7 @@
         <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
-      <div id="editor2" class="editor" phx-hook="Editor"><%= f[:template].value %></div>
+      <div id="editor2" class="editor" phx-hook="Editor" data-form="true"><%= f[:template].value %></div>
     </div>
     <.input hidden type="hidden" field={f[:template]} id="editor2-code" phx-update="ignore"></.input>
   </div>
