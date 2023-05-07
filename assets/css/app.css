@@ -19,7 +19,7 @@ body {
 }
 
 .editor-loading { 
-    @apply z-10 w-full h-full absolute bg-[#282a36] text-white flex items-center justify-center flex-col text-2xl gap-2;
+    @apply z-10 w-full h-64 bg-[#282a36] text-white flex items-center justify-center flex-col text-2xl gap-2;
 }
 
 .editor {

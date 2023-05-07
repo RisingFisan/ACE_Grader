@@ -62,7 +62,7 @@ Hooks.Editor = {
     });
     this.handleEvent("expand_editor", (data) => {
       if(data.expand)
-        editor.setOptions({minLines: 20, maxLines: 100});
+        editor.setOptions({minLines: 12, maxLines: 100});
       else
         editor.setOptions({minLines: 0, maxLines: 20});
     })
@@ -77,13 +77,14 @@ Hooks.Editor = {
 
 Hooks.EditorReadOnly = {
   mounted() {
-    let editor = start_editor(this.el.id, {wrap: "free"});
+    let editor = start_editor(this.el.id);
+    editor.setOptions({minLines: 6});
     editor.setReadOnly(true);
     this.handleEvent("expand_editor", (data) => {
       if(data.expand == "true")
         editor.setOptions({minLines: 20, maxLines: 100});
       else
-        editor.setOptions({minLines: 0, maxLines: 20});
+        editor.setOptions({minLines: 6, maxLines: 20});
     })
   }
 }

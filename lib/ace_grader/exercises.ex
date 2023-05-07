@@ -67,11 +67,26 @@ defmodule AceGrader.Exercises do
       ** (Ecto.NoResultsError)
 
   """
-  def get_exercise!(id, preloads \\ true) do
+  def get_exercise!(id, preloads \\ true, params \\ %{}) do
     Repo.get!(Exercise, id)
     |> Repo.preload([:user, tests: from(t in Test, order_by: [asc: t.position])])
-    |> Repo.preload(if preloads, do: [submissions: from(s in Submission, order_by: [desc: s.inserted_at], preload: [:user])], else: [])
+    |> Repo.preload(if preloads, do: [submissions: from(get_submissions(params))], else: [])
   end
+
+  defp get_submissions(params) do
+    Submission
+    |> join(:inner, [s], u in assoc(s, :user), as: :user)
+    |> order_by(^sort_submissions_by(params["order_by"]))
+    |> preload([s,u], [user: u])
+  end
+
+  defp sort_submissions_by("date_desc"), do: [desc: :inserted_at]
+  defp sort_submissions_by("date_asc"), do: [asc: :inserted_at]
+  defp sort_submissions_by("grade_desc"), do: [desc: :total_grade]
+  defp sort_submissions_by("grade_asc"), do: [asc: :total_grade]
+  defp sort_submissions_by("name_desc"), do: [desc: dynamic([user: u], u.username)]
+  defp sort_submissions_by("name_asc"), do: [asc: dynamic([user: u], u.username)]
+  defp sort_submissions_by(_), do: [desc: :inserted_at]
 
   @doc """
   Creates a exercise.
@@ -147,7 +162,6 @@ defmodule AceGrader.Exercises do
     |> Map.update!(:tests, fn tests -> Enum.map(tests, & Map.from_struct(&1) |> Map.put(:temp_id, 0)) end)
     |> Map.put(:author_id, user_id)
     |> Map.update!(:title, fn title -> title <> " (copy)" end)
-    |> IO.inspect()
 
     %Exercise{}
     |> Exercise.changeset(attrs)

@@ -10,7 +10,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       {:ok, socket |> put_flash(:error, "You must be this exercise's owner in order to perform this operation!") |> redirect(to: ~p"/exercises/#{id}")}
     else
       changeset = Exercises.change_exercise(exercise)
-      {:ok, socket |> assign(changeset: changeset, exercise: exercise, valid_grades: true)}
+      {:ok, socket |> assign(changeset: changeset, exercise: exercise, valid_grades: true, page_title: "Edit Exercise")}
     end
   end
 
@@ -35,7 +35,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
           printf("Hello World!");
       }
       """)
-    {:ok, socket |> assign(changeset: changeset, valid_grades: true)}
+    {:ok, socket |> assign(changeset: changeset, valid_grades: true, page_title: "New Exercise")}
   end
 
   def handle_event("validate", %{"exercise" => exercise_params} = _params, socket) do

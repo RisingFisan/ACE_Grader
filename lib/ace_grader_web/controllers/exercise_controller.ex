@@ -55,7 +55,7 @@ defmodule AceGraderWeb.ExerciseController do
         |> put_flash(:info, "Exercise duplicated successfully.")
         |> redirect(to: ~p"/exercises/#{exercise}")
 
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, %Ecto.Changeset{} = _changeset} ->
         conn
         |> put_flash(:error, "Error duplicating exercise.")
         |> redirect(to: ~p"/exercises/#{exercise}")

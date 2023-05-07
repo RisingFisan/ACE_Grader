@@ -7,8 +7,8 @@
       <a href="/" class="flex items-center h-16">
         <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
       </a>
-      <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-extralight text-zinc-800 dark:text-zinc-200",
-        (if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400")
+      <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
+        (if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
       ]}>
         <%= gettext "Exercises" %>
       </.link>

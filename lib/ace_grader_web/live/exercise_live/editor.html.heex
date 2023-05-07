@@ -38,7 +38,7 @@
       <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
     </div>
 
-    <div id="editor" class="editor" phx-hook="Editor"><%= @exercise.template || "" %></div>
+    <div id="editor" class="editor" phx-hook="Editor"><p class="hidden"><%= @exercise.template || "" %></p></div>
   </div>
   <div class="flex justify-end gap-2">
     <button class={["border border-zinc-500 rounded-lg px-2 py-1",
