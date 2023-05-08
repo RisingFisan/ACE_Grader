@@ -27,7 +27,7 @@
     <.button disabled={@current_user == nil}><%= gettext "Open in Editor" %></.button>
   </.link>
   <p :if={@current_user == nil} class="font-light text-sm"><%= gettext "Only registered users can use the online editor." %></p>
-  <div :if={@current_user.account_type != :student} class="flex flex-col items-center gap-3 border-t border-zinc-500 pt-2">
+  <div :if={@current_user != nil and @current_user.account_type != :student} class="flex flex-col items-center gap-3 border-t border-zinc-500 pt-2">
     <div :if={@is_owner} class="flex gap-3">
       <.link href={~p"/exercises/#{@exercise}/edit"}>
         <.button kind={:teacher} class="flex items-center">

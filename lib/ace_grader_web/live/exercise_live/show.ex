@@ -5,11 +5,16 @@ defmodule AceGraderWeb.ExerciseLive.Show do
   import Ecto.Changeset
 
   def handle_params(params = %{"id" => id}, _url, socket) do
-    exercise = Exercises.get_exercise!(id, true, params)
-    exercise = if socket.assigns.current_user.account_type == :student do
-      %{exercise | submissions: Enum.filter(exercise.submissions, &(&1.author_id == socket.assigns.current_user.id))}
-    else
-      exercise
+    exercise = cond do
+      socket.assigns.current_user == nil -> Exercises.get_exercise!(id, false)
+      socket.assigns.current_user.account_type == :student ->
+        Exercises.get_exercise!(id, true, params)
+        |> Map.update!(:submissions, fn submissions ->
+          Enum.filter(submissions, fn submission ->
+            submission.author_id == socket.assigns.current_user.id
+          end)
+        end)
+      true -> Exercises.get_exercise!(id, true, params)
     end
     {
       :noreply,
@@ -17,7 +22,7 @@ defmodule AceGraderWeb.ExerciseLive.Show do
       |> assign(:order_and_filter_changeset, order_and_filter_changeset(params))
       |> assign(:exercise, exercise)
       |> assign(:page_title, exercise.title)
-      |> assign(:is_owner, exercise.author_id == socket.assigns.current_user.id)
+      |> assign(:is_owner, socket.assigns.current_user != nil and exercise.author_id == socket.assigns.current_user.id)
     }
   end
 
