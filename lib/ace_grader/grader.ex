@@ -16,7 +16,7 @@ defmodule AceGrader.Grader do
           |> Regex.match?(output)
         :items ->
           String.split(test.expected_output, "\n")
-          |> Enum.all?(& &1 =~ output)
+          |> Enum.all?(& output =~ &1)
       end), do: :success, else: :failed),
       String.trim(output)
     }
@@ -41,6 +41,8 @@ defmodule AceGrader.Grader do
         case Jason.decode!(response.body) do
           %{"status" => "success", "output" => warnings} ->
             {:ok, warnings}
+          %{"status" => "timeout"} ->
+            {:error, "Server timeout."}
           %{"status" => "error", "output" => error_msg} ->
             {:error, error_msg}
         end
