@@ -52,6 +52,8 @@ defmodule AceGrader.Grader do
         case error do
           %HTTPoison.Error{reason: :econnrefused} ->
             {:error, "Internal server error - grader is offline. Please try again later."}
+          %HTTPoison.Error{reason: :timeout} ->
+            {:error, "Unexpected server timeout. Sometimes this happens and I still haven't figured out why. Just try again and it should work... probably."}
           _ ->
             IO.inspect(error)
             {:error, "Unexpected error."}
