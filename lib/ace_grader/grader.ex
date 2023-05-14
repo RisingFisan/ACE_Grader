@@ -37,7 +37,10 @@ defmodule AceGrader.Grader do
       "code" => submission.code,
       "test_file" => submission.exercise.test_file
     }), [{"Content-Type", "application/json"}]) do
+      {:ok, %HTTPoison.Response{status_code: 500}} ->
+        {:error, "Internal server error."}
       {:ok, response} ->
+        IO.inspect(response)
         case Jason.decode!(response.body) do
           %{"status" => "success", "output" => warnings} ->
             {:ok, warnings}
@@ -46,8 +49,13 @@ defmodule AceGrader.Grader do
           %{"status" => "error", "output" => error_msg} ->
             {:error, error_msg}
         end
-      {:error, _error} ->
-        {:error, "Internal server error. Please try again later."}
+      {:error, error} ->
+        case error do
+          %HTTPoison.Error{reason: :econnrefused} ->
+            {:error, "Internal server error - grader is offline. Please try again later."}
+          _ ->
+            {:error, "Unexpected error."}
+        end
     end
 
     # File.write("#{path}/sub.c", submission.code)
