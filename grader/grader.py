@@ -63,4 +63,7 @@ def cleanup():
 
 if __name__ == '__main__':
     from waitress import serve
-    serve(app, host=os.getenv("host", '0.0.0.0'), port=int(os.getenv("port", '5000')))
+    import logging
+    logger = logging.getLogger('waitress')
+    logger.setLevel(logging.INFO)
+    serve(app, host=os.getenv("HOST", '0.0.0.0'), port=int(os.getenv("PORT", '5000')))

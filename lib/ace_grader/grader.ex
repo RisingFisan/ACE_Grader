@@ -40,7 +40,6 @@ defmodule AceGrader.Grader do
       {:ok, %HTTPoison.Response{status_code: 500}} ->
         {:error, "Internal server error."}
       {:ok, response} ->
-        IO.inspect(response)
         case Jason.decode!(response.body) do
           %{"status" => "success", "output" => warnings} ->
             {:ok, warnings}
@@ -54,6 +53,7 @@ defmodule AceGrader.Grader do
           %HTTPoison.Error{reason: :econnrefused} ->
             {:error, "Internal server error - grader is offline. Please try again later."}
           _ ->
+            IO.inspect(error)
             {:error, "Unexpected error."}
         end
     end
