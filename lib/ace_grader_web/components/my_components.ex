@@ -26,7 +26,7 @@ defmodule AceGraderWeb.MyComponents do
             <h3 class="text-xl"><%= "#{pgettext("noun", "Test")} #{i}" %></h3>
             <p :if={!@editor}><%= "(#{test.grade}%)" %></p>
           </div>
-          <div class="pl-4 py-2 grid grid-cols-[152px_1fr] gap-y-1 gap-x-4 items-start border-l border-zinc-400 dark:border-zinc-700">
+          <div class="pl-4 py-2 grid grid-cols-[min-content_1fr] md:grid-cols-[150px_1fr] gap-y-1 gap-x-4 items-start border-l border-zinc-400 dark:border-zinc-700">
             <%= if test.description do %>
               <p><%= gettext "Description" %></p>
               <p><%= test.description %></p>
@@ -92,18 +92,18 @@ defmodule AceGraderWeb.MyComponents do
           <% else %>
             <%= if @errors == nil do %>
               <div class="flex items-center text-yellow-600 gap-2 font-bold">
-                <Heroicons.exclamation_triangle class="w-8 h-8"/>
+                <Heroicons.exclamation_triangle class="w-6 h-6 md:w-8 md:h-8"/>
                 <p><%= gettext "Warning" %></p>
                 <Heroicons.chevron_down
-                  class="w-8 h-6 self-end text-gray-500 animate-bounce"
+                  class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"
                 />
               </div>
             <% else %>
               <div class="flex items-center text-red-600 gap-2 font-bold">
-                <Heroicons.exclamation_circle class="w-8 h-8"/>
+                <Heroicons.exclamation_circle class="w-6 h-6 md:w-8 md:h-8"/>
                 <p><%= gettext "Error" %></p>
                 <Heroicons.chevron_down
-                  class="w-8 h-6 self-end text-gray-500 animate-bounce"
+                  class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"
                 />
               </div>
             <% end %>
