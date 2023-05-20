@@ -10,7 +10,7 @@ defmodule AceGraderWeb.UserController do
     assigns = %{
       user: user,
       page_title: "#{user.username}",
-      exercises: (if user.account_type == :teacher, do: Exercises.list_exercises_by_user(user.id, user.id != conn.assigns.current_user.id), else: nil),
+      exercises: (if user.account_type == :teacher, do: Exercises.list_exercises_by_user(user.id, conn.assigns.current_user == nil || user.id != conn.assigns.current_user.id), else: nil),
       submissions: (if user.account_type == :student && (conn.assigns.current_user.account_type != :student || conn.assigns.current_user.id == user.id), do: Submissions.list_submissions_by_user(user.id), else: nil)
     }
     render(conn, :show, assigns)

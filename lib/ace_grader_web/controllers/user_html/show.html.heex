@@ -13,7 +13,7 @@
       </div>
     </div>
     <.link
-      :if={@current_user.id == @user.id}
+      :if={@current_user && @current_user.id == @user.id}
       navigate={~p"/users/settings"}
       class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-100 outline-zinc-900 dark:outline-zinc-200 outline rounded-full px-4 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 flex items-center gap-2 self-end sm:self-start"
       >

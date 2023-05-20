@@ -36,3 +36,4 @@ ace_grader.env
 docker-compose.yml
 
 test/
+__pycache__/
