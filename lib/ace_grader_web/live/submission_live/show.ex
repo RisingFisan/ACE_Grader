@@ -11,7 +11,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
     else
       socket = assign(socket, submission: submission)
 
-      if Submissions.Submission.pending_tests(submission) do
+      if connected?(socket) && (True || Submissions.Submission.pending_tests(submission)) do
         liveview = self()
         Task.async(fn -> Grader.grade_submission(submission, liveview) end)
       end
@@ -30,9 +30,12 @@ defmodule AceGraderWeb.SubmissionLive.Show do
 
   def handle_info({ref, result}, socket) do
     Process.demonitor(ref, [:flush]) # we flush the process before it dies, since we already have the result, and avoid needing another handle_info for the death message
+    IO.inspect(DateTime.utc_now())
     case result do
       {:ok, submission} -> {:noreply, socket |> assign(submission: submission)}
-      {:error, _changeset} -> {:noreply, socket |> put_flash(:error, "Error grading submission! Please reload the page.")}
+      {:error, changeset} ->
+        IO.inspect(changeset)
+        {:noreply, socket |> put_flash(:error, "Error grading submission! Please reload the page.")}
     end
   end
 

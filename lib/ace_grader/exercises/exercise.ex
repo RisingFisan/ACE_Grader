@@ -18,6 +18,7 @@ defmodule AceGrader.Exercises.Exercise do
 
     has_many :submissions, AceGrader.Submissions.Submission
     has_many :tests, AceGrader.Exercises.Test, on_replace: :delete
+    has_many :parameters, AceGrader.Exercises.Parameter, on_replace: :delete
 
     timestamps()
   end
@@ -25,11 +26,15 @@ defmodule AceGrader.Exercises.Exercise do
   @doc false
   def changeset(exercise, attrs) do
     tests = Map.get(attrs, "tests", %{})
+    parameters = Map.get(attrs, "parameters", %{})
+    graded_params = Map.filter(parameters, fn {_key, param} -> param["type"] == "graded" end)
 
-    validate_grade = map_size(tests) > 0 and not Enum.any?(tests, fn {_key, test} -> test["grade"] == "" end)
+    validate_grade = not Enum.any?(tests, fn {_key, test} -> test["grade"] == "" end) and not Enum.any?(graded_params, fn {_key, param} -> param["grade"] == "" end)
 
     attrs = if validate_grade do
-      sum = Enum.reduce(tests, 0, fn {_key, test}, acc -> acc + (if !test["grade"] or test["delete"] == "true", do: 0, else: String.to_integer(test["grade"])) end)
+      sum =
+        Enum.reduce(tests, 0, fn {_key, tp}, acc -> acc + (if !tp["grade"] or tp["delete"] == "true", do: 0, else: String.to_integer(tp["grade"])) end)
+        |> Kernel.+(Enum.reduce(graded_params, 0, fn {_key, gp}, acc -> acc + (if !gp["grade"] or gp["delete"] == "true", do: 0, else: String.to_integer(gp["grade"])) end))
       Map.put(attrs, "total_grade", sum)
     else
       attrs
@@ -39,7 +44,9 @@ defmodule AceGrader.Exercises.Exercise do
     |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
     |> validate_required([:title, :description, :public])
     |> cast_assoc(:tests, sort_param: :tests_order, drop_param: :tests_delete)
+    |> cast_assoc(:parameters, sort_param: :params_order, drop_param: :params_delete)
     |> copy_test_positions()
+    |> copy_param_positions()
     |> (& if validate_grade, do: validate_number(&1, :total_grade, equal_to: 100), else: &1).()
   end
 
@@ -50,6 +57,18 @@ defmodule AceGrader.Exercises.Exercise do
         Ecto.Changeset.put_change(test, :position, index)
       end)
       |> then(&Ecto.Changeset.put_change(changeset, :tests, &1))
+    else
+      changeset
+    end
+  end
+
+  defp copy_param_positions(changeset) do
+    if parameters = Ecto.Changeset.get_change(changeset, :parameters) do
+      parameters
+      |> Enum.with_index(fn parameter, index ->
+        Ecto.Changeset.put_change(parameter, :position, index)
+      end)
+      |> then(&Ecto.Changeset.put_change(changeset, :parameters, &1))
     else
       changeset
     end

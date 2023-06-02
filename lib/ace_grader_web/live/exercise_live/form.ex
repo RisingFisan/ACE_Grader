@@ -17,6 +17,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   def mount(_params, _session, socket) do
     changeset = Exercises.change_exercise(%Exercise{})
       |> Ecto.Changeset.put_assoc(:tests, [%Exercises.Test{temp_id: get_temp_id()}])
+      |> Ecto.Changeset.put_assoc(:parameters, [%Exercises.Parameter{temp_id: get_temp_id()}])
       |> Ecto.Changeset.put_change(:test_file, """
       #include <stdio.h>
 
@@ -91,6 +92,21 @@ defmodule AceGraderWeb.ExerciseLive.Form do
      )}
   end
 
+  def handle_event("add-parameter", _params, socket) do
+    existing_parameters = Map.get(socket.assigns.changeset.changes, :parameters, (if socket.assigns[:exercise], do: socket.assigns.exercise.parameters, else: []))
+
+    changeset =
+      socket.assigns.changeset
+      |> Ecto.Changeset.put_assoc(:parameters,
+        Enum.concat(existing_parameters, [%Exercises.Parameter{temp_id: get_temp_id()}])
+      )
+
+    {:noreply,
+     assign(socket,
+       changeset: changeset
+     )}
+  end
+
   def handle_event("remove-test", %{"remove" => remove_id}, socket) do
     tests =
       socket.assigns.changeset.changes.tests
@@ -101,6 +117,20 @@ defmodule AceGraderWeb.ExerciseLive.Form do
     changeset =
       socket.assigns.changeset
       |> Ecto.Changeset.put_assoc(:tests, tests)
+
+    {:noreply, assign(socket, changeset: changeset)}
+  end
+
+  def handle_event("remove-parameter", %{"remove" => remove_id}, socket) do
+    parameters =
+      socket.assigns.changeset.changes.parameters
+      |> Enum.reject(fn %{data: parameter} ->
+        parameter.temp_id == remove_id
+      end)
+
+    changeset =
+      socket.assigns.changeset
+      |> Ecto.Changeset.put_assoc(:parameters, parameters)
 
     {:noreply, assign(socket, changeset: changeset)}
   end

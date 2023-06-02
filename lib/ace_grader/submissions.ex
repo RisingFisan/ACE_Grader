@@ -9,6 +9,7 @@ defmodule AceGrader.Submissions do
 
   alias AceGrader.Submissions.Submission
   alias AceGrader.Submissions.Test
+  alias AceGrader.Submissions.Parameter
 
   @doc """
   Returns the list of submissions.
@@ -43,7 +44,7 @@ defmodule AceGrader.Submissions do
   """
   def get_submission!(id) do
     Repo.get!(Submission, id)
-    |> Repo.preload([:user, :exercise, tests: from(t in Test, order_by: [asc: t.position])])
+    |> Repo.preload([:user, :exercise, tests: from(t in Test, order_by: [asc: t.position]), parameters: from(p in Parameter, order_by: [asc: p.position])])
   end
 
   @doc """
@@ -113,7 +114,7 @@ defmodule AceGrader.Submissions do
   """
   def change_submission(%Submission{} = submission, attrs \\ %{}) do
     submission
-    |> Repo.preload([:tests])
+    |> Repo.preload([:tests, :parameters])
     |> Submission.changeset(attrs)
   end
 

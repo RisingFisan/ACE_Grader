@@ -10,7 +10,8 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
     attrs = %{
       exercise_id: exercise.id,
       author_id: socket.assigns.current_user.id,
-      tests: Enum.map(exercise.tests, fn test -> Map.from_struct(test) end)
+      tests: Enum.map(exercise.tests, fn test -> Map.from_struct(test) end),
+      parameters: Enum.map(exercise.parameters, fn parameter -> Map.from_struct(parameter) end)
     }
     # |> Ecto.Changeset.put_assoc(:tests, (for test <- exercise.tests do
     #   struct(%Submissions.Test{}, test

@@ -8,6 +8,7 @@ defmodule AceGrader.Exercises do
 
   alias AceGrader.Exercises.Exercise
   alias AceGrader.Exercises.Test
+  alias AceGrader.Exercises.Parameter
   alias AceGrader.Submissions.Submission
 
   @doc """
@@ -69,7 +70,7 @@ defmodule AceGrader.Exercises do
   """
   def get_exercise!(id, preloads \\ true, params \\ %{}) do
     Repo.get!(Exercise, id)
-    |> Repo.preload([:user, tests: from(t in Test, order_by: [asc: t.position])])
+    |> Repo.preload([:user, tests: from(t in Test, order_by: [asc: t.position]), parameters: from(p in Parameter, order_by: [asc: p.position])])
     |> Repo.preload(if preloads, do: [submissions: from(get_submissions(params))], else: [])
   end
 
@@ -151,7 +152,7 @@ defmodule AceGrader.Exercises do
   """
   def change_exercise(%Exercise{} = exercise, attrs \\ %{}) do
     exercise
-    |> Repo.preload([:tests, :submissions])
+    |> Repo.preload([:tests, :parameters, :submissions])
     |> Exercise.changeset(attrs)
   end
 

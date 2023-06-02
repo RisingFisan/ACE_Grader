@@ -31,6 +31,20 @@ defmodule AceGrader.Grader do
     end
   end
 
+  defp process_parameters_output(parameters, results) do
+    results = Map.new(results, fn %{"key" => key, "result" => result} ->
+      {key, result}
+    end)
+    for parameter <- parameters do
+      result = Map.get(results, parameter.key)
+      %{
+        id: parameter.id,
+        type: parameter.type,
+        status: (if result == nil, do: :error, else: (if parameter.negative and !result or !parameter.negative and result, do: :success, else: :failed)),
+      }
+    end |> IO.inspect()
+  end
+
   defp compile(submission, id) do
     case HTTPoison.post(grader_url() <> "/compile", Jason.encode!(%{
       "id" => id,
@@ -71,13 +85,13 @@ defmodule AceGrader.Grader do
   end
 
   def grade_submission(submission, liveview) do
-    if Submission.pending_tests(submission) do
+    if true || Submission.pending_tests(submission) do
       case compile(submission, submission.id) do
         {:ok, warnings} ->
           send(liveview, {:compilation_warnings, warnings})
-          tests = for test <- submission.tests do
+          tests_async = for test <- submission.tests do
             Task.async(fn ->
-              if test.status == :pending do
+              if test.status == :pending or test.status == :error do
                 {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
                 {status, output} = process_output(test, Jason.decode!(response.body))
                 # send(liveview, {:test_result, test.id, output, i})
@@ -87,12 +101,40 @@ defmodule AceGrader.Grader do
               end
             end)
           end
-          |> Task.await_many(10_000)
-          total_grade = Enum.reduce(tests, 0, fn test, acc -> (if test.status == :success, do: acc + test.grade, else: acc) end)
+
+          parameters =
+            Task.async(fn ->
+              {_status, response} = HTTPoison.post(grader_url() <> "/analyze", Jason.encode!(%{
+                "id" => submission.id,
+                "timestamp" => DateTime.utc_now() |> to_string(),
+                "params" => Enum.map(submission.parameters, fn parameter -> %{
+                  "key" => parameter.key,
+                  "value" => parameter.value
+                } end)
+              }), [{"Content-Type", "application/json"}])
+              process_parameters_output(submission.parameters, Jason.decode!(response.body))
+            end) |> Task.await(10_000)
+
+          tests = Task.await_many(tests_async, 10_000)
+
+          mandatory_params = [] # Enum.filter(paramters, fn parameter -> parameter.type == :mandatory end)
+          total_grade =
+            if Enum.all?(mandatory_params, fn parameter -> parameter.status == :success end) do
+              Enum.reduce(tests, 0, fn test, acc -> (if test.status == :success, do: acc + test.grade, else: acc) end)
+              + Enum.reduce(parameters, 0, fn parameter, acc -> (if parameter.status == :success and parameter.type == :graded, do: acc + parameter.grade, else: acc) end)
+            else
+              0
+            end
           HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
-          Submissions.update_submission(submission, %{success: true, warnings: warnings, total_grade: total_grade, tests: tests})
+          Submissions.update_submission(submission, %{success: true, warnings: warnings, errors: nil, total_grade: total_grade, tests: tests, parameters: parameters})
         {:error, error_msg} ->
-          Submissions.update_submission(submission, %{success: false, errors: error_msg, total_grade: 0, tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end)})
+          Submissions.update_submission(submission, %{
+            success: false,
+            errors: error_msg,
+            total_grade: 0,
+            tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end),
+            parameters: Enum.map(submission.parameters, fn parameter -> %{ Map.from_struct(parameter) | status: :error} end)
+          })
       end
     else
       {:ok, submission}

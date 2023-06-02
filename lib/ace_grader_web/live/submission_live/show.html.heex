@@ -80,6 +80,7 @@
     </svg>
   <% end %> --%>
 
-  <.compilation_results warnings={@submission.warnings} errors={@submission.errors} />
-  <.test_results tests={@submission.tests} success={@submission.errors == nil}/>
+  <.compilation_results warnings={@submission.warnings} errors={@submission.errors} success={@submission.success} />
+  <.test_results tests={@submission.tests} success={@submission.success}/>
+  <.parameter_results parameters={@submission.parameters} success={@submission.success}/>
 </div>

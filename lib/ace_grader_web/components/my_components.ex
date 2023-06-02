@@ -76,8 +76,86 @@ defmodule AceGraderWeb.MyComponents do
     """
   end
 
+
+  attr :parameters, :list
+  attr :success, :boolean, default: true
+  attr :editor, :boolean, default: false
+
+  def parameter_results(assigns) do
+    ~H"""
+    <div class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4">
+      <h2 class="text-xl md:text-2xl font-bold"><%= gettext "Parameters" %></h2>
+      <div class="space-y-4">
+        <div :for={parameter <- @parameters}
+          class={["grid grid-cols-1 md:grid-cols-[148px_1fr_128px] items-center text-lg rounded-xl border-2 border-zinc-400 dark:border-zinc-600",
+            (parameter.status == :success && "bg-green-200 dark:bg-green-800"),
+            ((parameter.status in [:failed, :error] or not @success) && "bg-red-200 dark:bg-red-900"),
+            (parameter.status == :timeout && "bg-orange-100 dark:bg-orange-900"),
+            (parameter.status == :pending && "bg-zinc-100 dark:bg-zinc-700"),
+          ]}>
+          <div class="h-full w-full font-light bg-zinc-200 dark:bg-zinc-500 flex flex-col items-center justify-center rounded-l-lg py-1">
+            <h3 class="text-xl text-center"><%= "#{gettext("Parameter")} #{parameter.position + 1}" %></h3>
+            <%= if !@editor do %>
+              <p :if={parameter.type == :optional}><%= "(0%)" %></p>
+              <p :if={parameter.type == :graded}><%= "(#{parameter.grade}%)" %></p>
+              <p :if={parameter.type == :mandatory}><%= "(100%)" %></p>
+            <% end %>
+          </div>
+          <div class="pl-4 py-2 grid grid-cols-[min-content_1fr] md:grid-cols-[96px_1fr] gap-y-1 gap-x-4 items-start border-l border-zinc-400 dark:border-zinc-700">
+            <p><%= gettext "Check if" %></p>
+            <p><%= AceGrader.Submissions.Parameter.key_string(parameter) <> "." %></p>
+            <%!-- <%= if parameter.description do %>
+              <p><%= gettext "Description" %></p>
+              <p><%= parameter.description %></p>
+            <% else %>
+              <p><%= gettext "Input" %></p>
+              <pre><%= parameter.input %></pre>
+            <% end %> --%>
+
+            <%!-- <p><%= gettext "Expected output" %></p>
+            <pre><%= parameter.expected_output %></pre> --%>
+
+            <%!-- <%= if test.status != :error do %>
+              <p><%= gettext "Actual output" %></p>
+              <%= if test.actual_output != nil do %>
+                <pre class="whitespace-pre-wrap"><%= test.actual_output %></pre>
+              <% else %>
+                <%= if test.status == :pending do %>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-4 self-center fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/>
+                  </svg>
+                <% end %>
+              <% end %>
+            <% else %>
+              <p><%= gettext "Error message" %></p>
+              <pre class="whitespace-pre-wrap"><%= test.actual_output %></pre>
+            <% end %> --%>
+          </div>
+          <div class="justify-self-center md:justify-self-end md:pr-4">
+            <Heroicons.check_circle :if={parameter.status == :success} class="w-12 h-12 text-green-600" />
+            <div :if={parameter.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
+              <p><%= gettext "Error" %></p>
+              <Heroicons.x_circle class="w-8 h-8"/>
+            </div>
+            <div :if={parameter.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
+              <p><%= gettext "Failed" %></p>
+              <Heroicons.x_circle class="w-8 h-8"/>
+            </div>
+            <div :if={parameter.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
+              <p><%= gettext "Timeout" %></p>
+              <Heroicons.exclamation_circle class="w-8 h-8"/>
+            </div>
+            <Heroicons.clock :if={parameter.status == :pending} class="w-8 h-8" />
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   attr :warnings, :string
   attr :errors, :string
+  attr :success, :boolean, default: true
 
   def compilation_results(assigns) do
     ~H"""
@@ -85,12 +163,12 @@ defmodule AceGraderWeb.MyComponents do
       <div class="flex justify-between" phx-click={if @warnings != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
         <p class="font-bold"><%= gettext "Compilation" %></p>
         <div>
-          <%= if (@warnings == nil or @warnings == "") and @errors == nil do %>
+          <%= if (@warnings == nil or @warnings == "") and @success do %>
             <div class="flex items-center text-green-600 gap-2 font-bold">
               <Heroicons.check class="w-8 h-8"/><p><%= gettext "Successful" %></p>
             </div>
           <% else %>
-            <%= if @errors == nil do %>
+            <%= if @success do %>
               <div class="flex items-center text-yellow-600 gap-2 font-bold">
                 <Heroicons.exclamation_triangle class="w-6 h-6 md:w-8 md:h-8"/>
                 <p><%= gettext "Warning" %></p>

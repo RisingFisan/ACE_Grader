@@ -3,6 +3,8 @@ import subprocess
 import os
 import shutil
 
+from analyzer import run_checks
+
 app = Flask(__name__)
 
 @app.route('/compile', methods=['POST'])
@@ -48,6 +50,18 @@ def run_command():
         return jsonify({'status': 'timeout'})
     except subprocess.CalledProcessError as e:
         return jsonify({'status': 'error', 'output': e.stderr.decode(), 'code': abs(e.returncode)})
+
+@app.route('/analyze', methods=['POST'])
+def analyze_submission():
+    data = request.get_json()
+    id = data.get('id')
+    params = data.get('params', [])
+
+    os.chdir(f'/tmp/{id}')
+    result = run_checks(params)
+    print(result)
+
+    return jsonify(result)
 
 def clean(path):
     if os.path.exists(path):
