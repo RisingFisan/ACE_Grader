@@ -19,6 +19,8 @@ def run_checks(params):
     tu = index.parse('sub.c')
     root_cursor = tu.cursor
 
+    functions = set()
+
     for param in params:
         param['result'] = False
 
@@ -27,6 +29,7 @@ def run_checks(params):
             # This is a system header, skip it
             continue
         elif child.kind == cindex.CursorKind.FUNCTION_DECL:
+            functions.add(child.spelling)
             # print(f"**Function**: {child.spelling}\n")
             
             for param in params:
@@ -58,6 +61,10 @@ def run_checks(params):
                                     param['result'] = frees_dynamic_memory(child)
                                 case _:
                                     pass
+
+    for param in params:
+        if param['key'] > 10 and param['value'] not in functions:
+            param['error'] = True
 
     return params
     

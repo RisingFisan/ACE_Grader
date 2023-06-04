@@ -132,7 +132,7 @@ defmodule AceGraderWeb.MyComponents do
             <% end %> --%>
           </div>
           <div class="justify-self-center md:justify-self-end md:pr-4">
-            <Heroicons.check_circle :if={parameter.status == :success} class="w-12 h-12 text-green-600" />
+            <Heroicons.check_circle :if={parameter.status == :success} class="w-8 h-8 text-green-600" />
             <div :if={parameter.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Error" %></p>
               <Heroicons.x_circle class="w-8 h-8"/>

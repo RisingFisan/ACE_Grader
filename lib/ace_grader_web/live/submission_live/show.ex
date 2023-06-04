@@ -30,7 +30,6 @@ defmodule AceGraderWeb.SubmissionLive.Show do
 
   def handle_info({ref, result}, socket) do
     Process.demonitor(ref, [:flush]) # we flush the process before it dies, since we already have the result, and avoid needing another handle_info for the death message
-    IO.inspect(DateTime.utc_now())
     case result do
       {:ok, submission} -> {:noreply, socket |> assign(submission: submission)}
       {:error, changeset} ->

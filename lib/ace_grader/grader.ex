@@ -32,17 +32,19 @@ defmodule AceGrader.Grader do
   end
 
   defp process_parameters_output(parameters, results) do
-    results = Map.new(results, fn %{"key" => key, "result" => result} ->
-      {key, result}
+    results = Map.new(results, fn
+      %{"key" => key, "error" => _} -> {key, nil}
+      %{"key" => key, "result" => result} -> {key, result}
     end)
     for parameter <- parameters do
       result = Map.get(results, parameter.key)
-      %{
-        id: parameter.id,
-        type: parameter.type,
-        status: (if result == nil, do: :error, else: (if parameter.negative and !result or !parameter.negative and result, do: :success, else: :failed)),
-      }
-    end |> IO.inspect()
+      status = cond do
+        result == nil -> :error
+        parameter.negative and !result or !parameter.negative and result -> :success
+        true -> :failed
+      end
+      Map.from_struct(%{parameter | status: status})
+    end
   end
 
   defp compile(submission, id) do
@@ -106,7 +108,6 @@ defmodule AceGrader.Grader do
             Task.async(fn ->
               {_status, response} = HTTPoison.post(grader_url() <> "/analyze", Jason.encode!(%{
                 "id" => submission.id,
-                "timestamp" => DateTime.utc_now() |> to_string(),
                 "params" => Enum.map(submission.parameters, fn parameter -> %{
                   "key" => parameter.key,
                   "value" => parameter.value
@@ -120,8 +121,10 @@ defmodule AceGrader.Grader do
           mandatory_params = [] # Enum.filter(paramters, fn parameter -> parameter.type == :mandatory end)
           total_grade =
             if Enum.all?(mandatory_params, fn parameter -> parameter.status == :success end) do
-              Enum.reduce(tests, 0, fn test, acc -> (if test.status == :success, do: acc + test.grade, else: acc) end)
-              + Enum.reduce(parameters, 0, fn parameter, acc -> (if parameter.status == :success and parameter.type == :graded, do: acc + parameter.grade, else: acc) end)
+              Kernel.+(
+                Enum.reduce(tests, 0, fn test, acc -> (if test.status == :success, do: acc + test.grade, else: acc) end),
+                Enum.reduce(parameters, 0, fn parameter, acc -> (if parameter.status == :success and parameter.type == :graded, do: acc + parameter.grade, else: acc) end)
+              )
             else
               0
             end
@@ -144,18 +147,29 @@ defmodule AceGrader.Grader do
   def test_submission(submission, user) do
     case compile(submission, submission.author_id) do
       {:ok, warnings} ->
-        tests = for test <- submission.tests, test.visible || submission.author_id == user.id do
+        tests_async = for test <- submission.tests, test.visible || submission.author_id == user.id do
           Task.async(fn ->
             {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.author_id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
             {status, output} = process_output(test, Jason.decode!(response.body))
             %{ Map.from_struct(test) | actual_output: output, status: status }
           end)
         end
-        |> Task.await_many(10_000)
+        parameters =
+          Task.async(fn ->
+            {_status, response} = HTTPoison.post(grader_url() <> "/analyze", Jason.encode!(%{
+              "id" => submission.author_id,
+              "params" => Enum.map(submission.parameters, fn parameter -> %{
+                "key" => parameter.key,
+                "value" => parameter.value
+              } end)
+            }), [{"Content-Type", "application/json"}])
+            process_parameters_output(submission.parameters, Jason.decode!(response.body))
+          end) |> Task.await(10_000)
+        tests = Task.await_many(tests_async, 10_000)
         HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
-        %{success: true, compilation_msg: warnings, tests: tests}
+        %{success: true, compilation_msg: warnings, tests: tests, parameters: parameters}
       {:error, error_msg} ->
-        %{success: false, compilation_msg: error_msg, tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end)}
+        %{success: false, compilation_msg: error_msg, tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end), parameters: Enum.map(submission.parameters, fn parameter -> %{ Map.from_struct(parameter) | status: :error} end)}
     end
   end
 end

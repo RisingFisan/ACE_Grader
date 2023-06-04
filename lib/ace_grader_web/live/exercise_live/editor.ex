@@ -48,6 +48,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
       |> assign(
         success: result.success,
         test_results: result.tests,
+        parameter_results: result.parameters,
         compilation_msg: result.compilation_msg,
         testing: false)}
   end
