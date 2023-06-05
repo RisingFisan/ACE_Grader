@@ -86,14 +86,14 @@
         <.input field={tf[:grade]} type="text" label={ gettext "Grade %" }/>
         <.input field={tf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
       </div>
-      <%!-- <label class="cursor-pointer">
-        <input id={"checkbox#{tf.index}"} type="checkbox" name="exercise[tests_delete][]" class="" value={tf.index}/>
+      <label class="cursor-pointer">
+        <input id={"checkbox_test_#{tf.index}"} type="checkbox" name="exercise[tests_delete][]" class="hidden" value={tf.index}/>
         <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
           <Heroicons.trash class="w-6 h-6"/>
           <p class="text-red-600"><%= gettext "Delete" %></p>
         </div>
-      </label> --%>
-      <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
+      </label>
+      <%!-- <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
         <%= if is_nil(tf.data.temp_id) do %>
           <p><%= gettext "Delete" %></p>
           <Heroicons.trash class="w-6 h-6"/>
@@ -102,29 +102,29 @@
           <.input field={tf[:temp_id]} type="hidden"/>
           <a href="#" phx-click="remove-test" phx-value-remove={tf.data.temp_id}><Heroicons.x_mark class="w-6 h-6" /></a>
         <% end %>
-      </div>
+      </div> --%>
     </div>
   </.inputs_for>
-  <%!-- <label class="cursor-pointer flex flex-col items-center">
+  <label class="cursor-pointer flex flex-col items-center">
     <input type="checkbox" name="exercise[tests_order][]" class="hidden" />
     <div class="flex items-center gap-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500 px-4 py-2 rounded-lg duration-200">
       <Heroicons.plus_circle class="w-6 h-6"/>
       <p><%= gettext "Add test" %></p>
     </div>
-  </label> --%>
-  <div class="flex flex-col items-center">
+  </label>
+  <!-- <div class="flex flex-col items-center">
     <button type="button" phx-click="add-test" class="mx-auto bg-zinc-300 dark:bg-zinc-500 hover:bg-zinc-400 dark:hover:bg-zinc-400 px-4 py-2 rounded-lg duration-200"><%= "+ " <> gettext "Add test" %></button>
-  </div>
+  </div> -->
 
   <h2 class="text-2xl font-bold"><%= gettext "Parameters" %></h2>
-  <.inputs_for :let={tf} field={f[:parameters]}>
-    <.input :if={is_nil(tf.data.temp_id)} field={tf[:id]} type="hidden" />
-    <input type="hidden" name="exercise[params_order][]" value={tf.index} />
+  <.inputs_for :let={pf} field={f[:parameters]}>
+    <.input :if={is_nil(pf.data.temp_id)} field={pf[:id]} type="hidden" />
+    <input type="hidden" name="exercise[params_order][]" value={pf.index} />
     <div class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-xl border-2 border-zinc-300 dark:border-zinc-700">
-      <div class={["space-y-2", (if tf[:delete].value == "true", do: "blur-sm")]}>
-        <%!-- <.input field={tf[:description]} type="text" label={gettext "Description"} placeholder={gettext("If left empty, the input will be used as the description.")} /> --%>
+      <div class={["space-y-2", (if pf[:delete].value == "true", do: "blur-sm")]}>
+        <%!-- <.input field={pf[:description]} type="text" label={gettext "Description"} placeholder={gettext("If left empty, the input will be used as the description.")} /> --%>
         <div class="grid grid-cols-[1fr_min-content] items-center gap-4">
-        <.input field={tf[:key]} type="select" options={[ 
+        <.input field={pf[:key]} type="select" options={[ 
           {gettext("Program uses recursion"), 1},
           {gettext("Program uses loops"), 2},
           {gettext("Program uses pointers"), 3},
@@ -138,60 +138,60 @@
           {gettext("Function X frees allocated memory"), 15},
           ] 
         } label={gettext "Check if"} />
-        <.input field={tf[:negative]} type="checkbox" label="Invert?"/>
+        <.input field={pf[:negative]} type="checkbox" label="Invert?"/>
         </div>
-        <%= if tf[:key].value && tf[:key].value >= 10 do %>
-          <.input field={tf[:value]} type="text" label={gettext "Function name"} mono />
+        <%= if pf[:key].value && pf[:key].value >= 10 do %>
+          <.input field={pf[:value]} type="text" label={gettext "Function name"} mono />
         <% end %>
         <div class="flex w-full items-center gap-5">
           <div class="w-48">
-            <.input field={tf[:type]} type="select" options={[ {gettext("Optional"), "optional"}, {gettext("Graded"), "graded"}, {gettext("Mandatory"), "mandatory"}] } label={gettext "Parameter type"} />
+            <.input field={pf[:type]} type="select" options={[ {gettext("Optional"), "optional"}, {gettext("Graded"), "graded"}, {gettext("Mandatory"), "mandatory"}] } label={gettext "Parameter type"} />
           </div>
-          <div class="cursor-pointer" phx-click={JS.toggle(to: "#param-type-tooltip-#{tf.index}")} >
+          <div class="cursor-pointer" phx-click={JS.toggle(to: "#param-type-tooltip-#{pf.index}")} >
             <Heroicons.question_mark_circle class="h-6 w-6 hover:text-gray-500 duration-200" />
           </div>
           <div class="relative">
-            <div id={"param-type-tooltip-#{tf.index}"} hidden class="absolute left-0 w-[512px] -top-20 bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none shadow-lg">
+            <div id={"param-type-tooltip-#{pf.index}"} hidden class="absolute left-0 w-[512px] -top-20 bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none shadow-lg">
               <p><b><%= gettext "Optional" %></b>: <%= gettext "if the parameter fails, a warning will be displayed, but it won't affect a submission's total grade." %></p>
               <p><b><%= gettext "Graded" %></b>: <%= gettext "the parameter's grade contributes to a submission's total grade." %></p>
               <p><b><%= gettext "Mandatory" %></b>: <%= gettext "the parameter must be passed in order for a submission to be graded, otherwise the total grade will always be 0%." %></p>
             </div>
           </div>
         </div>
-        <%= if tf[:type].value == :graded do %>
-          <.input field={tf[:grade]} type="text" label={ gettext "Grade %" }/>
+        <%= if pf[:type].value == :graded do %>
+          <.input field={pf[:grade]} type="text" label={ gettext "Grade %" }/>
         <% end %>
-        <.input field={tf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
+        <.input field={pf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
       </div>
-      <%!-- <label class="cursor-pointer">
-        <input id={"checkbox#{tf.index}"} type="checkbox" name="exercise[tests_delete][]" class="" value={tf.index}/>
+      <label class="cursor-pointer">
+        <input id={"checkbox_param_#{pf.index}"} type="checkbox" name="exercise[params_delete][]" class="hidden" value={pf.index}/>
         <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
           <Heroicons.trash class="w-6 h-6"/>
           <p class="text-red-600"><%= gettext "Delete" %></p>
         </div>
-      </label> --%>
-      <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
-        <%= if is_nil(tf.data.temp_id) do %>
+      </label>
+      <%!-- <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
+        <%= if is_nil(pf.data.temp_id) do %>
           <p><%= gettext "Delete" %></p>
           <Heroicons.trash class="w-6 h-6"/>
-          <.input field={tf[:delete]} type="checkbox" />
+          <.input field={pf[:delete]} type="checkbox" />
         <% else %>
-          <.input field={tf[:temp_id]} type="hidden"/>
-          <a href="#" phx-click="remove-parameter" phx-value-remove={tf.data.temp_id}><Heroicons.x_mark class="w-6 h-6" /></a>
+          <.input field={pf[:temp_id]} type="hidden"/>
+          <a href="#" phx-click="remove-parameter" phx-value-remove={pf.data.temp_id}><Heroicons.x_mark class="w-6 h-6" /></a>
         <% end %>
-      </div>
+      </div> --%>
     </div>
   </.inputs_for>
-  <%!-- <label class="cursor-pointer flex flex-col items-center">
-    <input type="checkbox" name="exercise[tests_order][]" class="hidden" />
+  <label class="cursor-pointer flex flex-col items-center">
+    <input type="checkbox" name="exercise[params_order][]" class="hidden" />
     <div class="flex items-center gap-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500 px-4 py-2 rounded-lg duration-200">
       <Heroicons.plus_circle class="w-6 h-6"/>
-      <p><%= gettext "Add test" %></p>
+      <p><%= gettext "Add parameter" %></p>
     </div>
-  </label> --%>
-  <div class="flex flex-col items-center">
+  </label>
+  <%!-- <div class="flex flex-col items-center">
     <button type="button" phx-click="add-parameter" class="mx-auto bg-zinc-300 dark:bg-zinc-500 hover:bg-zinc-400 dark:hover:bg-zinc-400 px-4 py-2 rounded-lg duration-200"><%= "+ " <> gettext "Add parameter" %></button>
-  </div>
+  </div> --%>
 
   <.error :if={length(f[:total_grade].errors) > 0}><%= dgettext "errors", "The sum of every grade should equal 100!" %></.error>
   <:actions>

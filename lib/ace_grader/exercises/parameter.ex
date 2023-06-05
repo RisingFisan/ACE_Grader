@@ -35,7 +35,7 @@ defmodule AceGrader.Exercises.Parameter do
 
   # if key >= 10, validate required value, else ignore
   def validate_value(changeset) do
-    case get_change(changeset, :key) |> IO.inspect() do
+    case get_change(changeset, :key) do
       key when key != nil and key >= 10 ->
         changeset
         |> validate_required([:value])

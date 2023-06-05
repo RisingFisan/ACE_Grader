@@ -40,6 +40,8 @@ defmodule AceGrader.Exercises.Exercise do
       attrs
     end
 
+    IO.inspect(attrs)
+
     exercise
     |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
     |> validate_required([:title, :description, :public])
@@ -53,6 +55,7 @@ defmodule AceGrader.Exercises.Exercise do
   defp copy_test_positions(changeset) do
     if tests = Ecto.Changeset.get_change(changeset, :tests) do
       tests
+      |> Enum.filter(fn changeset -> changeset.action != :replace end)
       |> Enum.with_index(fn test, index ->
         Ecto.Changeset.put_change(test, :position, index)
       end)
@@ -65,6 +68,7 @@ defmodule AceGrader.Exercises.Exercise do
   defp copy_param_positions(changeset) do
     if parameters = Ecto.Changeset.get_change(changeset, :parameters) do
       parameters
+      |> Enum.filter(fn changeset -> changeset.action != :replace end)
       |> Enum.with_index(fn parameter, index ->
         Ecto.Changeset.put_change(parameter, :position, index)
       end)

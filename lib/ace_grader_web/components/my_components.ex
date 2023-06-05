@@ -153,17 +153,16 @@ defmodule AceGraderWeb.MyComponents do
     """
   end
 
-  attr :warnings, :string
-  attr :errors, :string
+  attr :message, :string
   attr :success, :boolean, default: true
 
   def compilation_results(assigns) do
     ~H"""
     <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4 text-xl md:text-2xl space-y-2 md:space-y-4">
-      <div class="flex justify-between" phx-click={if @warnings != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
+      <div class="flex justify-between" phx-click={if @message != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
         <p class="font-bold"><%= gettext "Compilation" %></p>
         <div>
-          <%= if (@warnings == nil or @warnings == "") and @success do %>
+          <%= if @success and (@message == nil or @message == "") do %>
             <div class="flex items-center text-green-600 gap-2 font-bold">
               <Heroicons.check class="w-8 h-8"/><p><%= gettext "Successful" %></p>
             </div>
@@ -188,7 +187,7 @@ defmodule AceGraderWeb.MyComponents do
           <% end %>
         </div>
       </div>
-      <pre :if={@warnings || @errors} id="compilation_message" class="break-all whitespace-pre-wrap text-lg hidden"><%= String.trim(@warnings || @errors) %></pre>
+      <pre :if={@message} id="compilation_message" class="break-all whitespace-pre-wrap text-lg hidden"><%= String.trim(@message) %></pre>
     </div>
     """
   end
