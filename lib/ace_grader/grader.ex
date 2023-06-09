@@ -87,7 +87,7 @@ defmodule AceGrader.Grader do
   end
 
   def grade_submission(submission, liveview) do
-    if true || Submission.pending_tests(submission) do
+    if Submission.pending_tests(submission) do
       case compile(submission, submission.id) do
         {:ok, warnings} ->
           send(liveview, {:compilation_warnings, warnings})
@@ -118,7 +118,7 @@ defmodule AceGrader.Grader do
 
           tests = Task.await_many(tests_async, 10_000)
 
-          mandatory_params = [] # Enum.filter(paramters, fn parameter -> parameter.type == :mandatory end)
+          mandatory_params = Enum.filter(parameters, fn parameter -> parameter.type == :mandatory end)
           total_grade =
             if Enum.all?(mandatory_params, fn parameter -> parameter.status == :success end) do
               Kernel.+(

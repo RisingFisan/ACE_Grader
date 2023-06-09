@@ -52,6 +52,14 @@ defmodule AceGrader.Exercises.Exercise do
     |> (& if validate_grade, do: validate_number(&1, :total_grade, equal_to: 100), else: &1).()
   end
 
+  def changeset_duplicate(exercise, attrs) do
+    exercise
+    |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
+    |> validate_required([:title, :description, :public])
+    |> cast_assoc(:tests)
+    |> cast_assoc(:parameters)
+  end
+
   defp copy_test_positions(changeset) do
     if tests = Ecto.Changeset.get_change(changeset, :tests) do
       tests

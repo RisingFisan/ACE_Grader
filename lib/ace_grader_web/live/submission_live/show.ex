@@ -11,7 +11,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
     else
       socket = assign(socket, submission: submission)
 
-      if connected?(socket) && (True || Submissions.Submission.pending_tests(submission)) do
+      if connected?(socket) && Submissions.Submission.pending_tests(submission) do
         liveview = self()
         Task.async(fn -> Grader.grade_submission(submission, liveview) end)
       end

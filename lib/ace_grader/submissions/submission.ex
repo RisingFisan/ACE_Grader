@@ -9,6 +9,7 @@ defmodule AceGrader.Submissions.Submission do
     field :warnings, :string
     field :errors, :string
     field :success, :boolean, default: false
+    # field :status, Ecto.Enum, values: [:pending, :success, :error], default: :pending
     field :total_grade, :integer
 
     has_many :tests, AceGrader.Submissions.Test

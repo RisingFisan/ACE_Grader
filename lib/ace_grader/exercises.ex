@@ -157,15 +157,20 @@ defmodule AceGrader.Exercises do
   end
 
   def duplicate_exercise(%Exercise{} = exercise, user_id) do
-    attrs = exercise
-    |> Map.from_struct()
-    |> Map.delete(:submissions)
-    |> Map.update!(:tests, fn tests -> Enum.map(tests, & Map.from_struct(&1) |> Map.put(:temp_id, 0)) end)
-    |> Map.put(:author_id, user_id)
-    |> Map.update!(:title, fn title -> title <> " (copy)" end)
+    attrs = %{
+      "title" => exercise.title <> " (copy)",
+      "description" => exercise.description,
+      "test_file" => exercise.test_file,
+      "template" => exercise.template,
+      "total_grade" => exercise.total_grade,
+      "public" => exercise.public,
+      "tests" => Enum.map(exercise.tests, & Map.from_struct(&1) |> Map.put(:temp_id, 0)),
+      "parameters" => Enum.map(exercise.parameters, & Map.from_struct(&1) |> Map.put(:temp_id, 0)),
+      "author_id" => user_id
+    }
 
     %Exercise{}
-    |> Exercise.changeset(attrs)
+    |> Exercise.changeset_duplicate(attrs)
     |> Repo.insert()
   end
 end
