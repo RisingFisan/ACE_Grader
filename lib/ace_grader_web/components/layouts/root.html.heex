@@ -4,9 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · AceGrader">
+    <.live_title suffix=" · ACE Grader">
       <%= assigns[:page_title] || "Page" %>
     </.live_title>
+    <meta property="og:title" content={assigns[:page_title] || "ACE Grader"} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={~p"/images/ACEGrader_violet.png"} />
+    <meta property="og:description" :if={assigns[:page_description]} content={assigns[:page_description]} />
+    <meta property="og:site_name" content="ACE Grader" />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
     <script>
