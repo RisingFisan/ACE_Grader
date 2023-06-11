@@ -61,7 +61,7 @@
 
   <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
   <.inputs_for :let={tf} field={f[:tests]}>
-    <.input :if={is_nil(tf.data.temp_id)} field={tf[:id]} type="hidden" />
+    <!-- .input :if={is_nil(tf.data.temp_id)} field={tf[:id]} type="hidden" /-->
     <input type="hidden" name="exercise[tests_order][]" value={tf.index} />
     <div class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-xl border-2 border-zinc-300 dark:border-zinc-700">
       <div class={["space-y-2", (if tf[:delete].value == "true", do: "blur-sm")]}>
@@ -118,7 +118,7 @@
 
   <h2 class="text-2xl font-bold"><%= gettext "Parameters" %></h2>
   <.inputs_for :let={pf} field={f[:parameters]}>
-    <.input :if={is_nil(pf.data.temp_id)} field={pf[:id]} type="hidden" />
+    <!--.input :if={is_nil(pf.data.temp_id)} field={pf[:id]} type="hidden" /-->
     <input type="hidden" name="exercise[params_order][]" value={pf.index} />
     <div class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-xl border-2 border-zinc-300 dark:border-zinc-700">
       <div class={["space-y-2", (if pf[:delete].value == "true", do: "blur-sm")]}>
