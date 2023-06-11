@@ -3,7 +3,7 @@ FROM python:3.11-slim-buster
 WORKDIR /python-grader
 
 RUN apt-get update && \
-    apt-get -y install gcc clang python3-clang && \
+    apt-get -y install gcc libclang-13-dev && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
