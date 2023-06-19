@@ -83,7 +83,7 @@
           </div>
         </div>
         <.input field={tf[:expected_output]} type="textarea" label={gettext "Expected output"} mono />
-        <.input field={tf[:grade]} type="text" label={ gettext "Grade %" }/>
+        <.input field={tf[:grade]} type="range" min={0} max={100} label={ gettext "Grade %" }/>
         <.input field={tf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
       </div>
       <label class="cursor-pointer">
@@ -124,21 +124,8 @@
       <div class={["space-y-2", (if pf[:delete].value == "true", do: "blur-sm")]}>
         <%!-- <.input field={pf[:description]} type="text" label={gettext "Description"} placeholder={gettext("If left empty, the input will be used as the description.")} /> --%>
         <div class="grid grid-cols-[1fr_min-content] items-center gap-4">
-        <.input field={pf[:key]} type="select" options={[ 
-          {gettext("Program uses recursion"), 1},
-          {gettext("Program uses loops"), 2},
-          {gettext("Program uses pointers"), 3},
-          {gettext("Program uses dynamic memory"), 4},
-          {gettext("Program frees allocated memory"), 5},
-          {gettext("Function X is used"), 10},
-          {gettext("Function X is recursive"), 11},
-          {gettext("Function X is iterative"), 12},
-          {gettext("Function X uses pointers"), 13},
-          {gettext("Function X uses dynamic memory"), 14},
-          {gettext("Function X frees allocated memory"), 15},
-          ] 
-        } label={gettext "Check if"} />
-        <.input field={pf[:negative]} type="checkbox" label="Invert?"/>
+        <.input field={pf[:key]} type="select" options={AceGraderWeb.Utils.get_keys() |> Map.to_list() |> Enum.map(fn {a, b} -> {b, a} end)} label={gettext "Check if"} />
+        <.input field={pf[:negative]} type="checkbox" label={gettext "Invert?"}/>
         </div>
         <%= if pf[:key].value && pf[:key].value >= 10 do %>
           <.input field={pf[:value]} type="text" label={gettext "Function name"} mono />
@@ -159,7 +146,7 @@
           </div>
         </div>
         <%= if pf[:type].value == :graded do %>
-          <.input field={pf[:grade]} type="text" label={ gettext "Grade %" }/>
+          <.input field={pf[:grade]} type="range" label={ gettext "Grade %" }/>
         <% end %>
         <.input field={pf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
       </div>

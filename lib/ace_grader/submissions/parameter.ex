@@ -48,21 +48,4 @@ defmodule AceGrader.Submissions.Parameter do
         changeset
     end
   end
-
-  def key_string(%{key: key, negative: negative, value: value}) do
-    case key do
-      1 -> Gettext.gettext(AceGraderWeb.Gettext, "Program #{if negative, do: "doesn't use", else: "uses"} recursion")
-      2 -> Gettext.gettext(AceGraderWeb.Gettext, "Program #{if negative, do: "doesn't use", else: "uses"} loops")
-      3 -> Gettext.gettext(AceGraderWeb.Gettext, "Program #{if negative, do: "doesn't use", else: "uses"} pointers")
-      4 -> Gettext.gettext(AceGraderWeb.Gettext, "Program #{if negative, do: "doesn't use", else: "uses"} dynamic memory")
-      5 -> Gettext.gettext(AceGraderWeb.Gettext, "Program #{if negative, do: "doesn't free", else: "frees"} allocated memory")
-      10 -> Gettext.gettext(AceGraderWeb.Gettext, "Function '#{value}' is#{if negative, do: "n't", else: ""} used")
-      11 -> Gettext.gettext(AceGraderWeb.Gettext, "Function '#{value}' is#{if negative, do: "n't", else: ""} recursive")
-      12 -> Gettext.gettext(AceGraderWeb.Gettext, "Function '#{value}' is#{if negative, do: "n't", else: ""} iterative")
-      13 -> Gettext.gettext(AceGraderWeb.Gettext, "Function '#{value}' #{if negative, do: "doesn't use", else: "uses"} pointers")
-      14 -> Gettext.gettext(AceGraderWeb.Gettext, "Function '#{value}' #{if negative, do: "doesn't use", else: "uses"} dynamic memory")
-      15 -> Gettext.gettext(AceGraderWeb.Gettext, "Function '#{value}' #{if negative, do: "doesn't free", else: "frees"} allocated memory")
-      _ -> Gettext.gettext(AceGraderWeb.Gettext, "Unknown key")
-    end
-  end
 end

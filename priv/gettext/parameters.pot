@@ -1,0 +1,46 @@
+msgid "Function"
+msgstr ""
+
+msgid "is"
+msgstr ""
+
+msgid "isn't"
+msgstr ""
+
+msgid "Program"
+msgstr ""
+
+msgid "uses"
+msgstr ""
+
+msgid "doesn't use"
+msgstr ""
+
+msgid "recursion"
+msgstr ""
+
+msgctxt "function"
+msgid "recursive"
+msgstr ""
+
+msgid "loops"
+msgstr ""
+
+msgid "pointers"
+msgstr ""
+
+msgid "dynamic memory"
+msgstr ""
+
+msgid "frees"
+msgstr ""
+
+msgid "doesn't free"
+msgstr ""
+
+msgid "allocated memory"
+msgstr ""
+
+msgctxt "function"
+msgid "iterative"
+msgstr ""

@@ -1,0 +1,42 @@
+<.header>
+  Listing Classes
+  <:actions>
+    <.link patch={~p"/classes/new"}>
+      <.button>New Class</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="classes"
+  rows={@streams.classes}
+  row_click={fn {_id, class} -> JS.navigate(~p"/classes/#{class}") end}
+>
+  <:col :let={{_id, class}} label="Name"><%= class.name %></:col>
+  <:action :let={{_id, class}}>
+    <div class="sr-only">
+      <.link navigate={~p"/classes/#{class}"}>Show</.link>
+    </div>
+    <.link patch={~p"/classes/#{class}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, class}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: class.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="class-modal" show on_cancel={JS.patch(~p"/classes")}>
+  <.live_component
+    module={AceGraderWeb.ClassLive.FormComponent}
+    id={@class.id || :new}
+    current_user={@current_user}
+    title={@page_title}
+    action={@live_action}
+    class={@class}
+    patch={~p"/classes"}
+  />
+</.modal>

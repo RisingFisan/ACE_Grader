@@ -95,9 +95,14 @@ defmodule AceGrader.Grader do
             Task.async(fn ->
               if test.status == :pending or test.status == :error do
                 {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
-                {status, output} = process_output(test, Jason.decode!(response.body))
-                # send(liveview, {:test_result, test.id, output, i})
-                %{ Map.from_struct(test) | actual_output: output, status: status }
+                case response do
+                  %HTTPoison.Error{reason: :timeout} ->
+                    %{ Map.from_struct(test) | status: :timeout }
+                  response ->
+                    {status, output} = process_output(test, Jason.decode!(response.body))
+                    # send(liveview, {:test_result, test.id, output, i})
+                    %{ Map.from_struct(test) | actual_output: output, status: status }
+                end
               else
                 Map.from_struct(test)
               end
@@ -114,9 +119,9 @@ defmodule AceGrader.Grader do
                 } end)
               }), [{"Content-Type", "application/json"}])
               process_parameters_output(submission.parameters, Jason.decode!(response.body))
-            end) |> Task.await(10_000)
+            end) |> Task.await()
 
-          tests = Task.await_many(tests_async, 10_000)
+          tests = Task.await_many(tests_async)
 
           mandatory_params = Enum.filter(parameters, fn parameter -> parameter.type == :mandatory end)
           total_grade =
@@ -129,10 +134,10 @@ defmodule AceGrader.Grader do
               0
             end
           HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
-          Submissions.update_submission(submission, %{success: true, warnings: warnings, errors: nil, total_grade: total_grade, tests: tests, parameters: parameters})
+          Submissions.update_submission(submission, %{status: :success, warnings: warnings, errors: nil, total_grade: total_grade, tests: tests, parameters: parameters})
         {:error, error_msg} ->
           Submissions.update_submission(submission, %{
-            success: false,
+            status: :error,
             errors: error_msg,
             total_grade: 0,
             tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end),
@@ -150,8 +155,13 @@ defmodule AceGrader.Grader do
         tests_async = for test <- submission.tests, test.visible || submission.author_id == user.id do
           Task.async(fn ->
             {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.author_id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
-            {status, output} = process_output(test, Jason.decode!(response.body))
-            %{ Map.from_struct(test) | actual_output: output, status: status }
+            case response do
+              %HTTPoison.Error{reason: :timeout} ->
+                %{ Map.from_struct(test) | status: :timeout }
+              response ->
+                {status, output} = process_output(test, Jason.decode!(response.body))
+                %{ Map.from_struct(test) | actual_output: output, status: status }
+            end
           end)
         end
         parameters =
@@ -164,8 +174,8 @@ defmodule AceGrader.Grader do
               } end)
             }), [{"Content-Type", "application/json"}])
             process_parameters_output(submission.parameters, Jason.decode!(response.body))
-          end) |> Task.await(10_000)
-        tests = Task.await_many(tests_async, 10_000)
+          end) |> Task.await()
+        tests = Task.await_many(tests_async)
         HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
         %{success: true, compilation_msg: warnings, tests: tests, parameters: parameters}
       {:error, error_msg} ->

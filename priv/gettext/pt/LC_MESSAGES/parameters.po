@@ -1,0 +1,59 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: pt\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Function"
+msgstr "Função"
+
+msgid "is"
+msgstr "é"
+
+msgid "isn't"
+msgstr "não é"
+
+msgid "Program"
+msgstr "Programa"
+
+msgid "uses"
+msgstr "usa"
+
+msgid "doesn't use"
+msgstr "não usa"
+
+msgid "recursion"
+msgstr "recursividade"
+
+msgctxt "function"
+msgid "recursive"
+msgstr "recursiva"
+
+msgid "loops"
+msgstr "ciclos"
+
+msgid "pointers"
+msgstr "apontadores"
+
+msgid "dynamic memory"
+msgstr "memória dinâmica"
+
+msgid "frees"
+msgstr "liberta"
+
+msgid "doesn't free"
+msgstr "não liberta"
+
+msgid "allocated memory"
+msgstr "memória alocada"
+
+msgctxt "function"
+msgid "iterative"
+msgstr "iterativa"

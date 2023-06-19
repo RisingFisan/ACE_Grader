@@ -57,7 +57,7 @@
   <div :if={@current_user.account_type != :student} class="flex items-center gap-2 self-end">
       <p><%= gettext("Sort by") %></p>
       <.simple_form :let={f} for={@order_and_filter_changeset} phx-change="order_and_filter" as="order_and_filter">
-        <% options = [{gettext("Username"), "name_asc"}, {gettext("Username (Desc)"), "name_desc"},
+        <% options = [{pgettext("short", "Username"), "name_asc"}, {pgettext("short", "Username (Desc)"), "name_desc"},
                   {gettext("Date"), "date_asc"}, {gettext("Date (Desc)"), "date_desc"},
                   {gettext("Grade"), "grade_asc"}, {gettext("Grade (Desc)"), "grade_desc"}] %>
         <.input field={f[:order_by]} type="select" options={options}/>

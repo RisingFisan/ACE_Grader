@@ -70,6 +70,13 @@ defmodule AceGraderWeb.Router do
       on_mount: [{AceGraderWeb.UserAuth, :ensure_teacher}] do
         live "/exercises/new", ExerciseLive.Form
         live "/exercises/:id/edit", ExerciseLive.Form
+
+        live "/classes", ClassLive.Index, :index
+        live "/classes/new", ClassLive.Index, :new
+        live "/classes/:id/edit", ClassLive.Index, :edit
+
+        live "/classes/:id", ClassLive.Show, :show
+        live "/classes/:id/show/edit", ClassLive.Show, :edit
     end
   end
 

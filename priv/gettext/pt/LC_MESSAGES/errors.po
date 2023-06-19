@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "can't be blank"
-msgstr ""
+msgstr "não pode ficar em branco"
 
 msgid "has already been taken"
 msgstr ""
@@ -87,21 +87,21 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "must be less than %{number}"
-msgstr ""
+msgstr "deve ser menor que %{number}"
 
 msgid "must be greater than %{number}"
-msgstr ""
+msgstr "deve ser maior que %{number}"
 
 msgid "must be less than or equal to %{number}"
-msgstr ""
+msgstr "deve ser menor ou igual a %{number}"
 
 msgid "must be greater than or equal to %{number}"
-msgstr ""
+msgstr "deve ser maior ou igual a %{number}"
 
 msgid "must be equal to %{number}"
-msgstr ""
+msgstr "deve ser igual a %{number}"
 
-#: lib/ace_grader_web/live/exercise_live/form.html.heex:117
+#: lib/ace_grader_web/live/exercise_live/form.html.heex:183
 #, elixir-autogen, elixir-format
 msgid "The sum of every grade should equal 100!"
-msgstr ""
+msgstr "A soma de todas as notas deve ser igual a 100!"

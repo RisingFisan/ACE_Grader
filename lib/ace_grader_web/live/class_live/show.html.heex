@@ -1,0 +1,26 @@
+<.header>
+  Class <%= @class.name %>
+  <:subtitle>This is a class record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/classes/#{@class}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit class</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @class.name %></:item>
+</.list>
+
+<.back navigate={~p"/classes"}>Back to classes</.back>
+
+<.modal :if={@live_action == :edit} id="class-modal" show on_cancel={JS.patch(~p"/classes/#{@class}")}>
+  <.live_component
+    module={AceGraderWeb.ClassLive.FormComponent}
+    id={@class.id}
+    title={@page_title}
+    action={@live_action}
+    class={@class}
+    patch={~p"/classes/#{@class}"}
+  />
+</.modal>

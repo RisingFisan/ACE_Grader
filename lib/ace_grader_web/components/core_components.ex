@@ -309,6 +309,8 @@ defmodule AceGraderWeb.CoreComponents do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :min, :integer, default: nil, doc: "the min value for number inputs"
+  attr :max, :integer, default: nil, doc: "the max value for number inputs"
   attr :rest, :global, include: ~w(autocomplete cols disabled form list max maxlength min minlength
                                    pattern placeholder readonly required rows size step)
   attr :mono, :boolean, default: false
@@ -412,6 +414,35 @@ defmodule AceGraderWeb.CoreComponents do
             <%= opt_name %>
           </label>
         </div>
+      <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+
+  def input(%{type: "range"} = assigns) do
+    ~H"""
+    <div phx-feedback-for={@name}>
+      <.label for={@id}><%= @label %></.label>
+      <div class="flex gap-2 items-center pt-2">
+      <input
+        type={@type}
+        name={@name}
+        id={@id || @name}
+        min={@min}
+        max={@max}
+        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        class={[
+          "block w-full rounded-lg text-zinc-900 dark:text-zinc-50 focus:ring-0 sm:text-sm sm:leading-6",
+          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
+          "border-zinc-300 focus:border-zinc-400 dark:border-zinc-600",
+          "accent-violet-700 opacity-80 hover:opacity-100",
+          @errors != [] && "border-rose-400 focus:border-rose-400",
+          @mono && "font-mono"
+        ]}
+        {@rest}
+      />
+      <span class="select-none"><%= Phoenix.HTML.Form.normalize_value(@type, @value) %></span>
+      </div>
       <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
     """
