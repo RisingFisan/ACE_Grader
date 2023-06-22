@@ -10,10 +10,26 @@ defmodule AceGraderWeb.ClassLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:class, Classes.get_class!(id))}
+    class = Classes.get_class!(id)
+    case socket.assigns.live_action do
+      :edit ->
+        if class.creator_id != socket.assigns.current_user.id do
+          {:noreply,
+          socket
+          |> put_flash(:error, "You do not have permission to edit this class.")
+          |> redirect(to: ~p"/classes/#{class}")}
+        else
+          {:noreply,
+           socket
+           |> assign(:page_title, page_title(socket.assigns.live_action))
+           |> assign(:class, class)}
+        end
+      :show ->
+        {:noreply,
+         socket
+         |> assign(:page_title, page_title(socket.assigns.live_action))
+         |> assign(:class, class)}
+    end
   end
 
   defp page_title(:show), do: "Show Class"

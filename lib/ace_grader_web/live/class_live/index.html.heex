@@ -1,33 +1,32 @@
 <.header>
   Listing Classes
   <:actions>
-    <.link patch={~p"/classes/new"}>
+    <.link :if={@current_user.account_type != :student} patch={~p"/classes/new"}>
       <.button>New Class</.button>
     </.link>
   </:actions>
 </.header>
 
-<.table
-  id="classes"
-  rows={@streams.classes}
-  row_click={fn {_id, class} -> JS.navigate(~p"/classes/#{class}") end}
->
-  <:col :let={{_id, class}} label="Name"><%= class.name %></:col>
-  <:action :let={{_id, class}}>
-    <div class="sr-only">
-      <.link navigate={~p"/classes/#{class}"}>Show</.link>
-    </div>
-    <.link patch={~p"/classes/#{class}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, class}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: class.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
-</.table>
+<div id="classes" phx-update="stream" class="py-4">
+  <div :for={{id, class} <- @streams.classes} class="flex justify-between px-4 py-2 rounded-lg cursor-pointer bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600"
+    phx-click={JS.navigate(~p"/classes/#{class}")}
+  >
+    <p><%= class.name %></p>
+    <div class="space-x-2">
+      <div class="sr-only">
+        <.link navigate={~p"/classes/#{class}"}>Show</.link>
+      </div>
+      <.link :if={class.creator_id == @current_user.id} patch={~p"/classes/#{class}/edit"}>Edit</.link>
+      <.link
+        :if={class.creator_id == @current_user.id || @current_user.account_type == :admin} 
+        phx-click={JS.push("delete", value: %{id: class.id}) |> hide("##{id}")}
+        data-confirm="Are you sure?"
+      >
+        Delete
+      </.link>
+    </div> 
+  </div>
+</div>
 
 <.modal :if={@live_action in [:new, :edit]} id="class-modal" show on_cancel={JS.patch(~p"/classes")}>
   <.live_component

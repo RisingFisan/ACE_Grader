@@ -9,7 +9,6 @@ defmodule AceGraderWeb.ClassLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage class records in your database.</:subtitle>
       </.header>
 
       <.simple_form

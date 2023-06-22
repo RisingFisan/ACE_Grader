@@ -11,13 +11,27 @@ defmodule AceGraderWeb.ClassLive.Index do
 
   @impl true
   def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    case socket.assigns.live_action do
+      :new -> if socket.assigns.current_user.account_type != :student do
+        {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+      else
+        {:noreply, socket |> put_flash(:error, "You do not have permission to create a class.") |> push_patch(to: "/classes")}
+      end
+      _ -> {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+    end
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
-    socket
-    |> assign(:page_title, "Edit class")
-    |> assign(:class, Classes.get_class!(id))
+    class = Classes.get_class!(id)
+    if class.creator_id != socket.assigns.current_user.id do
+      socket
+      |> put_flash(:error, "You do not have permission to edit this class.")
+      |> push_patch(to: "/classes")
+    else
+      socket
+      |> assign(:page_title, "Edit class")
+      |> assign(:class, class)
+    end
   end
 
   defp apply_action(socket, :new, _params) do
@@ -40,8 +54,15 @@ defmodule AceGraderWeb.ClassLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     class = Classes.get_class!(id)
-    {:ok, _} = Classes.delete_class(class)
+    if class.creator_id != socket.assigns.current_user.id do
+      {:noreply,
+       socket
+       |> put_flash(:error, "You do not have permission to delete this class.")
+       |> push_patch(to: "/classes")}
+    else
+      {:ok, _} = Classes.delete_class(class)
 
-    {:noreply, stream_delete(socket, :classes, class)}
+      {:noreply, stream_delete(socket, :classes, class)}
+    end
   end
 end

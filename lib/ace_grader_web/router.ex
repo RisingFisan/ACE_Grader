@@ -71,11 +71,9 @@ defmodule AceGraderWeb.Router do
         live "/exercises/new", ExerciseLive.Form
         live "/exercises/:id/edit", ExerciseLive.Form
 
-        live "/classes", ClassLive.Index, :index
         live "/classes/new", ClassLive.Index, :new
         live "/classes/:id/edit", ClassLive.Index, :edit
 
-        live "/classes/:id", ClassLive.Show, :show
         live "/classes/:id/show/edit", ClassLive.Show, :edit
     end
   end
@@ -91,6 +89,9 @@ defmodule AceGraderWeb.Router do
 
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
+      live "/classes", ClassLive.Index, :index
+      live "/classes/:id", ClassLive.Show, :show
     end
   end
 

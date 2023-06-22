@@ -1,18 +1,17 @@
 <.header>
-  Class <%= @class.name %>
-  <:subtitle>This is a class record from your database.</:subtitle>
+  Class <b><%= @class.name %></b>
   <:actions>
-    <.link patch={~p"/classes/#{@class}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit class</.button>
-    </.link>
+    <.back navigate={~p"/classes"}>Back to classes</.back>
   </:actions>
 </.header>
 
-<.list>
-  <:item title="Name"><%= @class.name %></:item>
-</.list>
-
-<.back navigate={~p"/classes"}>Back to classes</.back>
+<div class="py-4">
+<%= if @class.creator_id == @current_user.id do %>
+  <.link patch={~p"/classes/#{@class}/show/edit"} phx-click={JS.push_focus()}>
+    <.button>Edit class</.button>
+  </.link>
+<% end %>
+</div>
 
 <.modal :if={@live_action == :edit} id="class-modal" show on_cancel={JS.patch(~p"/classes/#{@class}")}>
   <.live_component

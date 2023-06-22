@@ -3,12 +3,12 @@
     <div class="md:hidden w-0 flex-1">
       <Heroicons.bars_3 class="w-8 h-8 cursor-pointer" onclick="toggleMobileMenu()"/>
     </div>
-    <div class="flex flex-0 items-center gap-8 xl:gap-16 w-0 flex-1">
+    <div class="flex flex-0 items-center flex-col md:flex-row gap-8 xl:gap-16 w-0 flex-1">
       <a href="/" class="flex items-center h-16">
         <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
       </a>
       <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
-        (if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
+        (if String.trim_trailing(@current_path, "/") == "/exercises", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
       ]}>
         <%= gettext "Exercises" %>
       </.link>
