@@ -1,5 +1,6 @@
 <.header>
-  Class <b><%= @class.name %></b>
+  <%= gettext("Class") %> <b><%= @class.name %></b>
+  <:subtitle><p><%= pgettext("class", "Created by") <> ":" %> <a href={~p"/users/#{@class.creator.username}"} class="text-violet-600 dark:text-violet-400"><%= @class.creator.username %></a></p></:subtitle>
   <:actions>
     <.back navigate={~p"/classes"}>Back to classes</.back>
   </:actions>
@@ -8,9 +9,54 @@
 <div class="py-4">
 <%= if @class.creator_id == @current_user.id do %>
   <.link patch={~p"/classes/#{@class}/show/edit"} phx-click={JS.push_focus()}>
-    <.button>Edit class</.button>
+    <.button kind={:teacher}>Edit class</.button>
   </.link>
+<% else %>
+  <%= if @current_user not in @class.members do %>
+    <.button phx-click="join-class">Join class</.button>
+  <% else %>
+    <.button phx-click="leave-class">Leave class</.button>
+  <% end %>
 <% end %>
+</div>
+
+<div class="space-y-5">
+  <div>
+    <h2 class="text-2xl font-bold"><%= gettext "Teachers" %></h2>
+    <div>
+      <%= if @current_user.account_type != :student do %>
+        <a href={~p"/users/#{@class.creator.username}"}><%= "#{@class.creator.display_name} (@#{@class.creator.username})" %></a>
+      <% else %>
+        <p><%= "#{@class.creator.display_name} (@#{@class.creator.username})" %></p>
+      <% end %>
+    </div>
+    <div>
+      <%= for teacher <- @class.members |> Enum.sort_by(& &1.display_name), teacher.account_type == :teacher do %>
+        <div>
+          <%= if @current_user.account_type != :student do %>
+            <a href={~p"/users/#{teacher.username}"}><%= "#{teacher.display_name} (@#{teacher.username})" %></a>
+          <% else %>
+            <p><%= "#{teacher.display_name} (@#{teacher.username})" %></p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="text-2xl font-bold"><%= gettext "Students" %></h2>
+    <div>
+      <%= for student <- @class.members |> Enum.sort_by(& &1.display_name), student.account_type == :student do %>
+        <div>
+          <%= if @current_user.account_type != :student do %>
+            <a href={~p"/users/#{student.username}"}><%= "#{student.display_name} (@#{student.username})" %></a>
+          <% else %>
+            <p><%= "#{student.display_name} (@#{student.username})" %></p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
 
 <.modal :if={@live_action == :edit} id="class-modal" show on_cancel={JS.patch(~p"/classes/#{@class}")}>

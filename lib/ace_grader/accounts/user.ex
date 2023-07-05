@@ -16,6 +16,8 @@ defmodule AceGrader.Accounts.User do
 
     has_many :submissions, AceGrader.Submissions.Submission, foreign_key: :author_id
 
+    many_to_many :classes, AceGrader.Classes.Class, join_through: "classes_users", on_replace: :delete
+
     timestamps()
   end
 
@@ -126,6 +128,7 @@ defmodule AceGrader.Accounts.User do
     |> cast(attrs, [:username, :display_name, :account_type, :locale])
     |> validate_username(opts)
     |> validate_display_name()
+    |> cast_assoc(:classes)
   end
 
   @doc """

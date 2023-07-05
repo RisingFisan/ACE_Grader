@@ -377,4 +377,22 @@ defmodule AceGrader.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  def add_to_class(user, class) do
+    user = Repo.preload(user, :classes)
+
+    user
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:classes, [class | user.classes])
+    |> Repo.update()
+  end
+
+  def remove_from_class(user, class) do
+    user = Repo.preload(user, :classes)
+
+    user
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:classes, Enum.filter(user.classes, fn c -> c.id != class.id end))
+    |> Repo.update()
+  end
 end

@@ -40,8 +40,6 @@ defmodule AceGrader.Exercises.Exercise do
       attrs
     end
 
-    IO.inspect(attrs)
-
     exercise
     |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
     |> validate_required([:title, :description, :public])

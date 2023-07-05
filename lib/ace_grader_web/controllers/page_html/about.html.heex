@@ -1,10 +1,9 @@
-<div class="h-min bg-violet-700 py-6 space-y-4">
+<div class="h-min bg-violet-700 py-6 space-y-8">
   <div class="flex flex-col items-center justify-center h-full gap-3">
     <img src={"/images/ACEGrader_white.svg"} alt="ACE Grader" class="w-48 md:w-64"/>
     <p class="font-light tracking-wider text-xl text-zinc-200 text-center px-16"><%= gettext "Automatic Code Evaluator and Grader" %></p>
   </div>
   <div class="flex flex-col items-center gap-4">
-    <div class="h-[1px] border-t border-zinc-300 w-64"></div>
     <h2 :if={@current_user} class="text-2xl md:text-4xl font-bold"><%= gettext("Welcome back, %{name}!", name: @current_user.display_name) %></h2>
     <div class="flex flex-col md:flex-row items-center gap-4">
       <%= if @current_user do %>
@@ -29,14 +28,12 @@
   </div>
 </div>
 <div class="px-4 py-6 sm:py-12 md:px-8 lg:px-12 xl:px-16 flex flex-col items-center md:items-start gap-6">
-  <h2 class="text-4xl font-bold">What is ACE Grader?</h2>
-  <p class="text-xl font-light">ACE Grader, as the name implies, is an automatic grading solution for programming exercises! It uses a combination of dynamic and static analysis in order to evaluate submitted programs.</p>
+  <p>ACE Grader was developed by Sofia Santos as part of her Master's Thesis in Software Engineering at Universidade do Minho. Sofia was supervised by Professor Pedro Rangel Henriques and Professor Alda Gancarski.</p>
 
-  <h2 class="text-4xl font-bold">What is static analysis?</h2>
-  <p class="text-xl font-light">Unlike dynamic analysis, which only looks at a program's output, static analysis looks at the program itself. For example, ACE Grader can check if a function is recursive, unlike most automatic grading software. This can be extremely useful for grading introductory programming exercises, where students must use a speficic concept in order to solve a problem.</p>
+  <p>ACE Grader is an open source project under the MIT license. You can find the source code on <a href="https://github.com/RisingFisan/ACE_Grader" class="text-violet-500">GitHub</a>.</p>
 </div>
 
 <footer class="fixed bottom-0 w-full p-4 px-6 bg-violet-700 text-lg flex justify-between">
   <p>Made with 🏳️‍🌈 by Sofia Santos.</p>
-  <a href={~p"/about"} class="text-violet-300">More information about this project</a>
+  <a href="/" class="text-violet-300">Back to the home page</a>
 </footer>

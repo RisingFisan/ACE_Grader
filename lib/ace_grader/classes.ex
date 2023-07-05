@@ -21,6 +21,14 @@ defmodule AceGrader.Classes do
     Repo.all(Class)
   end
 
+  def list_enrolled_classes(user_id) do
+    Repo.all(from(c in Class, join: m in assoc(c, :members), where: m.id == ^user_id))
+  end
+
+  def list_user_classes(user_id) do
+    Repo.all(from(c in Class, where: c.creator_id == ^user_id))
+  end
+
   @doc """
   Gets a single class.
 
@@ -35,7 +43,10 @@ defmodule AceGrader.Classes do
       ** (Ecto.NoResultsError)
 
   """
-  def get_class!(id), do: Repo.get!(Class, id)
+  def get_class!(id) do
+    Repo.get!(Class, id)
+    |> Repo.preload([:members, :creator])
+  end
 
   @doc """
   Creates a class.

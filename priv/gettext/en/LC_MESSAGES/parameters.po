@@ -33,6 +33,7 @@ msgid "recursion"
 msgstr ""
 
 #, fuzzy
+msgctxt "function"
 msgid "recursive"
 msgstr ""
 

@@ -6,7 +6,11 @@ defmodule AceGraderWeb.ClassLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :classes, Classes.list_classes())}
+    case socket.assigns.current_user.account_type do
+      :student -> {:ok, stream(socket, :classes, Classes.list_enrolled_classes(socket.assigns.current_user.id))}
+      :teacher -> {:ok, stream(socket, :classes, Classes.list_user_classes(socket.assigns.current_user.id))}
+      :admin -> {:ok, stream(socket, :classes, Classes.list_classes())}
+    end
   end
 
   @impl true
@@ -42,7 +46,7 @@ defmodule AceGraderWeb.ClassLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing classes")
+    |> assign(:page_title, "Your classes")
     |> assign(:class, nil)
   end
 

@@ -12,6 +12,11 @@
       ]}>
         <%= gettext "Exercises" %>
       </.link>
+      <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
+        (if String.trim_trailing(@current_path, "/") == "/classes", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
+      ]}>
+        <%= gettext "Classes" %>
+      </.link>
     </div>
     <div class="items-center gap-6 w-0 flex-1">
       <div class="flex gap-4 items-center justify-end max-w-full">
@@ -37,6 +42,9 @@
   <div id="mobile-menu" class="hidden h-min w-full bg-white dark:bg-zinc-800 px-4 py-2 flex flex-col divide-y [&>*]:border-zinc-500 [&>*]:py-1 text-xl tracking-wider font-extralight text-zinc-200 ">
     <.link href={~p"/exercises"} class={(if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400")}>
       <%= gettext "Exercises" %>
+    </.link>
+    <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={(if @current_path == "/classes", do: "text-violet-700 dark:text-violet-400")}>
+      <%= gettext "Classes" %>
     </.link>
     <.link :if={!@current_user} href={~p"/users/log_in"} class="font-bold">
       <%= gettext "Log in" %>

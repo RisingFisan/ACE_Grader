@@ -7,9 +7,9 @@ defmodule AceGrader.Classes.Class do
   schema "classes" do
     field :name, :string
 
-    belongs_to :user, AceGrader.Users.User, foreign_key: :creator_id
+    belongs_to :creator, AceGrader.Accounts.User, foreign_key: :creator_id
 
-    many_to_many :users, AceGrader.Users.User, join_through: "classes_users"
+    many_to_many :members, AceGrader.Accounts.User, join_through: "classes_users"
 
     timestamps()
   end
@@ -19,6 +19,5 @@ defmodule AceGrader.Classes.Class do
     class
     |> cast(attrs, [:name, :creator_id])
     |> validate_required([:name, :creator_id])
-    |> cast_assoc(:users)
   end
 end

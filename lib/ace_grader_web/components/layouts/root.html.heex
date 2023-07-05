@@ -4,9 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · ACE Grader">
-      <%= assigns[:page_title] || "Page" %>
-    </.live_title>
+    <%= if assigns[:page_title] do %>
+      <.live_title suffix=" · ACE Grader"><%= assigns[:page_title] %></.live_title>
+    <% else %>
+      <.live_title>ACE Grader</.live_title>
+    <% end %>
     <meta property="og:title" content={assigns[:page_title] || "ACE Grader"} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={~p"/images/ACEGrader_violet.png"} />

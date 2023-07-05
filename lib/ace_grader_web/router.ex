@@ -98,6 +98,9 @@ defmodule AceGraderWeb.Router do
   scope "/", AceGraderWeb do
     pipe_through [:browser]
 
+    get "/", PageController, :home
+    get "/about", PageController, :about
+
     resources "/exercises", ExerciseController, only: [:index]
     get "/users/:username", UserController, :show
 
@@ -105,8 +108,6 @@ defmodule AceGraderWeb.Router do
 
     live_session :current_user,
       on_mount: [{AceGraderWeb.UserAuth, :mount_current_user}] do
-
-      live "/", HomeLive
 
       live "/exercises/:id", ExerciseLive.Show
 
