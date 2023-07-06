@@ -1,8 +1,8 @@
 <.header>
-  Your Classes
+  <%= gettext "Your Classes" %>
   <:actions>
     <.link :if={@current_user.account_type != :student} patch={~p"/classes/new"}>
-      <.button kind={:teacher}>New Class</.button>
+      <.button kind={:teacher}><%= gettext "New Class" %></.button>
     </.link>
   </:actions>
 </.header>
@@ -16,13 +16,13 @@
       <div class="sr-only">
         <.link navigate={~p"/classes/#{class}"}>Show</.link>
       </div>
-      <.link :if={class.creator_id == @current_user.id} patch={~p"/classes/#{class}/edit"}>Edit</.link>
+      <.link :if={class.creator_id == @current_user.id} patch={~p"/classes/#{class}/edit"}><%= gettext "Edit" %></.link>
       <.link
         :if={class.creator_id == @current_user.id || @current_user.account_type == :admin} 
         phx-click={JS.push("delete", value: %{id: class.id}) |> hide("##{id}")}
         data-confirm="Are you sure?"
       >
-        Delete
+        <%= gettext "Delete" %>
       </.link>
     </div> 
   </div>

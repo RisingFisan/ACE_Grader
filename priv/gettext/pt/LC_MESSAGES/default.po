@@ -12,7 +12,7 @@ msgstr ""
 "Language: pt\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/ace_grader_web/components/core_components.ex:566
+#: lib/ace_grader_web/components/core_components.ex:568
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr "Ações"
@@ -31,6 +31,7 @@ msgid "Back to exercise"
 msgstr "Voltar ao exercício"
 
 #: lib/ace_grader_web/controllers/exercise_html/show.html.heex:63
+#: lib/ace_grader_web/live/class_live/index.html.heex:25
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:93
 #: lib/ace_grader_web/live/exercise_live/form.html.heex:157
 #: lib/ace_grader_web/live/exercise_live/show.html.heex:74
@@ -248,7 +249,7 @@ msgid_plural "My submissions"
 msgstr[0] "Submissões"
 msgstr[1] "Submissões"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:77
+#: lib/ace_grader_web/components/layouts/app.html.heex:85
 #, elixir-autogen, elixir-format
 msgid "Account settings"
 msgstr "Definições da conta"
@@ -261,17 +262,17 @@ msgstr "Definições da conta"
 msgid "Date"
 msgstr "Data"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:57
+#: lib/ace_grader_web/components/layouts/app.html.heex:65
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "Idioma"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:83
+#: lib/ace_grader_web/components/layouts/app.html.heex:91
 #, elixir-autogen, elixir-format
 msgid "Log out"
 msgstr "Terminar sessão"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:64
+#: lib/ace_grader_web/components/layouts/app.html.heex:72
 #, elixir-autogen, elixir-format
 msgid "Theme"
 msgstr "Tema"
@@ -295,7 +296,7 @@ msgstr "Utilizador"
 msgid "Add test"
 msgstr "Adicionar teste"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:117
+#: lib/ace_grader_web/components/layouts/app.html.heex:125
 #, elixir-autogen, elixir-format
 msgid "Dark"
 msgstr "Escuro"
@@ -306,13 +307,15 @@ msgstr "Escuro"
 msgid "Delete exercise"
 msgstr "Apagar exercício"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:121
+#: lib/ace_grader_web/components/layouts/app.html.heex:129
 #, elixir-autogen, elixir-format
 msgid "Light"
 msgstr "Claro"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:25
-#: lib/ace_grader_web/components/layouts/app.html.heex:42
+#: lib/ace_grader_web/components/layouts/app.html.heex:30
+#: lib/ace_grader_web/components/layouts/app.html.heex:50
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:18
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:19
 #: lib/ace_grader_web/live/home.ex:25
 #, elixir-autogen, elixir-format
 msgid "Log in"
@@ -323,7 +326,7 @@ msgstr "Iniciar sessão"
 msgid "Submission template"
 msgstr "Modelo de submissão"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:113
+#: lib/ace_grader_web/components/layouts/app.html.heex:121
 #, elixir-autogen, elixir-format
 msgid "System"
 msgstr "Sistema"
@@ -338,6 +341,7 @@ msgstr "Ficheiro de teste"
 msgid "Already registered?"
 msgstr "Já tens uma conta?"
 
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:4
 #: lib/ace_grader_web/controllers/page_html/home.html.heex:4
 #: lib/ace_grader_web/live/home.ex:9
 #, elixir-autogen, elixir-format
@@ -370,6 +374,8 @@ msgstr "Falhou"
 msgid "Forgot your password?"
 msgstr "Esqueceste-te da tua palavra-passe?"
 
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:24
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:25
 #: lib/ace_grader_web/live/home.ex:31
 #, elixir-autogen, elixir-format
 msgid "Go to Exercises"
@@ -503,7 +509,7 @@ msgid "Exercise name"
 msgstr "Nome do exercício"
 
 #: lib/ace_grader_web/components/layouts/app.html.heex:13
-#: lib/ace_grader_web/components/layouts/app.html.heex:39
+#: lib/ace_grader_web/components/layouts/app.html.heex:44
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Exercises"
 msgstr "Exercícios"
@@ -518,7 +524,7 @@ msgstr "Exercícios criados por"
 msgid "Keep me logged in"
 msgstr "Manter a minha sessão iniciada"
 
-#: lib/ace_grader_web/components/layouts/app.html.heex:71
+#: lib/ace_grader_web/components/layouts/app.html.heex:79
 #, elixir-autogen, elixir-format
 msgid "My account"
 msgstr "A minha conta"
@@ -601,6 +607,8 @@ msgstr "Nova palavra-passe"
 msgid "Username"
 msgstr "Nome de identificação da conta (Username)"
 
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:12
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:13
 #: lib/ace_grader_web/live/home.ex:18
 #, elixir-autogen, elixir-format
 msgid "Go to my account"
@@ -611,6 +619,8 @@ msgstr "Ir para a minha conta"
 msgid "Password"
 msgstr "Palavra-passe"
 
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:7
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:8
 #: lib/ace_grader_web/live/home.ex:15
 #, elixir-autogen, elixir-format
 msgid "Welcome back, %{name}!"
@@ -780,3 +790,96 @@ msgstr "Nome de util. (Desc)"
 #, elixir-autogen, elixir-format
 msgid "Invert?"
 msgstr "Inverter?"
+
+#: lib/ace_grader_web/live/class_live/show.html.heex:2
+#, elixir-autogen, elixir-format
+msgid "Class"
+msgstr "Turma"
+
+#: lib/ace_grader_web/components/layouts/app.html.heex:18
+#: lib/ace_grader_web/components/layouts/app.html.heex:47
+#, elixir-autogen, elixir-format
+msgid "Classes"
+msgstr "Turmas"
+
+#: lib/ace_grader_web/live/class_live/show.html.heex:47
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Students"
+msgstr "Estudantes"
+
+#: lib/ace_grader_web/live/class_live/show.html.heex:25
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Teachers"
+msgstr "Docentes"
+
+#: lib/ace_grader_web/live/class_live/show.html.heex:3
+#, elixir-autogen, elixir-format, fuzzy
+msgctxt "class"
+msgid "Created by"
+msgstr "Criada por"
+
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:33
+#, elixir-autogen, elixir-format
+msgid "ACE Grader is an open source project under the MIT license. You can find the source code on"
+msgstr "ACE Grader é um projeto open source sob a licença MIT. O código fonte pode ser encontrado em"
+
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:31
+#, elixir-autogen, elixir-format
+msgid "ACE Grader was developed by Sofia Santos as part of her Master's Thesis in Software Engineering at Universidade do Minho. Sofia was supervised by Professor Pedro Rangel Henriques and Professor Alda Gancarski."
+msgstr "ACE Grader foi desenvolvido por Sofia Santos no âmbito da sua Dissertação do Mestrado em Engenharia Informática na Universidade do Minho. A Sofia foi supervisionada pelos professores Pedro Rangel Henriques e Alda Gancarski."
+
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:33
+#, elixir-autogen, elixir-format
+msgid "ACE Grader, as the name implies, is an automatic grading solution for programming exercises! It uses a combination of dynamic and static analysis in order to evaluate submitted programs."
+msgstr "ACE Grader, tal como o nome implica, é uma solução para a avaliação automática de exercícios de programação! Usa uma combinação de análise dinâmica e estática de forma a avaliar programas submetidos."
+
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:38
+#, elixir-autogen, elixir-format
+msgid "Back to the home page"
+msgstr "Voltar à página inicial"
+
+#: lib/ace_grader_web/controllers/page_html/about.html.heex:37
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:40
+#, elixir-autogen, elixir-format
+msgid "Made with 🏳️‍🌈 by"
+msgstr "Feito com 🏳️‍🌈 por"
+
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:41
+#, elixir-autogen, elixir-format
+msgid "More information about this project"
+msgstr "Mais informações sobre este projeto"
+
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:36
+#, elixir-autogen, elixir-format
+msgid "Unlike dynamic analysis, which only looks at a program's output, static analysis looks at the program itself. For example, ACE Grader can check if a function is recursive, unlike most automatic grading software. This can be extremely useful for grading introductory programming exercises, where students must use a specific concept in order to solve a problem."
+msgstr "Ao contrário de análise dinâmica, que apenas olha para o output de um programa, análise estática olha para o programa em si. Por exemplo, ACE Grader consegue verificar se uma função é recursiva, ao contrário da maioria do software de avaliação automática. Isto é especialmente útil para a avaliação de exercícios introdutórios de programação, nos quais estudantes devem usar um conceito específico de forma a resolver um problema."
+
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:32
+#, elixir-autogen, elixir-format
+msgid "What is ACE Grader?"
+msgstr "O que é ACE Grader?"
+
+#: lib/ace_grader_web/controllers/page_html/home.html.heex:35
+#, elixir-autogen, elixir-format
+msgid "What is static analysis?"
+msgstr "O que é análise estática?"
+
+#: lib/ace_grader_web/live/class_live/show.html.heex:5
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Back to classes"
+msgstr "Voltar aos exercícios"
+
+#: lib/ace_grader_web/live/class_live/index.html.heex:19
+#, elixir-autogen, elixir-format
+msgid "Edit"
+msgstr "Editar"
+
+#: lib/ace_grader_web/live/class_live/index.html.heex:5
+#, elixir-autogen, elixir-format
+msgid "New Class"
+msgstr "Nova Turma"
+
+#: lib/ace_grader_web/live/class_live/index.html.heex:2
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Your Classes"
+msgstr "As tuas Turmas"
