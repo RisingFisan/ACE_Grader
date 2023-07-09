@@ -87,7 +87,7 @@ defmodule AceGrader.Grader do
   end
 
   def grade_submission(submission, liveview) do
-    if Submission.pending_tests(submission) do
+    if submission.status == :pending do
       case compile(submission, submission.id) do
         {:ok, warnings} ->
           send(liveview, {:compilation_warnings, warnings})

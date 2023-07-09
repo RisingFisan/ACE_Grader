@@ -28,10 +28,4 @@ defmodule AceGrader.Submissions.Submission do
     |> cast_assoc(:tests)
     |> cast_assoc(:parameters)
   end
-
-  def pending_tests(submission) do
-    length(Enum.filter(submission.tests, & &1.status in [:pending, :error])) > 0
-    or
-    length(Enum.filter(submission.parameters, & &1.status in [:pending, :error])) > 0
-  end
 end
