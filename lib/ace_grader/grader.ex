@@ -67,12 +67,12 @@ defmodule AceGrader.Grader do
       {:error, error} ->
         case error do
           %HTTPoison.Error{reason: :econnrefused} ->
-            {:error, "Internal server error - grader is offline. Please try again later."}
+            {:retry, "Internal server error - grader is offline. Please try again later."}
           %HTTPoison.Error{reason: :timeout} ->
-            {:error, "Unexpected server timeout. Sometimes this happens and I still haven't figured out why. Just try again and it should work... probably."}
+            {:retry, "Unexpected server timeout. Sometimes this happens and I still haven't figured out why. Just try again and it should work... probably."}
           _ ->
             IO.inspect(error)
-            {:error, "Unexpected error."}
+            {:retry, "Unexpected error."}
         end
     end
 
@@ -143,6 +143,8 @@ defmodule AceGrader.Grader do
             tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end),
             parameters: Enum.map(submission.parameters, fn parameter -> %{ Map.from_struct(parameter) | status: :error} end)
           })
+        {:retry, error_msg} ->
+          {:retry, error_msg}
       end
     else
       {:ok, submission}

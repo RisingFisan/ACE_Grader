@@ -35,6 +35,8 @@ defmodule AceGraderWeb.SubmissionLive.Show do
       {:error, changeset} ->
         IO.inspect(changeset)
         {:noreply, socket |> put_flash(:error, "Error grading submission! Please reload the page.")}
+      {:retry, error_msg} ->
+        {:noreply, socket |> put_flash(:error, error_msg)}
     end
   end
 
