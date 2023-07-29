@@ -51,7 +51,7 @@ def run_command():
     except subprocess.CalledProcessError as e:
         return jsonify({'status': 'error', 'output': e.stderr.decode(), 'code': abs(e.returncode)})
     except UnicodeDecodeError:
-        return jsonify({'status': 'error', 'output': 'Output encoding error.'})
+        return jsonify({'status': 'error', 'output': 'Output encoding error.', 'code': 1})
 
 @app.route('/analyze', methods=['POST'])
 def analyze_submission():
