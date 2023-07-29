@@ -81,6 +81,6 @@
   <% end %> --%>
 
   <.compilation_results message={@submission.warnings || @submission.errors} status={@submission.status} />
-  <.test_results tests={@submission.tests} status={@submission.status}/>
-  <.parameter_results parameters={@submission.parameters} status={@submission.status}/>
+  <.test_results tests={@submission.tests} error={@submission.status == :error}/>
+  <.parameter_results parameters={@submission.parameters} error={@submission.status == :error}/>
 </div>

@@ -44,13 +44,20 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
 
     result = Grader.test_submission(submission, socket.assigns.current_user)
 
-    {:noreply, socket
-      |> assign(
-        success: result.success,
-        test_results: result.tests,
-        parameter_results: result.parameters,
-        compilation_msg: result.compilation_msg,
-        testing: false)}
+    case result do
+      {:ok, params} ->
+        {:noreply, socket
+        |> assign(params)
+        |> assign(%{success: true, testing: false})}
+      {:error, params} ->
+        {:noreply, socket
+        |> assign(params)
+        |> assign(%{success: false, testing: false})}
+      {:retry, msg} ->
+        {:noreply, socket
+        |> put_flash(:error, msg)
+        |> assign(%{success: nil, testing: false})}
+    end
   end
 
   def handle_event("submit_code", %{"submission" => %{"code" => code}} = _params, socket) do

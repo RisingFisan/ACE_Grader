@@ -179,9 +179,11 @@ defmodule AceGrader.Grader do
           end) |> Task.await()
         tests = Task.await_many(tests_async)
         HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
-        %{success: true, compilation_msg: warnings, tests: tests, parameters: parameters}
+        {:ok, %{compilation_msg: warnings, test_results: tests, parameter_results: parameters}}
       {:error, error_msg} ->
-        %{success: false, compilation_msg: error_msg, tests: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end), parameters: Enum.map(submission.parameters, fn parameter -> %{ Map.from_struct(parameter) | status: :error} end)}
+        {:error, %{compilation_msg: error_msg, test_results: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end), parameter_results: Enum.map(submission.parameters, fn parameter -> %{ Map.from_struct(parameter) | status: :error} end)}}
+      {:retry, error_msg} ->
+        {:retry, error_msg}
     end
   end
 end

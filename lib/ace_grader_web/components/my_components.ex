@@ -7,7 +7,7 @@ defmodule AceGraderWeb.MyComponents do
   import Phoenix.HTML
 
   attr :tests, :list
-  attr :status, :atom, values: [:success, :error, :pending], default: :success
+  attr :error, :boolean, default: :false
   attr :editor, :boolean, default: false
 
   def test_results(assigns) do
@@ -18,7 +18,7 @@ defmodule AceGraderWeb.MyComponents do
         <div :for={{test, i} <- @tests |> Enum.with_index(1)}
           class={["grid grid-cols-1 md:grid-cols-[92px_1fr_128px] items-center text-lg rounded-xl border-2 border-zinc-400 dark:border-zinc-600",
             (test.status == :success && "bg-green-200 dark:bg-green-800"),
-            ((test.status in [:failed, :error] or @status == :error) && "bg-red-200 dark:bg-red-900"),
+            ((test.status in [:failed, :error] or @error) && "bg-red-200 dark:bg-red-900"),
             (test.status == :timeout && "bg-orange-100 dark:bg-orange-900"),
             (test.status == :pending && "bg-zinc-100 dark:bg-zinc-700"),
           ]}>
@@ -78,7 +78,7 @@ defmodule AceGraderWeb.MyComponents do
 
 
   attr :parameters, :list
-  attr :status, :atom, [:success, :error, :pending]
+  attr :error, :boolean, default: :false
   attr :editor, :boolean, default: false
 
   def parameter_results(assigns) do
@@ -89,7 +89,7 @@ defmodule AceGraderWeb.MyComponents do
         <div :for={parameter <- @parameters}
           class={["grid grid-cols-1 md:grid-cols-[148px_1fr_128px] items-center text-lg rounded-xl border-2 border-zinc-400 dark:border-zinc-600",
             (parameter.status == :success && "bg-green-200 dark:bg-green-800"),
-            ((parameter.status in [:failed, :error] or @status == :error) && "bg-red-200 dark:bg-red-900"),
+            ((parameter.status in [:failed, :error] or @error) && "bg-red-200 dark:bg-red-900"),
             (parameter.status == :timeout && "bg-orange-100 dark:bg-orange-900"),
             (parameter.status == :pending && "bg-zinc-100 dark:bg-zinc-700"),
           ]}>

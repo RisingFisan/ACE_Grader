@@ -71,8 +71,8 @@
 </.simple_form>
 
 <.compilation_results :if={@success != nil} status={if @success, do: :success, else: :error} message={@compilation_msg}/>
-<.test_results :if={@success && length(@test_results) > 0} tests={@test_results} editor />
-<.parameter_results :if={@success && length(@parameter_results) > 0} parameters={@parameter_results} editor />
+<.test_results :if={@success && length(@test_results) > 0} tests={@test_results} error={!@success} editor />
+<.parameter_results :if={@success && length(@parameter_results) > 0} parameters={@parameter_results} error={!@success} editor />
 
 <.modal :if={@confirm_modal} id="confirm-modal" show={@confirm_modal} on_cancel={JS.push("hide_confirm")} on_confirm={JS.dispatch("submit", to: "#submit_form")}>
   <:title><%= gettext "Are you sure you want to submit your answer?" %></:title>
