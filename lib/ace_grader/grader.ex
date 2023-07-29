@@ -152,6 +152,7 @@ defmodule AceGrader.Grader do
   end
 
   def test_submission(submission, user) do
+    submission = Map.update!(submission, :parameters, fn parameters -> Enum.filter(parameters, fn parameter -> parameter.visible end) end)
     case compile(submission, submission.author_id) do
       {:ok, warnings} ->
         tests_async = for test <- submission.tests, test.visible || submission.author_id == user.id do
