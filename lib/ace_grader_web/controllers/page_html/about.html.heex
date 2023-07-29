@@ -1,7 +1,7 @@
-<div class="h-min bg-violet-700 py-6 space-y-8">
+<div class="h-min bg-violet-700 py-6 space-y-8 text-zinc-200">
   <div class="flex flex-col items-center justify-center h-full gap-3">
     <img src={"/images/ACEGrader_white.svg"} alt="ACE Grader" class="w-48 md:w-64"/>
-    <p class="font-light tracking-wider text-xl text-zinc-200 text-center px-16"><%= gettext "Automatic Code Evaluator and Grader" %></p>
+    <p class="font-light tracking-wider text-xl text-center px-16"><%= gettext "Automatic Code Evaluator and Grader" %></p>
   </div>
   <div class="flex flex-col items-center gap-4">
     <h2 :if={@current_user} class="text-2xl md:text-4xl font-bold"><%= gettext("Welcome back, %{name}!", name: @current_user.display_name) %></h2>
@@ -33,7 +33,7 @@
   <p><%= gettext "ACE Grader is an open source project under the MIT license. You can find the source code on" %><a href="https://github.com/RisingFisan/ACE_Grader" class="text-violet-500">GitHub</a>.</p>
 </div>
 
-<footer class="fixed bottom-0 w-full p-4 px-6 bg-violet-700 text-lg flex justify-between">
-  <p><%= gettext "Made with 🏳️‍🌈 by" %><a href="https://github.com/RisingFisan" class="text-violet-300">Sofia Santos</a>.</p>
+<footer class="fixed bottom-0 w-full p-4 px-6 bg-violet-700 text-zinc-200 text-lg flex justify-between">
+  <p><%= gettext "Made with 🏳️‍🌈 by " %><a href="https://github.com/RisingFisan" class="text-violet-300">Sofia Santos</a>.</p>
   <a href="/" class="text-violet-300"><%= gettext "Back to the home page" %></a>
 </footer>

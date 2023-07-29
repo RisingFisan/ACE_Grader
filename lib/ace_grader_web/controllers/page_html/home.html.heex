@@ -1,7 +1,7 @@
-<div class="h-min bg-violet-700 py-6 space-y-4">
+<div class="h-min bg-violet-700 py-6 space-y-4 text-zinc-200">
   <div class="flex flex-col items-center justify-center h-full gap-3">
     <img src={"/images/ACEGrader_white.svg"} alt="ACE Grader" class="w-48 md:w-64"/>
-    <p class="font-light tracking-wider text-xl text-zinc-200 text-center px-16"><%= gettext "Automatic Code Evaluator and Grader" %></p>
+    <p class="font-light tracking-wider text-xl text-center px-16"><%= gettext "Automatic Code Evaluator and Grader" %></p>
   </div>
   <div class="flex flex-col items-center gap-4">
     <div class="h-[1px] border-t border-zinc-300 w-64"></div>
@@ -36,7 +36,7 @@
   <p class="text-xl font-light"><%= gettext "Unlike dynamic analysis, which only looks at a program's output, static analysis looks at the program itself. For example, ACE Grader can check if a function is recursive, unlike most automatic grading software. This can be extremely useful for grading introductory programming exercises, where students must use a specific concept in order to solve a problem." %></p>
 </div>
 
-<footer class="fixed bottom-0 w-full p-4 px-6 bg-violet-700 text-lg flex justify-between">
-  <p><%= gettext "Made with 🏳️‍🌈 by" %><a href="https://github.com/RisingFisan" class="text-violet-300">Sofia Santos</a>.</p>
+<footer class="fixed bottom-0 w-full p-4 px-6 bg-violet-700 text-zinc-200 text-lg flex justify-between">
+  <p><%= gettext "Made with 🏳️‍🌈 by " %><a href="https://github.com/RisingFisan" class="text-violet-300">Sofia Santos</a>.</p>
   <a href={~p"/about"} class="text-violet-300"><%= gettext "More information about this project" %></a>
 </footer>
