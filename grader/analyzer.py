@@ -44,6 +44,8 @@ def run_checks(params):
                         param['result'] = param['result'] or uses_dynamic_memory(child)
                     case 5:
                         param['result'] = param['result'] or frees_dynamic_memory(child)
+                    case 10:
+                        param['result'] = param['result'] or calls_function(child, param['value'])
                     case _:
                         if param['value'] == child.spelling:
                             match param['key'] % 10:
@@ -105,5 +107,13 @@ def frees_dynamic_memory(cursor):
         return True
     for child in cursor.get_children():
         if frees_dynamic_memory(child):
+            return True
+    return False
+
+def calls_function(cursor, function_name):
+    if cursor.kind == cindex.CursorKind.CALL_EXPR and cursor.spelling == function_name:
+        return True
+    for child in cursor.get_children():
+        if calls_function(child, function_name):
             return True
     return False
