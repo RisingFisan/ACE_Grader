@@ -2,6 +2,8 @@
 
 Automatic Code Evaluator and Grader
 
+ACE Grader was developed as part of my Master's Dissertation in Software Engineering at Universidade do Minho. I was supervised by Professor Pedro Rangel Henriques and Professor Alda Gancarski.
+
 ## What is ACE Grader?
 ACE Grader, as the name implies, is an automatic grading solution for programming exercises! It uses a combination of dynamic and static analysis in order to evaluate submitted programs.
 
