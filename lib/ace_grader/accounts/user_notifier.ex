@@ -25,7 +25,7 @@ defmodule AceGrader.Accounts.UserNotifier do
 
     ==============================
 
-    Hi #{user.email},
+    Hi #{user.username},
 
     You can confirm your account by visiting the URL below:
 
@@ -45,7 +45,7 @@ defmodule AceGrader.Accounts.UserNotifier do
 
     ==============================
 
-    Hi #{user.email},
+    Hi #{user.username},
 
     You can reset your password by visiting the URL below:
 
@@ -65,7 +65,7 @@ defmodule AceGrader.Accounts.UserNotifier do
 
     ==============================
 
-    Hi #{user.email},
+    Hi #{user.username},
 
     You can change your email by visiting the URL below:
 
