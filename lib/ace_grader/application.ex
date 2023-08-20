@@ -15,7 +15,7 @@ defmodule AceGrader.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: AceGrader.PubSub},
       # Start Finch
-      {Finch, name: AceGrader.Finch},
+      {Finch, name: Swoosh.Finch},
       # Start the Endpoint (http/https)
       AceGraderWeb.Endpoint
       # Start a worker by calling: AceGrader.Worker.start_link(arg)
