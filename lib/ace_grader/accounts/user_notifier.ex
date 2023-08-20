@@ -8,7 +8,7 @@ defmodule AceGrader.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"ACE Grader", "contact@example.com"})
+      |> from({"ACE Grader", "acegrader@#{Mailer.domain()}"})
       |> subject(subject)
       |> text_body(body)
 
