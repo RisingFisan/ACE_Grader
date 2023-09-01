@@ -29,34 +29,35 @@
     <.input id="description-form" field={f[:description]} type="hidden" label={gettext("Description") <> " (Markdown)"}/>
     <div id="description" class="text-lg border-2 dark:border-zinc-800" phx-hook="MdEditor"><p class="hidden"><%= f[:description].value %></p></div>
   </div>
+  <.input field={f[:language]} type="select" options={[ {"C", "c"}, {"Haskell", "haskell"}] } label={gettext "Language"} />
   <.input field={f[:public]} type="checkbox" label={gettext("Public") <> "?"} />
   <div>
     <.label>
-      <%= gettext("Test file") <> " (main.c)" %>
+      <%= gettext("Test file") %>
     </.label>
-    <div id="editor1-container" class="editor-container" phx-update="ignore">
-      <div id="editor1-loading" class="editor-loading">
+    <div id="editor_test_file-container" class="editor-container" phx-update="ignore">
+      <div id="editor_test_file-loading" class="editor-loading">
         <p><%= gettext "Loading editor" %></p>
         <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
-      <div id="editor1" class="editor" phx-hook="Editor" data-form="true"><%= f[:test_file].value %></div>
+      <div id="editor_test_file" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}></div>
     </div>
-    <.input hidden type="hidden" field={f[:test_file]} id="editor1-code" phx-update="ignore"></.input>
+    <.input hidden type="hidden" field={f[:test_file]} id="editor_test_file-code" phx-update="ignore"></.input>
    </div>
   <div>
     <.label>
-      <%= gettext("Submission template") <> " (sub.c)" %>
+      <%= gettext("Submission template") %>
     </.label>
-    <div id="editor2-container" class="editor-container" phx-update="ignore">
-      <div id="editor2-loading" class="editor-loading">
+    <div id="editor_template-container" class="editor-container" phx-update="ignore">
+      <div id="editor_template-loading" class="editor-loading">
         <p><%= gettext "Loading editor" %></p>
         <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
-      <div id="editor2" class="editor" phx-hook="Editor" data-form="true"><%= f[:template].value %></div>
+      <div id="editor_template" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}></div>
     </div>
-    <.input hidden type="hidden" field={f[:template]} id="editor2-code" phx-update="ignore"></.input>
+    <.input hidden type="hidden" field={f[:template]} id="editor_template-code" phx-update="ignore"></.input>
   </div>
 
   <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
@@ -117,6 +118,7 @@
   </div> -->
 
   <h2 class="text-2xl font-bold"><%= gettext "Parameters" %></h2>
+  <%= if (f[:language].value |> to_string()) in ["c"] do %>
   <.inputs_for :let={pf} field={f[:parameters]}>
     <!--.input :if={is_nil(pf.data.temp_id)} field={pf[:id]} type="hidden" /-->
     <input type="hidden" name="exercise[params_order][]" value={pf.index} />
@@ -176,6 +178,9 @@
       <p><%= gettext "Add parameter" %></p>
     </div>
   </label>
+  <% else %>
+    <p>Static analysis is not yet available for the selected language.</p>
+  <% end %>
   <%!-- <div class="flex flex-col items-center">
     <button type="button" phx-click="add-parameter" class="mx-auto bg-zinc-300 dark:bg-zinc-500 hover:bg-zinc-400 dark:hover:bg-zinc-400 px-4 py-2 rounded-lg duration-200"><%= "+ " <> gettext "Add parameter" %></button>
   </div> --%>

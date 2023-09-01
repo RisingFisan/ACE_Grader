@@ -1,6 +1,5 @@
 defmodule AceGrader.Grader do
   alias AceGrader.Submissions
-  alias AceGrader.Submissions.Submission
 
   defp grader_url do
     "http://#{Application.get_env(:ace_grader, :grader_host)}:#{Application.get_env(:ace_grader, :grader_port)}"

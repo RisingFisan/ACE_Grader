@@ -172,8 +172,9 @@ defmodule AceGraderWeb.MyComponents do
   def exercise_list(assigns) do
     ~H"""
     <div class="flex flex-col gap-2">
-      <a :for={exercise <- @exercises} phx-click={@ex_click.(exercise)} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 space-y-2 cursor-pointer">
-        <div class="flex justify-between">
+      <a :for={exercise <- @exercises} phx-click={@ex_click.(exercise)} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 cursor-pointer
+        grid grid-cols-[1fr_max-content] gap-4">
+        <div class="space-y-2">
           <div class="flex items-center gap-4">
             <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
             <div class="flex gap-2 items-end">
@@ -181,10 +182,13 @@ defmodule AceGraderWeb.MyComponents do
               <p class="showOnHover"><%= gettext "Private" %></p>
             </div>
           </div>
-          <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
+          <div class="text-sm line-clamp-2">
+            <p class="whitespace-pre-line"><%= exercise.description %></p>
+          </div>
         </div>
-        <div class="text-sm line-clamp-2">
-          <p class="whitespace-pre-line"><%= exercise.description %></p>
+        <div class="justify-self-end text-right">
+          <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
+          <p><%= exercise.language |> Atom.to_string() |> String.capitalize() %></p>
         </div>
       </a>
     </div>

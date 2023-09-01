@@ -10,33 +10,56 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       {:ok, socket |> put_flash(:error, "You must be this exercise's owner in order to perform this operation!") |> redirect(to: ~p"/exercises/#{id}")}
     else
       changeset = Exercises.change_exercise(exercise)
-      {:ok, socket |> assign(changeset: changeset, exercise: exercise, valid_grades: true, page_title: "Edit Exercise")}
+      {:ok, socket |> assign(changeset: changeset, exercise: exercise, valid_grades: true, page_title: "Edit Exercise", language: exercise.language)}
     end
   end
 
   def mount(_params, _session, socket) do
     changeset = Exercises.change_exercise(%Exercise{})
       |> Ecto.Changeset.put_assoc(:tests, [%Exercises.Test{temp_id: get_temp_id()}])
-      |> Ecto.Changeset.put_assoc(:parameters, [%Exercises.Parameter{temp_id: get_temp_id()}])
-      |> Ecto.Changeset.put_change(:test_file, """
-      #include <stdio.h>
+      # |> Ecto.Changeset.put_assoc(:parameters, [%Exercises.Parameter{temp_id: get_temp_id()}])
+      # |> Ecto.Changeset.put_change(:test_file, """
 
-      void hello_world();
+      # """)
+      # |> Ecto.Changeset.put_change(:template, )
+    language = to_string(%Exercise{}.language)
+    {:ok, socket |> assign(changeset: changeset, valid_grades: true, page_title: "New Exercise", language: language)
+      |> push_event("set_file_data", %{language: language, files: %{test_file: test_file(language), template: template(language)}})}
+  end
 
-      int main() {
-          hello_world();
+  def test_file("c") do
+    """
+    #include <stdio.h>
 
-          return 0;
-      }
-      """)
-      |> Ecto.Changeset.put_change(:template, """
-      #include <stdio.h>
+    void hello_world();
 
-      void hello_world() {
-          printf("Hello World!");
-      }
-      """)
-    {:ok, socket |> assign(changeset: changeset, valid_grades: true, page_title: "New Exercise")}
+    int main() {
+        hello_world();
+
+        return 0;
+    }
+    """
+  end
+  def test_file("haskell") do
+    """
+    main = do
+      putStrLn $ hello_world
+    """
+  end
+
+  def template("c") do
+    """
+    #include <stdio.h>
+
+    void hello_world() {
+        printf("Hello World!");
+    }
+    """
+  end
+  def template("haskell") do
+    """
+    hello_world = "Hello World!"
+    """
   end
 
   def handle_event("validate", %{"exercise" => exercise_params} = _params, socket) do
@@ -45,7 +68,13 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       |> Exercises.change_exercise(exercise_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, changeset: changeset)}
+    # if language changes
+    if socket.assigns.language != exercise_params["language"] do
+      {:noreply, assign(socket, changeset: changeset, language: exercise_params["language"])
+        |> push_event("set_file_data", %{language: exercise_params["language"], files: %{test_file: test_file(exercise_params["language"]), template: template(exercise_params["language"])}})}
+    else
+      {:noreply, assign(socket, changeset: changeset)}
+    end
   end
 
   def handle_event("save", %{"exercise" => exercise_params} = _params, socket) do

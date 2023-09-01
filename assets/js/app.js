@@ -26,6 +26,7 @@ import ace from "../vendor/ace_editor/ace"
 import "../vendor/ace_editor/theme-dracula"
 import "../vendor/ace_editor/theme-eclipse"
 import "../vendor/ace_editor/mode-c_cpp"
+import "../vendor/ace_editor/mode-haskell"
 import "../vendor/ace_editor/mode-markdown"
 import "../vendor/ace_editor/ext-searchbox"
 
@@ -35,14 +36,27 @@ import Prism from "../vendor/prism"
 //     document.getElementById("editor_code").value = editor.getValue();
 // })
 
-function start_editor(editor_id) {
+function start_editor(editor_id, language) {
   var editor = ace.edit(editor_id, {
     maxLines: 20,
   });
   editor.setTheme("ace/theme/dracula");
-  var cMode = ace.require("ace/mode/c_cpp").Mode;
-  editor.session.setMode(new cMode());
+  set_language(editor_id, language);
   return editor;
+}
+
+function set_language(editor_id, language) {
+  var editor = ace.edit(editor_id);
+  var mode;
+  switch (language) {
+    case "c":
+      mode = ace.require("ace/mode/c_cpp").Mode;
+      break;
+    case "haskell":
+      mode = ace.require("ace/mode/haskell").Mode;
+      break;
+  }
+  editor.session.setMode(new mode());
 }
 
 let Hooks = {}
@@ -50,7 +64,10 @@ let Hooks = {}
 Hooks.Editor = {
   mounted() {
     let editor_id = this.el.id;
-    let editor = start_editor(editor_id);
+    let language = this.el.getAttribute("data-language");
+    if (!language) language = "c";
+
+    let editor = start_editor(editor_id, language);
     if (this.el.getAttribute("data-form") || false) {
       editor.setOptions({maxLines: Infinity, wrap: "free"});
     }
@@ -71,6 +88,16 @@ Hooks.Editor = {
         editor.setOptions({wrap: "free"});
       else
         editor.setOptions({wrap: "off"});
+    })
+    this.handleEvent("set_file_data", (data) => {
+      for (const [key, value] of Object.entries(data.files)) {
+        if (editor_id.endsWith(key)) {
+          editor.setValue(value);
+          //editor.clearSelection();
+          editor.moveCursorTo(0, 0);
+        }
+      }
+      set_language(editor_id, data.language);
     })
   }
 }

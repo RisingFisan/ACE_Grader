@@ -8,6 +8,7 @@ defmodule AceGrader.Exercises.Exercise do
     field :description, :string
     field :public, :boolean, default: true
     field :title, :string
+    field :language, Ecto.Enum, values: [:c, :haskell], default: :c
 
     field :test_file, :string
     field :template, :string
@@ -41,7 +42,7 @@ defmodule AceGrader.Exercises.Exercise do
     end
 
     exercise
-    |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
+    |> cast(attrs, [:title, :description, :public, :total_grade, :language, :author_id, :test_file, :template])
     |> validate_required([:title, :description, :public])
     |> cast_assoc(:tests, sort_param: :tests_order, drop_param: :tests_delete)
     |> cast_assoc(:parameters, sort_param: :params_order, drop_param: :params_delete)
