@@ -155,7 +155,7 @@ defmodule AceGrader.Grader do
     submission = Map.update!(submission, :parameters, fn parameters -> Enum.filter(parameters, fn parameter -> parameter.visible end) end)
     case compile(submission, submission.author_id) do
       {:ok, warnings} ->
-        tests_async = for test <- submission.tests, test.visible || submission.author_id == user.id do
+        tests_async = for test <- submission.tests, test.visible || submission.exercise.author_id == user.id do
           Task.async(fn ->
             {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.author_id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
             case response do
