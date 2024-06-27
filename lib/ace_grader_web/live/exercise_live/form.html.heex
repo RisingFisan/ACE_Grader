@@ -41,7 +41,7 @@
         <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
-      <div id="editor_test_file" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}></div>
+      <div id="editor_test_file" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}><%= f[:test_file].value %></div>
     </div>
     <.input hidden type="hidden" field={f[:test_file]} id="editor_test_file-code" phx-update="ignore"></.input>
    </div>
@@ -55,7 +55,7 @@
         <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
-      <div id="editor_template" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}></div>
+      <div id="editor_template" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}><%= f[:template].value %></div>
     </div>
     <.input hidden type="hidden" field={f[:template]} id="editor_template-code" phx-update="ignore"></.input>
   </div>

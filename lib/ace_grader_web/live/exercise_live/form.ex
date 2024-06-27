@@ -24,7 +24,8 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       # |> Ecto.Changeset.put_change(:template, )
     language = to_string(%Exercise{}.language)
     {:ok, socket |> assign(changeset: changeset, valid_grades: true, page_title: "New Exercise", language: language)
-      |> push_event("set_file_data", %{language: language, files: %{test_file: test_file(language), template: template(language)}})}
+      # |> push_event("set_file_data", %{language: language, files: %{test_file: test_file(language), template: template(language)}})
+    }
   end
 
   def test_file("c") do
@@ -69,9 +70,10 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       |> Map.put(:action, :validate)
 
     # if language changes
-    if socket.assigns.language != exercise_params["language"] do
+    if to_string(socket.assigns.language) != exercise_params["language"] do
       {:noreply, assign(socket, changeset: changeset, language: exercise_params["language"])
-        |> push_event("set_file_data", %{language: exercise_params["language"], files: %{test_file: test_file(exercise_params["language"]), template: template(exercise_params["language"])}})}
+        |> push_event("set_file_data", %{language: exercise_params["language"], files: %{test_file: test_file(exercise_params["language"]), template: template(exercise_params["language"])}})
+      }
     else
       {:noreply, assign(socket, changeset: changeset)}
     end
@@ -162,6 +164,18 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       |> Ecto.Changeset.put_assoc(:parameters, parameters)
 
     {:noreply, assign(socket, changeset: changeset)}
+  end
+
+  def handle_event("change-slider", params = %{"_target" => [name]}, socket) do
+    "manual_" <> xname = name
+    value = Map.get(params, name)
+    value = if value == "", do: "0", else: value
+    case Integer.parse(value) do
+      {n, ""} when n in 0..100 ->
+        {:noreply, socket |> push_event("update-grade", %{"target_id" => xname, "target_grade" => n, "original_id" => name})}
+      _ ->
+        {:noreply, socket |> push_event("update-grade", %{"target_id" => name, "original_id" => xname})}
+    end
   end
 
   defp get_temp_id, do: :crypto.strong_rand_bytes(5) |> Base.url_encode64

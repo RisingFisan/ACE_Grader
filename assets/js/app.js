@@ -76,6 +76,7 @@ Hooks.Editor = {
     editor.session.on('change', function(delta) {
         // delta.start, delta.end, delta.lines, delta.action
         document.getElementById(`${editor_id}-code`).value = editor.getValue();
+        document.getElementById(`${editor_id}-code`).dispatchEvent(new Event('input', { bubbles: true }));
     });
     this.handleEvent("expand_editor", (data) => {
       if(data.expand)
@@ -189,6 +190,23 @@ function getCurrentTheme() {
 
 document.querySelectorAll(".datetime").forEach((el) => {
   el.innerHTML = new Date(el.getAttribute("datetime")).toLocaleString("sv-SE", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
+})
+
+window.addEventListener("phx:update-grade", (e) => {
+  const target = document.getElementById(e.detail.target_id);
+  const original = document.getElementById(e.detail.original_id); 
+
+  if ("target_grade" in e.detail) {
+    const grade = parseInt(e.detail.target_grade);
+    if (grade >= 0 && grade <= 100) {
+      target.value = grade;
+      original.value = grade;
+      target.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+  else {
+    target.value = parseInt(original.value);
+  }
 })
 
 // document.querySelectorAll(".md-text").forEach((el) => {

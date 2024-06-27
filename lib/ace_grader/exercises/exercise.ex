@@ -26,13 +26,13 @@ defmodule AceGrader.Exercises.Exercise do
 
   @doc false
   def changeset(exercise, attrs) do
-    tests = Map.get(attrs, "tests", %{})
+    tests = Map.get(attrs, "tests", %{}) |> IO.inspect()
     parameters = Map.get(attrs, "parameters", %{})
     graded_params = Map.filter(parameters, fn {_key, param} -> param["type"] == "graded" end)
 
     validate_grade = not Enum.any?(tests, fn {_key, test} -> test["grade"] == "" end) and not Enum.any?(graded_params, fn {_key, param} -> param["grade"] == "" end)
 
-    attrs = if validate_grade do
+    attrs = if validate_grade and attrs != %{} do
       sum =
         Enum.reduce(tests, 0, fn {_key, tp}, acc -> acc + (if !tp["grade"] or tp["delete"] == "true", do: 0, else: String.to_integer(tp["grade"])) end)
         |> Kernel.+(Enum.reduce(graded_params, 0, fn {_key, gp}, acc -> acc + (if !gp["grade"] or gp["delete"] == "true", do: 0, else: String.to_integer(gp["grade"])) end))

@@ -432,7 +432,7 @@ defmodule AceGraderWeb.CoreComponents do
         id={@id || @name}
         min={@min}
         max={@max}
-        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        value={@value}
         class={[
           "block w-full rounded-lg text-zinc-900 dark:text-zinc-50 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
@@ -443,7 +443,8 @@ defmodule AceGraderWeb.CoreComponents do
         ]}
         {@rest}
       />
-      <span class="select-none"><%= Phoenix.HTML.Form.normalize_value(@type, @value) %></span>
+      <input class="bg-transparent border-0 text-zinc-900 dark:text-zinc-50 w-8 text-right" phx-change="change-slider" id={"manual_" <> (@id || @name)} name={"manual_" <> (@id || @name)} value={@value}/>
+      <%!-- <span class="select-none"><%= Phoenix.HTML.Form.normalize_value(@type, @value) %></span> --%>
       </div>
       <.error :for={msg <- @errors}><%= msg %></.error>
     </div>
