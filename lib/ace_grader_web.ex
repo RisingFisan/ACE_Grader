@@ -57,6 +57,7 @@ defmodule AceGraderWeb do
 
       on_mount AceGraderWeb.RestoreLocale
       on_mount AceGraderWeb.SetCurrentPath
+      on_mount AceGraderWeb.Plugs.Live.CheckAPIStatus
       unquote(html_helpers())
     end
   end

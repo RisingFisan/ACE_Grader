@@ -38,7 +38,7 @@
       <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
     </div>
 
-    <div id="editor" class="editor" phx-hook="Editor"><p class="hidden"><%= @exercise.template || "" %></p></div>
+    <div id="editor" class="editor" phx-hook="Editor" data-language={@exercise.language}><p class="hidden"><%= @code %></p></div>
   </div>
   <div class="flex justify-end gap-2">
     <button class={["border border-zinc-500 rounded-lg px-2 py-1",
@@ -58,7 +58,11 @@
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-[1fr_min-content_1fr] justify-center place-items-center gap-2">
-    <button id="test_button" class="w-36 sm:justify-self-end font-bold text-xl bg-zinc-300 dark:bg-zinc-700 px-4 py-2 rounded-xl hover:bg-zinc-400 dark:hover:bg-zinc-600" phx-hook="TestButton" disabled={@testing}>
+    <button id="test_button" 
+      type="button"
+      class="w-36 sm:justify-self-end font-bold text-xl bg-zinc-300 dark:bg-zinc-700 px-4 py-2 rounded-xl hover:bg-zinc-400 dark:hover:bg-zinc-600 disabled:text-zinc-400 disabled:cursor-not-allowed" 
+      phx-click="test_code"
+      disabled={@api_status == :offline or @testing}>
       <%= if @testing, do: gettext("Running..."), else: pgettext("verb", "Test") %>
     </button>
     <div class="bg-zinc-300 dark:bg-zinc-600 h-[1px] sm:h-auto sm:w-[1px] place-self-stretch"></div>
@@ -66,7 +70,7 @@
   </div>
 </div>
 
-<.simple_form :let={f} hidden for={@changeset} phx-submit="submit_code" id="submit_form" phx-update="ignore">
+<.simple_form :let={f} hidden for={@changeset} phx-submit="submit_code" id="submit_form" phx-change="update_code">
   <.input hidden type="hidden" field={f[:code]} id="editor-code" phx-update="ignore"></.input>
 </.simple_form>
 

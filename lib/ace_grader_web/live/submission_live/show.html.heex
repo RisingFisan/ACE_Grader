@@ -51,6 +51,7 @@
         id="editor"
         phx-hook="EditorReadOnly" 
         class="editor"
+        data-language={@submission.exercise.language}
       ><%= @submission.code %></div>
     </div>
     <div class="flex justify-end">

@@ -30,44 +30,44 @@ import "../vendor/ace_editor/mode-haskell"
 import "../vendor/ace_editor/mode-markdown"
 import "../vendor/ace_editor/ext-searchbox"
 
-import Prism from "../vendor/prism"
-
 // window.addEventListener(`phx:get_code`, (e) => {
 //     document.getElementById("editor_code").value = editor.getValue();
 // })
 
 function start_editor(editor_id, language) {
-  var editor = ace.edit(editor_id, {
+  console.log(language);
+  const editor = ace.edit(editor_id, {
     maxLines: 20,
   });
-  editor.setTheme("ace/theme/dracula");
-  set_language(editor_id, language);
+  if (getCurrentTheme() == "Light") { 
+    editor.setTheme("ace/theme/eclipse");
+  } else {
+    editor.setTheme("ace/theme/dracula");
+  }
+  set_language(editor, language);
   return editor;
 }
 
-function set_language(editor_id, language) {
-  var editor = ace.edit(editor_id);
-  var mode;
+function set_language(editor, language) {
   switch (language) {
     case "c":
-      mode = ace.require("ace/mode/c_cpp").Mode;
+      editor.session.setMode("ace/mode/c_cpp");
       break;
     case "haskell":
-      mode = ace.require("ace/mode/haskell").Mode;
+      editor.session.setMode("ace/mode/haskell");
       break;
   }
-  editor.session.setMode(new mode());
 }
 
 let Hooks = {}
 
 Hooks.Editor = {
   mounted() {
-    let editor_id = this.el.id;
+    const editor_id = this.el.id;
     let language = this.el.getAttribute("data-language");
     if (!language) language = "c";
 
-    let editor = start_editor(editor_id, language);
+    const editor = start_editor(editor_id, language);
     if (this.el.getAttribute("data-form") || false) {
       editor.setOptions({maxLines: Infinity, wrap: "free"});
     }
@@ -98,14 +98,15 @@ Hooks.Editor = {
           editor.moveCursorTo(0, 0);
         }
       }
-      set_language(editor_id, data.language);
+      set_language(editor, data.language);
     })
   }
 }
 
 Hooks.EditorReadOnly = {
   mounted() {
-    let editor = start_editor(this.el.id);
+    const editor = start_editor(this.el.id);
+    set_language(editor, this.el.getAttribute("data-language"));
     editor.setOptions({minLines: 6});
     editor.setReadOnly(true);
     this.handleEvent("expand_editor", (data) => {

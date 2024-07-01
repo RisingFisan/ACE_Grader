@@ -1,9 +1,6 @@
 defmodule AceGrader.Grader do
   alias AceGrader.Submissions
-
-  defp grader_url do
-    "http://#{Application.get_env(:ace_grader, :grader_host)}:#{Application.get_env(:ace_grader, :grader_port)}"
-  end
+  alias AceGrader.Grader.API
 
   defp process_output(test, %{"status" => "success", "output" => output}) do
     {
@@ -30,6 +27,7 @@ defmodule AceGrader.Grader do
     end
   end
 
+  defp process_parameters_output(_, %{"status" => "error"}), do: []
   defp process_parameters_output(parameters, results) do
     results = Map.new(results, fn
       %{"key" => key, "error" => _} -> {key, nil}
@@ -47,10 +45,11 @@ defmodule AceGrader.Grader do
   end
 
   defp compile(submission, id) do
-    case HTTPoison.post(grader_url() <> "/compile", Jason.encode!(%{
+    case HTTPoison.post(API.grader_url() <> "/compile", Jason.encode!(%{
       "id" => id,
       "code" => submission.code,
-      "test_file" => submission.exercise.test_file
+      "test_file" => submission.exercise.test_file,
+      "language" => submission.exercise.language
     }), [{"Content-Type", "application/json"}]) do
       {:ok, %HTTPoison.Response{status_code: 500}} ->
         {:error, "Internal server error."}
@@ -93,7 +92,10 @@ defmodule AceGrader.Grader do
           tests_async = for test <- submission.tests do
             Task.async(fn ->
               if test.status == :pending or test.status == :error do
-                {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
+                {_status, response} = HTTPoison.post(API.grader_url() <> "/execute", Jason.encode!(%{
+                  "id" => submission.id,
+                  "input" => (test.input || ""),
+                  "language" => submission.exercise.language}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
                 case response do
                   %HTTPoison.Error{reason: :timeout} ->
                     %{ Map.from_struct(test) | status: :timeout }
@@ -110,8 +112,9 @@ defmodule AceGrader.Grader do
 
           parameters =
             Task.async(fn ->
-              {_status, response} = HTTPoison.post(grader_url() <> "/analyze", Jason.encode!(%{
+              {_status, response} = HTTPoison.post(API.grader_url() <> "/analyze", Jason.encode!(%{
                 "id" => submission.id,
+                "language" => submission.exercise.language,
                 "params" => Enum.map(submission.parameters, fn parameter -> %{
                   "key" => parameter.key,
                   "value" => parameter.value
@@ -132,7 +135,7 @@ defmodule AceGrader.Grader do
             else
               0
             end
-          HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
+          HTTPoison.post(API.grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
           Submissions.update_submission(submission, %{status: :success, warnings: warnings, errors: nil, total_grade: total_grade, tests: tests, parameters: parameters})
         {:error, error_msg} ->
           Submissions.update_submission(submission, %{
@@ -156,7 +159,10 @@ defmodule AceGrader.Grader do
       {:ok, warnings} ->
         tests_async = for test <- submission.tests, test.visible || submission.exercise.author_id == user.id do
           Task.async(fn ->
-            {_status, response} = HTTPoison.post(grader_url() <> "/test", Jason.encode!(%{"id" => submission.author_id, "input" => (test.input || "")}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
+            {_status, response} = HTTPoison.post(API.grader_url() <> "/execute", Jason.encode!(%{
+              "id" => submission.author_id,
+              "input" => (test.input || ""),
+              "language" => submission.exercise.language}), [{"Content-Type", "application/json"}]) # System.cmd("python", [File.cwd!() <> "/runner.py", "#{path}/main", test.input || ""])
             case response do
               %HTTPoison.Error{reason: :timeout} ->
                 %{ Map.from_struct(test) | status: :timeout }
@@ -166,19 +172,23 @@ defmodule AceGrader.Grader do
             end
           end)
         end
-        parameters =
+        parameters = if length(submission.parameters) > 0 do
           Task.async(fn ->
-            {_status, response} = HTTPoison.post(grader_url() <> "/analyze", Jason.encode!(%{
+            {_status, response} = HTTPoison.post(API.grader_url() <> "/analyze", Jason.encode!(%{
               "id" => submission.author_id,
               "params" => Enum.map(submission.parameters, fn parameter -> %{
                 "key" => parameter.key,
                 "value" => parameter.value
-              } end)
+              } end),
+              "language" => submission.exercise.language
             }), [{"Content-Type", "application/json"}])
             process_parameters_output(submission.parameters, Jason.decode!(response.body))
           end) |> Task.await()
+        else
+          []
+        end
         tests = Task.await_many(tests_async)
-        HTTPoison.post(grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
+        HTTPoison.post(API.grader_url() <> "/cleanup", Jason.encode!(%{"id" => submission.author_id}), [{"Content-Type", "application/json"}])
         {:ok, %{compilation_msg: warnings, test_results: tests, parameter_results: parameters}}
       {:error, error_msg} ->
         {:error, %{compilation_msg: error_msg, test_results: Enum.map(submission.tests, fn test -> %{ Map.from_struct(test) | status: :error} end), parameter_results: Enum.map(submission.parameters, fn parameter -> %{ Map.from_struct(parameter) | status: :error} end)}}

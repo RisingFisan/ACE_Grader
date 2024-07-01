@@ -13,6 +13,7 @@ defmodule AceGraderWeb.Router do
     plug :fetch_current_user
     plug AceGraderWeb.Plugs.SetCurrentPath
     plug AceGraderWeb.Plugs.Locale, "en"
+    plug AceGraderWeb.Plugs.CheckAPIStatus
   end
 
   pipeline :api do

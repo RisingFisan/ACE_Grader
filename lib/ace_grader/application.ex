@@ -17,9 +17,11 @@ defmodule AceGrader.Application do
       # Start Finch
       {Finch, name: Swoosh.Finch},
       # Start the Endpoint (http/https)
-      AceGraderWeb.Endpoint
+      AceGraderWeb.Endpoint,
       # Start a worker by calling: AceGrader.Worker.start_link(arg)
       # {AceGrader.Worker, arg}
+      AceGrader.Grader.APICheck,
+      AceGrader.Grader.APIStatus,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

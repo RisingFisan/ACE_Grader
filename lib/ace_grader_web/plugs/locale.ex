@@ -29,10 +29,9 @@ defmodule AceGraderWeb.Plugs.Locale do
         Gettext.put_locale(AceGraderWeb.Gettext, loc)
 
         put_session(conn, :locale, loc)
-        |> assign(:locale, loc)
       loc ->
         Gettext.put_locale(AceGraderWeb.Gettext, loc)
-        assign(conn, :locale, loc)
+        put_session(conn, :locale, loc)
     end
   end
 

@@ -188,7 +188,7 @@ defmodule AceGraderWeb.MyComponents do
         </div>
         <div class="justify-self-end text-right">
           <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
-          <p><%= exercise.language |> Atom.to_string() |> String.capitalize() %></p>
+          <p class="text-zinc-600 dark:text-zinc-400 font-light"><%= exercise.language |> Atom.to_string() |> String.capitalize() %></p>
         </div>
       </a>
     </div>
