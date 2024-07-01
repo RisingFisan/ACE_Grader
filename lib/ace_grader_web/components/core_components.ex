@@ -640,6 +640,7 @@ defmodule AceGraderWeb.CoreComponents do
       <.back navigate={~p"/posts"}>Back to posts</.back>
   """
   attr :navigate, :any, required: true
+  attr :changes, :boolean, default: false
   slot :inner_block, required: true
 
   def back(assigns) do
@@ -648,6 +649,7 @@ defmodule AceGraderWeb.CoreComponents do
       <.link
         navigate={@navigate}
         class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-100 outline-zinc-900 dark:outline-zinc-200 outline rounded-full px-4 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 flex items-center gap-2"
+        data-confirm={if @changes, do: "Are you sure? Changes won't be saved."}
       >
         <Heroicons.arrow_left solid class="w-5 h-5 stroke-current inline" />
         <%= render_slot(@inner_block) %>

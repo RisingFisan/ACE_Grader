@@ -68,6 +68,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       %Exercise{}
       |> Exercises.change_exercise(exercise_params)
       |> Map.put(:action, :validate)
+      |> IO.inspect()
 
     # if language changes
     if to_string(socket.assigns.language) != exercise_params["language"] do

@@ -7,9 +7,9 @@
   
   <:actions>
     <%= if assigns[:exercise] do %>
-      <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
+      <.back changes={@changeset.changes != %{}} navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
     <% else %>
-      <.back navigate={~p"/exercises/"}><%= gettext "Back to exercises" %></.back>
+      <.back changes={@changeset.changes != %{}} navigate={~p"/exercises/"}><%= gettext "Back to exercises" %></.back>
     <% end %>
   </:actions>
 </.header>
@@ -29,7 +29,7 @@
     <.input id="description-form" field={f[:description]} type="hidden" label={gettext("Description") <> " (Markdown)"}/>
     <div id="description" class="text-lg border-2 dark:border-zinc-800" phx-hook="MdEditor"><p class="hidden"><%= f[:description].value %></p></div>
   </div>
-  <.input field={f[:language]} type="select" options={[ {"C", "c"}, {"Haskell", "haskell"}] } label={gettext "Language"} />
+  <.input field={f[:language]} type="select" options={[ {"C", "c"}, {"Haskell", "haskell"}] } label={pgettext("programming", "Language")} />
   <.input field={f[:public]} type="checkbox" label={gettext("Public") <> "?"} />
   <div>
     <.label>
@@ -179,7 +179,7 @@
     </div>
   </label>
   <% else %>
-    <p>Static analysis is not yet available for the selected language.</p>
+    <p><%= gettext "Static analysis is not yet available for the selected language." %></p>
   <% end %>
   <%!-- <div class="flex flex-col items-center">
     <button type="button" phx-click="add-parameter" class="mx-auto bg-zinc-300 dark:bg-zinc-500 hover:bg-zinc-400 dark:hover:bg-zinc-400 px-4 py-2 rounded-lg duration-200"><%= "+ " <> gettext "Add parameter" %></button>

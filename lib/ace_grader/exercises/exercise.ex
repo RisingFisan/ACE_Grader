@@ -26,7 +26,7 @@ defmodule AceGrader.Exercises.Exercise do
 
   @doc false
   def changeset(exercise, attrs) do
-    tests = Map.get(attrs, "tests", %{}) |> IO.inspect()
+    tests = Map.get(attrs, "tests", %{})
     parameters = Map.get(attrs, "parameters", %{})
     graded_params = Map.filter(parameters, fn {_key, param} -> param["type"] == "graded" end)
 

@@ -2,7 +2,7 @@ defmodule AceGraderWeb.Plugs.CheckAPIStatus do
   import Plug.Conn
   alias AceGrader.Grader.APIStatus
 
-  def init(default), do: IO.inspect(default)
+  def init(default), do: default
 
   def call(%Plug.Conn{} = conn, _default) do
     assign(conn, :api_status, APIStatus.get_status())

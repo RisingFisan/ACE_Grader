@@ -107,8 +107,8 @@ Hooks.EditorReadOnly = {
   mounted() {
     const editor = start_editor(this.el.id);
     set_language(editor, this.el.getAttribute("data-language"));
-    editor.setOptions({minLines: 6});
-    editor.setReadOnly(true);
+    editor.setOptions({readOnly: true, minLines: 6, highlightActiveLine: false, highlightGutterLine: false});
+    editor.renderer.$cursorLayer.element.style.display = "none"
     this.handleEvent("expand_editor", (data) => {
       if(data.expand == "true")
         editor.setOptions({minLines: 20, maxLines: 100});
@@ -147,6 +147,7 @@ Hooks.MdEditor = {
     editor.session.setMode(new cMode());
     editor.session.on('change', function(delta) {
       document.getElementById("description-form").value = editor.getValue();
+      document.getElementById(`description-code`).dispatchEvent(new Event('input', { bubbles: true }));
   });
     // let theme = "dracula";
     // if (getCurrentTheme() == "Light") { theme = "eclipse"; }

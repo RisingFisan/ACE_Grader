@@ -101,7 +101,7 @@ msgstr "deve ser maior ou igual a %{number}"
 msgid "must be equal to %{number}"
 msgstr "deve ser igual a %{number}"
 
-#: lib/ace_grader_web/live/exercise_live/form.html.heex:183
+#: lib/ace_grader_web/live/exercise_live/form.html.heex:188
 #, elixir-autogen, elixir-format
 msgid "The sum of every grade should equal 100!"
 msgstr "A soma de todas as notas deve ser igual a 100!"
