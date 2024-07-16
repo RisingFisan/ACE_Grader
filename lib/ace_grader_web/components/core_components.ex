@@ -79,7 +79,7 @@ defmodule AceGraderWeb.CoreComponents do
                   class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
                   aria-label={gettext("close")}
                 >
-                  <Heroicons.x_mark solid class="h-6 w-6 stroke-current dark:fill-zinc-400" />
+                  <.icon name="hero-x-mark-solid" class="h-6 w-6 stroke-current dark:fill-zinc-400" />
                 </button>
               </div>
               <div id={"#{@id}-content"} class="flex flex-col gap-4">
@@ -160,9 +160,9 @@ defmodule AceGraderWeb.CoreComponents do
       {@rest}
     >
       <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <Heroicons.information_circle :if={@kind == :info} mini class="h-4 w-4" />
-        <Heroicons.exclamation_triangle :if={@kind == :warning} mini class="h-4 w-4" />
-        <Heroicons.exclamation_circle :if={@kind == :error} mini class="h-4 w-4" />
+        <.icon name="hero-information-circle" :if={@kind == :info} mini class="h-4 w-4" />
+        <.icon name="hero-exclamation-triangle" :if={@kind == :warning} mini class="h-4 w-4" />
+        <.icon name="hero-exclamation-circle" :if={@kind == :error} mini class="h-4 w-4" />
         <%= @title %>
       </p>
       <p class="mt-2 text-sm leading-5"><%= msg %></p>
@@ -172,7 +172,7 @@ defmodule AceGraderWeb.CoreComponents do
         class="group absolute top-2 right-1 p-2"
         aria-label={gettext("close")}
       >
-        <Heroicons.x_mark solid class="h-5 w-5 stroke-current opacity-40 group-hover:opacity-70" />
+        <.icon name="hero-x-mark-solid" class="h-5 w-5 stroke-current opacity-40 group-hover:opacity-70" />
       </button>
     </div>
     """
@@ -201,7 +201,7 @@ defmodule AceGraderWeb.CoreComponents do
       phx-disconnected={show("#disconnected")}
       phx-connected={hide("#disconnected")}
     >
-      Attempting to reconnect <Heroicons.arrow_path class="ml-1 w-3 h-3 inline animate-spin" />
+      Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 inline animate-spin" />
     </.flash>
     """
   end
@@ -498,7 +498,7 @@ defmodule AceGraderWeb.CoreComponents do
   def error(assigns) do
     ~H"""
     <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm leading-6 text-rose-600">
-      <Heroicons.exclamation_circle mini class="mt-0.5 h-5 w-5 flex-none fill-rose-500" />
+      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none fill-rose-500" />
       <%= render_slot(@inner_block) %>
     </p>
     """
@@ -651,10 +651,37 @@ defmodule AceGraderWeb.CoreComponents do
         class="text-lg font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-zinc-700 dark:hover:text-zinc-100 outline-zinc-900 dark:outline-zinc-200 outline rounded-full px-4 py-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 flex items-center gap-2"
         data-confirm={if @changes, do: "Are you sure? Changes won't be saved."}
       >
-        <Heroicons.arrow_left solid class="w-5 h-5 stroke-current inline" />
+        <.icon name="hero-arrow-left-solid" class="w-5 h-5 stroke-current inline" />
         <%= render_slot(@inner_block) %>
       </.link>
     </div>
+    """
+  end
+
+  @doc """
+  Renders a [Heroicon](https://heroicons.com).
+
+  Heroicons come in three styles – outline, solid, and mini.
+  By default, the outline style is used, but solid and mini may
+  be applied by using the `-solid` and `-mini` suffix.
+
+  You can customize the size and colors of the icons by setting
+  width, height, and background color classes.
+
+  Icons are extracted from the `deps/heroicons` directory and bundled within
+  your compiled app.css by the plugin in your `assets/tailwind.config.js`.
+
+  ## Examples
+
+      <.icon name="hero-x-mark-solid" />
+      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
+  """
+  attr :name, :string, required: true
+  attr :class, :string, default: nil
+
+  def icon(%{name: "hero-" <> _} = assigns) do
+    ~H"""
+    <span class={[@name, @class]} />
     """
   end
 

@@ -38,7 +38,7 @@
     <div id="editor_test_file-container" class="editor-container" phx-update="ignore">
       <div id="editor_test_file-loading" class="editor-loading">
         <p><%= gettext "Loading editor" %></p>
-        <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
+        <.icon name="hero-cog-6-tooth" class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
       <div id="editor_test_file" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}><%= f[:test_file].value %></div>
@@ -52,7 +52,7 @@
     <div id="editor_template-container" class="editor-container" phx-update="ignore">
       <div id="editor_template-loading" class="editor-loading">
         <p><%= gettext "Loading editor" %></p>
-        <Heroicons.cog_6_tooth class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
+        <.icon name="hero-cog-6-tooth" class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
       </div>
 
       <div id="editor_template" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}><%= f[:template].value %></div>
@@ -73,7 +73,7 @@
             <.input field={tf[:type]} type="select" options={[ {gettext("Exact"), "exact"}, {gettext("Regex"), "regex"}, {gettext("Items"), "items"}] } label={gettext "Output type"} />
           </div>
           <div class="cursor-pointer" phx-click={JS.toggle(to: "#test-type-tooltip-#{tf.index}")} >
-            <Heroicons.question_mark_circle class="h-6 w-6 hover:text-gray-500 duration-200" />
+            <.icon name="hero-question-mark-circle" class="h-6 w-6 hover:text-gray-500 duration-200" />
           </div>
           <div class="relative">
             <div id={"test-type-tooltip-#{tf.index}"} hidden class="absolute left-0 w-[512px] -top-20 bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none shadow-lg">
@@ -90,18 +90,18 @@
       <label class="cursor-pointer">
         <input id={"checkbox_test_#{tf.index}"} type="checkbox" name="exercise[tests_delete][]" class="hidden" value={tf.index}/>
         <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
-          <Heroicons.trash class="w-6 h-6"/>
+          <.icon name="hero-trash" class="w-6 h-6"/>
           <p class="text-red-600"><%= gettext "Delete" %></p>
         </div>
       </label>
       <%!-- <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
         <%= if is_nil(tf.data.temp_id) do %>
           <p><%= gettext "Delete" %></p>
-          <Heroicons.trash class="w-6 h-6"/>
+          <.icon name="hero-trash" class="w-6 h-6"/>
           <.input field={tf[:delete]} type="checkbox" />
         <% else %>
           <.input field={tf[:temp_id]} type="hidden"/>
-          <a href="#" phx-click="remove-test" phx-value-remove={tf.data.temp_id}><Heroicons.x_mark class="w-6 h-6" /></a>
+          <a href="#" phx-click="remove-test" phx-value-remove={tf.data.temp_id}><.icon name="hero-x-mark" class="w-6 h-6" /></a>
         <% end %>
       </div> --%>
     </div>
@@ -109,7 +109,7 @@
   <label class="cursor-pointer flex flex-col items-center">
     <input type="checkbox" name="exercise[tests_order][]" class="hidden" />
     <div class="flex items-center gap-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500 px-4 py-2 rounded-lg duration-200">
-      <Heroicons.plus_circle class="w-6 h-6"/>
+      <.icon name="hero-plus-circle" class="w-6 h-6"/>
       <p><%= gettext "Add test" %></p>
     </div>
   </label>
@@ -137,7 +137,7 @@
             <.input field={pf[:type]} type="select" options={[ {gettext("Optional"), "optional"}, {gettext("Graded"), "graded"}, {gettext("Mandatory"), "mandatory"}] } label={gettext "Parameter type"} />
           </div>
           <div class="cursor-pointer" phx-click={JS.toggle(to: "#param-type-tooltip-#{pf.index}")} >
-            <Heroicons.question_mark_circle class="h-6 w-6 hover:text-gray-500 duration-200" />
+            <.icon name="hero-question-mark-circle" class="h-6 w-6 hover:text-gray-500 duration-200" />
           </div>
           <div class="relative">
             <div id={"param-type-tooltip-#{pf.index}"} hidden class="absolute left-0 w-[512px] -top-20 bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none shadow-lg">
@@ -155,18 +155,18 @@
       <label class="cursor-pointer">
         <input id={"checkbox_param_#{pf.index}"} type="checkbox" name="exercise[params_delete][]" class="hidden" value={pf.index}/>
         <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
-          <Heroicons.trash class="w-6 h-6"/>
+          <.icon name="hero-trash" class="w-6 h-6"/>
           <p class="text-red-600"><%= gettext "Delete" %></p>
         </div>
       </label>
       <%!-- <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
         <%= if is_nil(pf.data.temp_id) do %>
           <p><%= gettext "Delete" %></p>
-          <Heroicons.trash class="w-6 h-6"/>
+          <.icon name="hero-trash" class="w-6 h-6"/>
           <.input field={pf[:delete]} type="checkbox" />
         <% else %>
           <.input field={pf[:temp_id]} type="hidden"/>
-          <a href="#" phx-click="remove-parameter" phx-value-remove={pf.data.temp_id}><Heroicons.x_mark class="w-6 h-6" /></a>
+          <a href="#" phx-click="remove-parameter" phx-value-remove={pf.data.temp_id}><.icon name="hero-x-mark" class="w-6 h-6" /></a>
         <% end %>
       </div> --%>
     </div>
@@ -174,7 +174,7 @@
   <label class="cursor-pointer flex flex-col items-center">
     <input type="checkbox" name="exercise[params_order][]" class="hidden" />
     <div class="flex items-center gap-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500 px-4 py-2 rounded-lg duration-200">
-      <Heroicons.plus_circle class="w-6 h-6"/>
+      <.icon name="hero-plus-circle" class="w-6 h-6"/>
       <p><%= gettext "Add parameter" %></p>
     </div>
   </label>

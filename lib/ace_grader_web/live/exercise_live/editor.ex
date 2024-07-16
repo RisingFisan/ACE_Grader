@@ -47,7 +47,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
       Grader.test_submission(submission, socket.assigns.current_user)
     end)
 
-    {:noreply, assign(socket, testing: true)}
+    {:noreply, assign(socket, testing: true, success: nil)}
   end
 
   def handle_event("update_code", %{"submission" => %{"code" => code}} = _params, socket) do

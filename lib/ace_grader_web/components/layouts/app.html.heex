@@ -1,7 +1,7 @@
 <header class="w-full bg-zinc-50 dark:bg-zinc-800">
   <div class="flex items-center gap-3 justify-between py-3 px-4 sm:px-6 lg:px-20 border-b border-zinc-100 dark:border-zinc-700">
     <div class="md:hidden w-0 flex-1">
-      <Heroicons.bars_3 class="w-8 h-8 cursor-pointer" onclick="toggleMobileMenu()"/>
+      <.icon name="hero-bars-3" class="w-8 h-8 cursor-pointer" onclick="toggleMobileMenu()"/>
     </div>
     <div class="flex flex-1 items-center flex-col md:flex-row gap-8 xl:gap-16 w-0">
       <a href="/" class="flex items-center h-16 flex-shrink-0">
@@ -19,7 +19,7 @@
       </.link>
       <%= if @api_status == :offline do %>
         <div class="hidden lg:flex items-center gap-2 lg:gap-4 lg:text-lg text-red-500 dark:text-red-400 border-red-500 dark:border-red-800 border-2 rounded-2xl px-3 py-1 bg-red-100 dark:bg-red-950">
-          <Heroicons.exclamation_triangle class="w-6 h-6"/>
+          <.icon name="hero-exclamation-triangle" class="w-6 h-6"/>
           <div>
             <p class="font-bold"><%= gettext "Grader module is offline" %></p>
             <p class="text-base font-light"><%= gettext "Submissions won't be graded" %></p>
@@ -31,7 +31,7 @@
       <div class="flex gap-4 items-center justify-end">
         <%= if @current_user do %>
             <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="flex max-w-full items-center gap-2 md:px-4 md:pr-5 md:py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
-              <Heroicons.user_circle class="w-8 h-8"/>
+              <.icon name="hero-user-circle" class="w-8 h-8"/>
               <p class="text-lg text-ellipsis whitespace-nowrap overflow-hidden hidden md:block"><%= @current_user.display_name %></p>
             </div>
         <% else %>
@@ -39,13 +39,13 @@
             <p class="border-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 duration-200"><%= gettext "Log in" %></p>
           </.link>
           <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="gap-2 px-2 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
-            <Heroicons.cog_6_tooth class="w-6 h-6"/>
+            <.icon name="hero-cog-6-tooth" class="w-6 h-6"/>
           </div>
         <% end %>
       </div>
     </div>
   </div>
-  <div id="options-overlay" onclick="closeOptions(true)" class="w-full h-full absolute z-10 hidden"></div>
+  <div id="options-overlay" onclick="closeOptions(true)" class="w-full h-full fixed z-10 hidden"></div>
   <div id="mobile-menu" class="hidden h-min w-full bg-white dark:bg-zinc-800 px-4 py-2 flex flex-col divide-y [&>*]:border-zinc-500 [&>*]:py-1 text-xl tracking-wider font-extralight text-zinc-200 ">
     <.link href={~p"/exercises"} class={(if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400 font-bold")}>
       <%= gettext "Exercises" %>
@@ -59,7 +59,7 @@
   </div>
   <%= if @api_status == :offline do %>
     <div class="flex lg:hidden items-center gap-3 text-red-500 dark:text-red-400 border-red-500 dark:border-red-800 border-y px-3 py-1 bg-red-100 dark:bg-red-950">
-      <Heroicons.exclamation_triangle class="w-6 h-6"/>
+      <.icon name="hero-exclamation-triangle" class="w-6 h-6"/>
       <div>
         <p class="font-bold"><%= gettext "Grader module is offline" %></p>
         <p class="text-sm font-light"><%= gettext "Submissions won't be graded" %></p>
@@ -79,33 +79,33 @@
 <div id="options-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl grid grid-cols-1 divide-y divide-inherit [&>*]:px-4 [&>*]:py-2 hover:[&>*]:bg-zinc-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200 [&>*]:flex [&>*]:items-center [&>*]:justify-between hidden">
   <div onclick="openLanguageMenu()" class="cursor-pointer rounded-t-xl">
     <div class="flex items-center gap-2">
-      <Heroicons.language class="w-6 h-6"/> 
+      <.icon name="hero-language" class="w-6 h-6"/> 
       <p><%= gettext("Language") <> ": " %><span class="font-light"><%= Gettext.get_locale(AceGraderWeb.Gettext) %></span></p>
     </div>
-    <Heroicons.chevron_right class="w-6 h-6 relative"/>
+    <.icon name="hero-chevron-right" class="w-6 h-6 relative"/>
   </div>
   <div onclick="openThemeMenu()" class="cursor-pointer">
     <div class="flex items-center gap-2">
-      <Heroicons.moon class="w-6 h-6"/> 
+      <.icon name="hero-moon" class="w-6 h-6"/> 
       <p><%= gettext("Theme") <> ": " %><span class="font-light currentThemeName"></span></p>
     </div>
-    <Heroicons.chevron_right class="w-6 h-6 relative"/>
+    <.icon name="hero-chevron-right" class="w-6 h-6 relative"/>
   </div>
   <.link :if={@current_user} href={~p"/users/#{@current_user.username}"}>
     <div class="flex items-center gap-2">
-      <Heroicons.user class="w-6 h-6"/> 
+      <.icon name="hero-user" class="w-6 h-6"/> 
       <p><%= gettext("My account") %></p>
     </div>
   </.link>
   <.link :if={@current_user} href={~p"/users/settings"}>
     <div class="flex items-center gap-2">
-      <Heroicons.cog_6_tooth class="w-6 h-6"/> 
+      <.icon name="hero-cog-6-tooth" class="w-6 h-6"/> 
       <p><%= gettext("Account settings") %></p>
     </div>
   </.link>
   <.link :if={@current_user} href={~p"/users/log_out"} method="delete" class="rounded-b-xl">
     <div class="flex items-center gap-2">
-      <Heroicons.arrow_right_on_rectangle class="w-6 h-6"/> 
+      <.icon name="hero-arrow-right-on-rectangle" class="w-6 h-6"/> 
       <p><%= gettext("Log out") %></p>
     </div>
   </.link>
@@ -113,13 +113,13 @@
 
 <div id="language-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
   <div onclick="closeLanguageMenu()" class="self-stretch cursor-pointer flex items-center">
-    <Heroicons.chevron_left class="w-6 h-6"/> 
+    <.icon name="hero-chevron-left" class="w-6 h-6"/> 
   </div>
   <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
     <div :for={{language_name, language_abbr} <- ["English": "en", "Português": "pt"]} class="first:rounded-tr-xl last:rounded-br-xl">
       <.link href={"?locale=#{language_abbr}"} class="cursor-pointer flex items-center gap-2 w-full px-4 py-2">
         <%= if Gettext.get_locale(AceGraderWeb.Gettext) == language_abbr do %>
-          <Heroicons.check class="w-6 h-6"/>
+          <.icon name="hero-check" class="w-6 h-6"/>
           <p class="font-bold"><%= language_name %></p>
         <% else %>
           <p><%= language_name %></p>
@@ -131,19 +131,19 @@
 
 <div id="theme-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
   <div onclick="closeThemeMenu()" class="self-stretch cursor-pointer flex items-center">
-    <Heroicons.chevron_left class="w-6 h-6"/> 
+    <.icon name="hero-chevron-left" class="w-6 h-6"/> 
   </div>
   <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
     <div onclick="enableSystemMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-tr-xl">
-      <Heroicons.cog class="w-6 h-6"/>
+      <.icon name="hero-cog" class="w-6 h-6"/>
       <%= gettext("System") %>
     </div>
     <div onclick="enableDarkMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer">
-      <Heroicons.moon class="w-6 h-6"/>
+      <.icon name="hero-moon" class="w-6 h-6"/>
       <%= gettext("Dark") %>
     </div>
     <div onclick="enableLightMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-br-xl">
-      <Heroicons.sun class="w-6 h-6"/>
+      <.icon name="hero-sun" class="w-6 h-6"/>
       <%= gettext("Light") %>
     </div>
   </div>

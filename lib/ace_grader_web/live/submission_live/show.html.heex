@@ -12,20 +12,20 @@
 <div class="flex flex-col items-center pt-4">
   <button class="bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-lg description" phx-click={JS.toggle(to: ".description")}>
     <div class="flex items-center gap-1">
-    <Heroicons.chevron_double_up class="w-4" />
+    <.icon name="hero-chevron-double-up" class="w-4 h-4" />
     <p class="tracking-wide">
       <%= gettext("Hide description") %>
     </p>
-    <Heroicons.chevron_double_up class="w-4" />
+    <.icon name="hero-chevron-double-up" class="w-4 h-4" />
     </div>
   </button>
   <button class="bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-lg description" hidden phx-click={JS.toggle(to: ".description")}>
     <div class="flex items-center gap-1">
-    <Heroicons.chevron_double_down class="w-4" />
+    <.icon name="hero-chevron-double-down" class="w-4 h-4" />
     <p class="tracking-wide">
       <%= gettext("Show description") %>
     </p>
-    <Heroicons.chevron_double_down class="w-4" />
+    <.icon name="hero-chevron-double-down" class="w-4 h-4" />
     </div>
   </button>
 </div>
@@ -57,11 +57,11 @@
     <div class="flex justify-end">
       <%= if @expanded do %>
         <button phx-click="expand_editor" phx-value-expand="false">
-          <Heroicons.arrows_pointing_in class="w-6"/>
+          <.icon name="hero-arrows-pointing-in" class="w-6"/>
         </button>
       <% else %>
         <button phx-click="expand_editor" phx-value-expand="true">
-          <Heroicons.arrows_pointing_out class="w-6"/>
+          <.icon name="hero-arrows-pointing-out" class="w-6"/>
         </button>
       <% end %>
     </div>
@@ -73,7 +73,7 @@
     <%= if @submission.success do %>
       <pre class="text-xl"><%= @submission.output %></pre>
     <% else %>
-      <Heroicons.exclamation_triangle class="fill-red-700 w-8 text-white" />
+      <.icon name="hero-exclamation-triangle" class="fill-red-700 w-8 text-white" />
     <% end %>
   <% else %>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-8 my-4 mx-2 fill-blue-500 animate-spin"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->

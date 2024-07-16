@@ -4,7 +4,7 @@
     <:actions>
       <.link href={~p"/exercises/new"}>
         <.button :if={@current_user && @current_user.account_type != :student} kind={:teacher} class="flex items-center gap-2">
-          <Heroicons.plus class="w-5 h-5" />
+          <.icon name="hero-plus" class="w-5 h-5" />
           <%= gettext "New Exercise" %>
         </.button>
       </.link>

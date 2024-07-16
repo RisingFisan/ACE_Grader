@@ -5,6 +5,7 @@ defmodule AceGraderWeb.MyComponents do
   alias Phoenix.LiveView.JS
   import AceGraderWeb.Gettext
   import Phoenix.HTML
+  import AceGraderWeb.CoreComponents, only: [icon: 1]
 
   attr :tests, :list
   attr :error, :boolean, default: :false
@@ -55,20 +56,20 @@ defmodule AceGraderWeb.MyComponents do
             <% end %>
           </div>
           <div class="justify-self-center md:justify-self-end md:pr-4">
-            <Heroicons.check_circle :if={test.status == :success} class="w-12 h-12 text-green-600" />
+            <AceGraderWeb.CoreComponents.icon name="hero-check_circle" :if={test.status == :success} class="w-12 h-12 text-green-600" />
             <div :if={test.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Error" %></p>
-              <Heroicons.x_circle class="w-12 h-12"/>
+              <AceGraderWeb.CoreComponents.icon name="hero-x_circle" class="w-12 h-12"/>
             </div>
             <div :if={test.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Failed" %></p>
-              <Heroicons.x_circle class="w-12 h-12"/>
+              <AceGraderWeb.CoreComponents.icon name="hero-x_circle" class="w-12 h-12"/>
             </div>
             <div :if={test.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Timeout" %></p>
-              <Heroicons.exclamation_circle class="w-12 h-12"/>
+              <AceGraderWeb.CoreComponents.icon name="hero-exclamation_circle" class="w-12 h-12"/>
             </div>
-            <Heroicons.clock :if={test.status == :pending} class="w-12 h-12" />
+            <AceGraderWeb.CoreComponents.icon name="hero-clock" :if={test.status == :pending} class="w-12 h-12" />
           </div>
         </div>
       </div>
@@ -106,20 +107,20 @@ defmodule AceGraderWeb.MyComponents do
             <p><%= (AceGraderWeb.Utils.get_keys(parameter.negative, parameter.value) |> Map.get(parameter.key)) <> "." %></p>
           </div>
           <div class="justify-self-center md:justify-self-end md:pr-4">
-            <Heroicons.check_circle :if={parameter.status == :success} class="w-8 h-8 text-green-600" />
+            <.icon name="hero-check_circle" :if={parameter.status == :success} class="w-8 h-8 text-green-600" />
             <div :if={parameter.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Error" %></p>
-              <Heroicons.x_circle class="w-8 h-8"/>
+              <.icon name="hero-x_circle" class="w-8 h-8"/>
             </div>
             <div :if={parameter.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Failed" %></p>
-              <Heroicons.x_circle class="w-8 h-8"/>
+              <.icon name="hero-x_circle" class="w-8 h-8"/>
             </div>
             <div :if={parameter.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Timeout" %></p>
-              <Heroicons.exclamation_circle class="w-8 h-8"/>
+              <.icon name="hero-exclamation_circle" class="w-8 h-8"/>
             </div>
-            <Heroicons.clock :if={parameter.status == :pending} class="w-8 h-8" />
+            <.icon name="hero-clock" :if={parameter.status == :pending} class="w-8 h-8" />
           </div>
         </div>
       </div>
@@ -138,24 +139,20 @@ defmodule AceGraderWeb.MyComponents do
         <div>
           <%= if @status == :success and (@message == nil or @message == "") do %>
             <div class="flex items-center text-green-600 gap-2 font-bold">
-              <Heroicons.check class="w-8 h-8"/><p><%= gettext "Successful" %></p>
+              <.icon name="hero-check" class="w-8 h-8"/><p><%= gettext "Successful" %></p>
             </div>
           <% else %>
             <%= if @status == :success do %>
               <div class="flex items-center text-yellow-600 gap-2 font-bold">
-                <Heroicons.exclamation_triangle class="w-6 h-6 md:w-8 md:h-8"/>
+                <.icon name="hero-exclamation-triangle" class="w-6 h-6 md:w-8 md:h-8"/>
                 <p><%= gettext "Warning" %></p>
-                <Heroicons.chevron_down
-                  class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"
-                />
+                <.icon name="hero-chevron-down" class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"/>
               </div>
             <% else %>
               <div class="flex items-center text-red-600 gap-2 font-bold">
-                <Heroicons.exclamation_circle class="w-6 h-6 md:w-8 md:h-8"/>
+                <.icon name="hero-exclamation-circle" class="w-6 h-6 md:w-8 md:h-8"/>
                 <p><%= gettext "Error" %></p>
-                <Heroicons.chevron_down
-                  class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"
-                />
+                <.icon name="hero-chevron-down" class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"/>
               </div>
             <% end %>
           <% end %>
@@ -178,7 +175,7 @@ defmodule AceGraderWeb.MyComponents do
           <div class="flex items-center gap-4">
             <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
             <div class="flex gap-2 items-end">
-              <Heroicons.eye_slash :if={!exercise.public} class="w-6 h-6 hoverToShow"/>
+              <.icon name="hero-eye-slash" :if={!exercise.public} class="w-6 h-6 hoverToShow"/>
               <p class="showOnHover"><%= gettext "Private" %></p>
             </div>
           </div>

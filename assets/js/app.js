@@ -147,8 +147,8 @@ Hooks.MdEditor = {
     editor.session.setMode(new cMode());
     editor.session.on('change', function(delta) {
       document.getElementById("description-form").value = editor.getValue();
-      document.getElementById(`description-code`).dispatchEvent(new Event('input', { bubbles: true }));
-  });
+      document.getElementById(`description-form`).dispatchEvent(new Event('input', { bubbles: true }));
+    });
     // let theme = "dracula";
     // if (getCurrentTheme() == "Light") { theme = "eclipse"; }
     // let easyMDE = new EasyMDE({element: this.el, status: false, spellChecker: false, sideBySideFullscreen: false, toolbar: ["bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "|", "guide"], theme: theme });
