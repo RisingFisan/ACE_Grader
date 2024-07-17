@@ -30,12 +30,16 @@ import "../vendor/ace_editor/mode-haskell"
 import "../vendor/ace_editor/mode-markdown"
 import "../vendor/ace_editor/ext-searchbox"
 
+import Alpine from "alpinejs";
+
+window.Alpine = Alpine;
+Alpine.start();
+
 // window.addEventListener(`phx:get_code`, (e) => {
 //     document.getElementById("editor_code").value = editor.getValue();
 // })
 
 function start_editor(editor_id, language) {
-  console.log(language);
   const editor = ace.edit(editor_id, {
     maxLines: 20,
   });
@@ -156,7 +160,17 @@ Hooks.MdEditor = {
 }
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks: Hooks})
+let liveSocket = new LiveSocket("/live", Socket, {
+  params: {_csrf_token: csrfToken}, 
+  hooks: Hooks,
+  dom: {
+    onBeforeElUpdated(from, to) {
+      if (from._x_dataStack) {
+        window.Alpine.clone(from, to);
+      }
+    }
+  }
+});
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})

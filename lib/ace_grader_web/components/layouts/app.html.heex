@@ -1,238 +1,225 @@
-<header class="w-full bg-zinc-50 dark:bg-zinc-800">
-  <div class="flex items-center gap-3 justify-between py-3 px-4 sm:px-6 lg:px-20 border-b border-zinc-100 dark:border-zinc-700">
-    <div class="md:hidden w-0 flex-1">
-      <.icon name="hero-bars-3" class="w-8 h-8 cursor-pointer" onclick="toggleMobileMenu()"/>
-    </div>
-    <div class="flex flex-1 items-center flex-col md:flex-row gap-8 xl:gap-16 w-0">
-      <a href="/" class="flex items-center h-16 flex-shrink-0">
-        <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
-      </a>
-      <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
-        (if String.trim_trailing(@current_path, "/") == "/exercises", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
-      ]}>
-        <%= gettext "Exercises" %>
-      </.link>
-      <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
-        (if String.trim_trailing(@current_path, "/") == "/classes", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
-      ]}>
-        <%= gettext "Classes" %>
-      </.link>
-      <%= if @api_status == :offline do %>
-        <div class="hidden lg:flex items-center gap-2 lg:gap-4 lg:text-lg text-red-500 dark:text-red-400 border-red-500 dark:border-red-800 border-2 rounded-2xl px-3 py-1 bg-red-100 dark:bg-red-950">
-          <.icon name="hero-exclamation-triangle" class="w-6 h-6"/>
-          <div>
-            <p class="font-bold"><%= gettext "Grader module is offline" %></p>
-            <p class="text-base font-light"><%= gettext "Submissions won't be graded" %></p>
+<div
+  x-data={"{
+    open: false,
+    mobile_menu: false,
+    theme: localStorage.theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+    translate: (name) => { 
+      switch (name) {
+        case 'system': return '#{gettext("System")}';
+        case 'dark': return '#{gettext("Dark")}';
+        case 'light': return '#{gettext("Light")}';
+      }
+    } 
+  }"}>
+  <header class="w-full bg-zinc-50 dark:bg-zinc-800">
+    <div class="flex items-center gap-3 justify-between py-3 px-4 sm:px-6 lg:px-20 border-b border-zinc-100 dark:border-zinc-700">
+      <div class="md:hidden w-0 flex-1">
+        <.icon name="hero-bars-3" class="w-8 h-8 cursor-pointer" x-on:click=" mobile_menu = ! mobile_menu "/>
+      </div>
+      <div class="flex flex-1 items-center flex-col md:flex-row gap-8 xl:gap-16 w-0">
+        <a href="/" class="flex items-center h-16 flex-shrink-0">
+          <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
+        </a>
+        <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
+          (if String.trim_trailing(@current_path, "/") == "/exercises", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
+        ]}>
+          <%= gettext "Exercises" %>
+        </.link>
+        <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
+          (if String.trim_trailing(@current_path, "/") == "/classes", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
+        ]}>
+          <%= gettext "Classes" %>
+        </.link>
+        <%= if @api_status == :offline do %>
+          <div class="hidden lg:flex items-center gap-2 lg:gap-4 lg:text-lg text-red-500 dark:text-red-400 border-red-500 dark:border-red-800 border-2 rounded-2xl px-3 py-1 bg-red-100 dark:bg-red-950">
+            <.icon name="hero-exclamation-triangle" class="w-6 h-6"/>
+            <div>
+              <p class="font-bold"><%= gettext "Grader module is offline" %></p>
+              <p class="text-base font-light"><%= gettext "Submissions won't be graded" %></p>
+            </div>
           </div>
-        </div>
-      <% end %>
-    </div>
-    <div class="items-center gap-6 flex-1 md:flex-initial">
-      <div class="flex gap-4 items-center justify-end">
-        <%= if @current_user do %>
-            <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="flex max-w-full items-center gap-2 md:px-4 md:pr-5 md:py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
+        <% end %>
+      </div>
+      <div class="items-center gap-6 flex-1 md:flex-initial">
+        <div class="flex gap-4 items-center justify-end">
+          <%= if @current_user do %>
+            <div 
+              class="flex max-w-full items-center gap-2 md:px-4 md:pr-5 md:py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer"
+              x-on:click=" ! open ? open = 'options' : open = false "
+              >
               <.icon name="hero-user-circle" class="w-8 h-8"/>
               <p class="text-lg text-ellipsis whitespace-nowrap overflow-hidden hidden md:block"><%= @current_user.display_name %></p>
             </div>
-        <% else %>
-          <.link href={~p"/users/log_in"} class="hidden md:block">
-            <p class="border-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 duration-200"><%= gettext "Log in" %></p>
-          </.link>
-          <div onclick={"toggleOptions(\"#{Gettext.get_locale(AceGraderWeb.Gettext)}\")"} class="gap-2 px-2 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
-            <.icon name="hero-cog-6-tooth" class="w-6 h-6"/>
-          </div>
-        <% end %>
+          <% else %>
+            <.link href={~p"/users/log_in"} class="hidden md:block">
+              <p class="border-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-700 duration-200"><%= gettext "Log in" %></p>
+            </.link>
+            <div x-on:click=" ! open ? open = 'options' : open = false " class="gap-2 px-2 py-2 border-2 rounded-full dark:border-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 duration-200 cursor-pointer">
+              <.icon name="hero-cog-6-tooth" class="w-6 h-6"/>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
-  </div>
-  <div id="options-overlay" onclick="closeOptions(true)" class="w-full h-full fixed z-10 hidden"></div>
-  <div id="mobile-menu" class="hidden h-min w-full bg-white dark:bg-zinc-800 px-4 py-2 flex flex-col divide-y [&>*]:border-zinc-500 [&>*]:py-1 text-xl tracking-wider font-extralight text-zinc-200 ">
-    <.link href={~p"/exercises"} class={(if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400 font-bold")}>
-      <%= gettext "Exercises" %>
-    </.link>
-    <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={(if @current_path == "/classes", do: "text-violet-700 dark:text-violet-400 font-bold")}>
-      <%= gettext "Classes" %>
-    </.link>
-    <.link :if={!@current_user} href={~p"/users/log_in"} class="font-bold">
-      <%= gettext "Log in" %>
-    </.link>
-  </div>
-  <%= if @api_status == :offline do %>
-    <div class="flex lg:hidden items-center gap-3 text-red-500 dark:text-red-400 border-red-500 dark:border-red-800 border-y px-3 py-1 bg-red-100 dark:bg-red-950">
-      <.icon name="hero-exclamation-triangle" class="w-6 h-6"/>
-      <div>
-        <p class="font-bold"><%= gettext "Grader module is offline" %></p>
-        <p class="text-sm font-light"><%= gettext "Submissions won't be graded" %></p>
-      </div>
-    </div>
-  <% end %>
-</header>
-<main>
-  <div class="px-4 py-8 sm:px-6 lg:px-8 md:py-20">
-    <div class="mx-auto lg:max-w-[66%] ">
-      <.flash_group flash={@flash} />
-      <%= @inner_content %>
-    </div>
-  </div>
-</main>
-
-<div id="options-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl grid grid-cols-1 divide-y divide-inherit [&>*]:px-4 [&>*]:py-2 hover:[&>*]:bg-zinc-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200 [&>*]:flex [&>*]:items-center [&>*]:justify-between hidden">
-  <div onclick="openLanguageMenu()" class="cursor-pointer rounded-t-xl">
-    <div class="flex items-center gap-2">
-      <.icon name="hero-language" class="w-6 h-6"/> 
-      <p><%= gettext("Language") <> ": " %><span class="font-light"><%= Gettext.get_locale(AceGraderWeb.Gettext) %></span></p>
-    </div>
-    <.icon name="hero-chevron-right" class="w-6 h-6 relative"/>
-  </div>
-  <div onclick="openThemeMenu()" class="cursor-pointer">
-    <div class="flex items-center gap-2">
-      <.icon name="hero-moon" class="w-6 h-6"/> 
-      <p><%= gettext("Theme") <> ": " %><span class="font-light currentThemeName"></span></p>
-    </div>
-    <.icon name="hero-chevron-right" class="w-6 h-6 relative"/>
-  </div>
-  <.link :if={@current_user} href={~p"/users/#{@current_user.username}"}>
-    <div class="flex items-center gap-2">
-      <.icon name="hero-user" class="w-6 h-6"/> 
-      <p><%= gettext("My account") %></p>
-    </div>
-  </.link>
-  <.link :if={@current_user} href={~p"/users/settings"}>
-    <div class="flex items-center gap-2">
-      <.icon name="hero-cog-6-tooth" class="w-6 h-6"/> 
-      <p><%= gettext("Account settings") %></p>
-    </div>
-  </.link>
-  <.link :if={@current_user} href={~p"/users/log_out"} method="delete" class="rounded-b-xl">
-    <div class="flex items-center gap-2">
-      <.icon name="hero-arrow-right-on-rectangle" class="w-6 h-6"/> 
-      <p><%= gettext("Log out") %></p>
-    </div>
-  </.link>
-</div>
-
-<div id="language-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
-  <div onclick="closeLanguageMenu()" class="self-stretch cursor-pointer flex items-center">
-    <.icon name="hero-chevron-left" class="w-6 h-6"/> 
-  </div>
-  <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
-    <div :for={{language_name, language_abbr} <- ["English": "en", "Português": "pt"]} class="first:rounded-tr-xl last:rounded-br-xl">
-      <.link href={"?locale=#{language_abbr}"} class="cursor-pointer flex items-center gap-2 w-full px-4 py-2">
-        <%= if Gettext.get_locale(AceGraderWeb.Gettext) == language_abbr do %>
-          <.icon name="hero-check" class="w-6 h-6"/>
-          <p class="font-bold"><%= language_name %></p>
-        <% else %>
-          <p><%= language_name %></p>
-        <% end %>
+    <div id="options-overlay" x-show=" open " x-on:click=" open = false " class="w-full h-full fixed z-10"></div>
+    <div
+      id="mobile-menu" 
+      class="h-min w-full bg-white dark:bg-zinc-800 px-4 py-2 flex flex-col divide-y [&>*]:border-zinc-500 [&>*]:py-1 text-xl tracking-wider font-extralight text-zinc-200 "
+      x-show=" mobile_menu "
+      x-cloak
+      >
+      <.link href={~p"/exercises"} class={(if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400 font-bold")}>
+        <%= gettext "Exercises" %>
+      </.link>
+      <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={(if @current_path == "/classes", do: "text-violet-700 dark:text-violet-400 font-bold")}>
+        <%= gettext "Classes" %>
+      </.link>
+      <.link :if={!@current_user} href={~p"/users/log_in"} class="font-bold">
+        <%= gettext "Log in" %>
       </.link>
     </div>
+    <%= if @api_status == :offline do %>
+      <div class="flex lg:hidden items-center gap-3 text-red-500 dark:text-red-400 border-red-500 dark:border-red-800 border-y px-3 py-1 bg-red-100 dark:bg-red-950">
+        <.icon name="hero-exclamation-triangle" class="w-6 h-6"/>
+        <div>
+          <p class="font-bold"><%= gettext "Grader module is offline" %></p>
+          <p class="text-sm font-light"><%= gettext "Submissions won't be graded" %></p>
+        </div>
+      </div>
+    <% end %>
+  </header>
+
+
+  <div 
+    id="options-menu" 
+    class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl grid grid-cols-1 divide-y divide-inherit [&>*]:px-4 [&>*]:py-2 hover:[&>*]:bg-zinc-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200 [&>*]:flex [&>*]:items-center [&>*]:justify-between"
+    x-show=" open === 'options' "
+    x-cloak
+    >
+    <div x-on:click=" open = 'language' " class="cursor-pointer rounded-t-xl">
+      <div class="flex items-center gap-2">
+        <.icon name="hero-language" class="w-6 h-6"/> 
+        <p><%= gettext("Language") <> ": " %><span class="font-light"><%= 
+          case Gettext.get_locale(AceGraderWeb.Gettext) do
+            "en" -> "English"
+            "pt" -> "Português"
+            x -> x
+          end
+        %></span></p>
+      </div>
+      <.icon name="hero-chevron-right" class="w-6 h-6 relative"/>
+    </div>
+    <div 
+      x-on:click=" open = 'theme' " 
+      class="cursor-pointer">
+      <div class="flex items-center gap-2">
+        <.icon name="hero-moon" class="w-6 h-6"/> 
+        <p><%= gettext("Theme") <> ": " %><span class="font-light currentThemeName capitalize" x-text="translate(theme)"></span></p>
+      </div>
+      <.icon name="hero-chevron-right" class="w-6 h-6 relative"/>
+    </div>
+    <.link :if={@current_user} href={~p"/users/#{@current_user.username}"}>
+      <div class="flex items-center gap-2">
+        <.icon name="hero-user" class="w-6 h-6"/> 
+        <p><%= gettext("My account") %></p>
+      </div>
+    </.link>
+    <.link :if={@current_user} href={~p"/users/settings"}>
+      <div class="flex items-center gap-2">
+        <.icon name="hero-cog-6-tooth" class="w-6 h-6"/> 
+        <p><%= gettext("Account settings") %></p>
+      </div>
+    </.link>
+    <.link :if={@current_user} href={~p"/users/log_out"} method="delete" class="rounded-b-xl">
+      <div class="flex items-center gap-2">
+        <.icon name="hero-arrow-right-on-rectangle" class="w-6 h-6"/> 
+        <p><%= gettext("Log out") %></p>
+      </div>
+    </.link>
   </div>
+
+  <div id="language-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit"
+    x-show="open === 'language'"
+    x-cloak
+    >
+    <div x-on:click=" open === 'language' ? open = 'options' : open = 'language' " class="self-stretch cursor-pointer flex items-center">
+      <.icon name="hero-chevron-left" class="w-6 h-6"/> 
+    </div>
+    <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
+      <div :for={{language_name, language_abbr} <- [{"English", "en"}, {"Português", "pt"}]} class="first:rounded-tr-xl last:rounded-br-xl">
+        <.link href={"?locale=#{language_abbr}"} class="cursor-pointer flex items-center gap-2 w-full px-4 py-2">
+          <%
+           country = case language_abbr do
+             "en" -> "us"
+             "pt" -> "pt"
+             x -> x
+           end
+          %>
+          <%= if Gettext.get_locale(AceGraderWeb.Gettext) == language_abbr do %>
+            <.icon name="hero-check" class="w-6 h-6"/>
+            <p class="font-bold">
+              <img 
+                src={"https://flagcdn.com/16x12/#{country}.png"}
+                srcset={"https://flagcdn.com/32x24/#{country}.png 2x, https://flagcdn.com/48x36/#{country}.png 3x"}
+                class="inline w-4 h-3 mr-2"><%= language_name %>
+            </p>
+          <% else %>
+            <p><img 
+                src={"https://flagcdn.com/16x12/#{country}.png"}
+                srcset={"https://flagcdn.com/32x24/#{country}.png 2x, https://flagcdn.com/48x36/#{country}.png 3x"}
+                class="inline w-4 h-3 mr-2"><%= language_name %></p>
+          <% end %>
+        </.link>
+      </div>
+    </div>
+  </div>
+
+  <div 
+    id="theme-menu" 
+    class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit"
+    x-show="open === 'theme'"
+    x-cloak
+  >
+    <div x-on:click=" open = 'options' " class="self-stretch cursor-pointer flex items-center">
+      <.icon name="hero-chevron-left" class="w-6 h-6"/> 
+    </div>
+    <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
+      <div 
+        x-on:click="enableSystemMode(); theme = 'system' " 
+        class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-tr-xl"
+        x-bind:class="theme === 'system' ? 'font-bold' : ''"
+        >
+        <.icon x-show=" theme !== 'system' " name="hero-cog" class="w-6 h-6"/>
+        <.icon x-show=" theme === 'system' " name="hero-check" class="w-6 h-6"/>
+        <span><%= gettext("System") %></span>
+      </div>
+      <div 
+        x-on:click="enableDarkMode(); theme = 'dark' " 
+        class="flex items-center px-4 py-2 gap-2 cursor-pointer"
+        x-bind:class="theme === 'dark' ? 'font-bold' : ''"
+        >
+        <.icon x-show=" theme !== 'dark' " name="hero-moon" class="w-6 h-6"/>
+        <.icon x-show=" theme === 'dark' " name="hero-check" class="w-6 h-6"/>
+        <span><%= gettext("Dark") %></span>
+      </div>
+      <div 
+        x-on:click="enableLightMode(); theme = 'light' " 
+        class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-br-xl"
+        x-bind:class="theme === 'light' ? 'font-bold' : ''"
+        >
+        <.icon x-show=" theme !== 'light' " name="hero-sun" class="w-6 h-6"/>
+        <.icon x-show=" theme === 'light' " name="hero-check" class="w-6 h-6"/>
+        <span><%= gettext("Light") %></span>
+      </div>
+    </div>
+  </div>
+
+  <main x-bind:class=" open ? 'blur-[2px]' : '' ">
+    <div class="px-4 py-8 sm:px-6 lg:px-8 md:py-20">
+      <div class="mx-auto lg:max-w-[66%] ">
+        <.flash_group flash={@flash} />
+        <%= @inner_content %>
+      </div>
+    </div>
+  </main>
 </div>
-
-<div id="theme-menu" class="z-20 bg-white dark:bg-zinc-800 dark:border-zinc-500 absolute w-64 top-20 right-6 border-2 rounded-xl flex items-center divide-x-2 divide-inherit hidden">
-  <div onclick="closeThemeMenu()" class="self-stretch cursor-pointer flex items-center">
-    <.icon name="hero-chevron-left" class="w-6 h-6"/> 
-  </div>
-  <div class="grid grid-cols-1 w-full divide-y divide-inherit hover:[&>*]:bg-gray-200 dark:hover:[&>*]:bg-zinc-600 [&>*]:duration-200">
-    <div onclick="enableSystemMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-tr-xl">
-      <.icon name="hero-cog" class="w-6 h-6"/>
-      <%= gettext("System") %>
-    </div>
-    <div onclick="enableDarkMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer">
-      <.icon name="hero-moon" class="w-6 h-6"/>
-      <%= gettext("Dark") %>
-    </div>
-    <div onclick="enableLightMode()" class="flex items-center px-4 py-2 gap-2 cursor-pointer rounded-br-xl">
-      <.icon name="hero-sun" class="w-6 h-6"/>
-      <%= gettext("Light") %>
-    </div>
-  </div>
-</div>
-
-<script>
-
-locale = "en";
-
-function toggleMobileMenu() {
-  if (document.getElementById("mobile-menu").classList.contains("hidden")) {
-    openMobileMenu();
-  } else {
-    closeMobileMenu();
-  }
-}
-
-function openMobileMenu() {
-  document.getElementById("mobile-menu").classList.remove("hidden");
-}
-
-function closeMobileMenu() {
-  document.getElementById("mobile-menu").classList.add("hidden");
-}
-
-function toggleOptions(userlocale="en") {
-  locale = userlocale;
-  if (document.getElementById("options-overlay").classList.contains("hidden")) {
-    openOptions(true);
-  } else {
-    closeOptions(true);
-  }
-}
-
-function openOptions(firstLevel) {
-  document.getElementById("options-menu").classList.remove("hidden");
-  setCurrentTheme(locale);
-  if(firstLevel) {
-    document.getElementById("options-overlay").classList.remove("hidden");
-    document.querySelector("main").classList.add("blur-[2px]");
-  }
-}
-
-function closeOptions(firstLevel) {
-  document.getElementById("options-menu").classList.add("hidden");
-  if(firstLevel) {
-    document.getElementById("language-menu").classList.add("hidden");
-    document.getElementById("theme-menu").classList.add("hidden");
-    document.getElementById("options-overlay").classList.add("hidden");
-    document.querySelector("main").classList.remove("blur-[2px]");
-  }
-}
-
-function closeLanguageMenu() {
-  openOptions(false);
-  document.getElementById("language-menu").classList.add("hidden");
-}
-
-function openLanguageMenu() {
-  closeOptions(false);
-  document.getElementById("language-menu").classList.remove("hidden");
-}
-
-function closeThemeMenu() {
-  openOptions(false);
-  document.getElementById("theme-menu").classList.add("hidden");
-}
-
-function openThemeMenu() {
-  closeOptions(false);
-  document.getElementById("theme-menu").classList.remove("hidden");
-}
-
-function setCurrentTheme() {
-  console.log(locale)
-  document.querySelectorAll(".currentThemeName").forEach((item) => {
-    names = {
-      "en": ["System", "Dark", "Light"],
-      "pt": ["Sistema", "Escuro", "Claro"]
-    }
-    if (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      item.innerHTML = names[locale][0];
-    } else if (localStorage.theme === 'dark') {
-      item.innerHTML = names[locale][1];
-    } else {
-      item.innerHTML = names[locale][2];
-    }
-  })
-
-}
-
-</script>

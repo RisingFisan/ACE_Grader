@@ -9,7 +9,7 @@ defmodule AceGraderWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com), using the
   [heroicons_elixir](https://github.com/mveytsman/heroicons_elixir) project.
   """
-  use Phoenix.Component
+  use Phoenix.Component, global_prefixes: ~w(x-)
 
   alias Phoenix.LiveView.JS
   import AceGraderWeb.Gettext
@@ -160,9 +160,9 @@ defmodule AceGraderWeb.CoreComponents do
       {@rest}
     >
       <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <.icon name="hero-information-circle" :if={@kind == :info} mini class="h-4 w-4" />
-        <.icon name="hero-exclamation-triangle" :if={@kind == :warning} mini class="h-4 w-4" />
-        <.icon name="hero-exclamation-circle" :if={@kind == :error} mini class="h-4 w-4" />
+        <.icon name="hero-information-circle-mini" :if={@kind == :info} class="h-4 w-4" />
+        <.icon name="hero-exclamation-triangle-mini" :if={@kind == :warning} class="h-4 w-4" />
+        <.icon name="hero-exclamation-circle-mini" :if={@kind == :error} class="h-4 w-4" />
         <%= @title %>
       </p>
       <p class="mt-2 text-sm leading-5"><%= msg %></p>
@@ -678,10 +678,11 @@ defmodule AceGraderWeb.CoreComponents do
   """
   attr :name, :string, required: true
   attr :class, :string, default: nil
+  attr :rest, :global
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} />
+    <span class={[@name, @class]} {@rest} />
     """
   end
 

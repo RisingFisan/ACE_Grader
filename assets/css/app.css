@@ -12,6 +12,8 @@ body {
     font-family: 'Inter', 'Lexend', 'Atkinson Hyperlegible', sans-serif;
 }
 
+[x-cloak] { display: none !important; }
+
 .editor-container {
     position: relative;
     width: 100%;
