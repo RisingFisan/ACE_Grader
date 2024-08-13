@@ -26,7 +26,7 @@
 
   <div :if={@user.account_type == :teacher} class="space-y-4">
     <h2 class="text-3xl font-bold"><%= gettext("Exercises created by") <> " " <> @user.display_name %></h2>
-    <.exercise_list exercises={@exercises} ex_click={&JS.navigate(~p"/exercises/#{&1}")}/>
+    <.exercise_list exercises={@exercises} />
   </div>
 
   <div :if={@current_user && @user.account_type == :student && (@current_user.id == @user.id || @current_user.account_type != :student)} class="space-y-4">
@@ -38,7 +38,7 @@
     <.table id="submissions-table" rows={@submissions} row_click={&JS.navigate(~p"/exercises/#{&1.exercise}/submissions/#{&1}")}>
       <:col :let={submission} label={gettext "Exercise name"}><%= submission.exercise.title %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
-      <:col :let={submission} label={gettext "Date"}><time class="datetime" datetime={submission.inserted_at |> DateTime.from_naive!("Etc/UTC") |> to_string()}></time></:col>
+      <:col :let={submission} label={gettext "Date"}><time x-text={"$store.formatDateTime('#{submission.inserted_at}')"}></time></:col>
     </.table>
   </div>
 </div>

@@ -1,15 +1,24 @@
 <.header>
   <%= gettext("Class") %> <b><%= @class.name %></b>
-  <:subtitle><p><%= pgettext("class", "Created by") <> ":" %> <a href={~p"/users/#{@class.creator.username}"} class="text-violet-600 dark:text-violet-400"><%= @class.creator.username %></a></p></:subtitle>
+  <%!-- <:subtitle><p><%= pgettext("class", "Created by") <> ":" %> <a href={~p"/users/#{@class.creator.username}"} class="text-violet-600 dark:text-violet-400"><%= @class.creator.username %></a></p></:subtitle> --%>
   <:actions>
     <.back navigate={~p"/classes"}><%= gettext "Back to classes" %></.back>
   </:actions>
 </.header>
 
-<div class="py-4">
+<div class="py-4 flex gap-2">
 <%= if @class.creator_id == @current_user.id do %>
   <.link patch={~p"/classes/#{@class}/show/edit"} phx-click={JS.push_focus()}>
-    <.button kind={:teacher}>Edit class</.button>
+    <.button kind={:teacher} class="flex items-center gap-2">
+      <.icon name="hero-pencil-solid" class="w-5 h-5" />
+      <%= gettext "Edit" %>
+    </.button>
+  </.link>
+  <.link>
+    <.button kind={:delete} class="flex items-center gap-2">
+      <.icon name="hero-trash-solid" class="w-5 h-5" />
+      <%= gettext "Delete" %>
+    </.button>
   </.link>
 <% else %>
   <%= if @current_user not in @class.members do %>
@@ -21,17 +30,26 @@
 </div>
 
 <div class="space-y-5">
+  <div :if={@current_user.account_type == :teacher} class="p-4 mx-4 border-y-2 flex flex-col md:flex-row gap-2 items-center border-zinc-100 dark:border-zinc-700">
+    <p class="flex-shrink-0 text-center">Use the following link to invite students to this class: </p>
+    <div class="bg-zinc-200 dark:bg-zinc-500 rounded-md relative grid grid-cols-[min-content,1fr] items-center" x-data="{ copied: false }">
+      <button type="button" class="px-2 py-1 bg-zinc-400" x-on:click={"navigator.clipboard.writeText('#{@join_url}'); copied = true; setTimeout(() => copied = false, 2000)"} ><.icon name="hero-clipboard" class="w-5 h-5 text-zinc-900" />
+      </button>
+      <p class="overflow-x-auto whitespace-nowrap hide-scrollbar mx-2"><%= @join_url %></p>
+      <div x-show="copied" x-transition.opacity
+          class="absolute bottom-9 left-0 p-2 bg-violet-600 text-white text-sm rounded"
+          style="display: none;">
+        <.icon name="hero-check" class="w-4 h-4" />
+        Copied!
+      </div>
+    </div>
+  </div>
+
   <div>
     <h2 class="text-2xl font-bold"><%= gettext "Teachers" %></h2>
+
     <div>
-      <%= if @current_user.account_type != :student do %>
-        <a href={~p"/users/#{@class.creator.username}"}><%= "#{@class.creator.display_name} (@#{@class.creator.username})" %></a>
-      <% else %>
-        <p><%= "#{@class.creator.display_name} (@#{@class.creator.username})" %></p>
-      <% end %>
-    </div>
-    <div>
-      <%= for teacher <- @class.members |> Enum.sort_by(& &1.display_name), teacher.account_type == :teacher do %>
+      <%= for teacher <- [ @class.creator | @class.members ] |> Enum.sort_by(& &1.display_name), teacher.account_type == :teacher do %>
         <div>
           <%= if @current_user.account_type != :student do %>
             <a href={~p"/users/#{teacher.username}"}><%= "#{teacher.display_name} (@#{teacher.username})" %></a>
@@ -57,7 +75,13 @@
       <% end %>
     </div>
   </div>
+  <div :if={ @enrolled } class="space-y-3">
+    <h2 class="text-2xl font-bold">Exercises for this class</h2>
+    <.exercise_list exercises={@class.exercises} />
+  </div>
 </div>
+
+
 
 <.modal :if={@live_action == :edit} id="class-modal" show on_cancel={JS.patch(~p"/classes/#{@class}")}>
   <.live_component
@@ -68,4 +92,10 @@
     class={@class}
     patch={~p"/classes/#{@class}"}
   />
+</.modal>
+
+<.modal :if={@live_action == :join} id="class-join-modal" show on_confirm="join-class" on_cancel={JS.patch(~p"/classes/#{@class}")}>
+  Are you sure you want to join this class?
+  <:confirm>Join</:confirm>
+  <:cancel>Cancel</:cancel>
 </.modal>

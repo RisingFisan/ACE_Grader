@@ -10,6 +10,7 @@ defmodule AceGrader.Classes.Class do
     belongs_to :creator, AceGrader.Accounts.User, foreign_key: :creator_id
 
     many_to_many :members, AceGrader.Accounts.User, join_through: "classes_users"
+    many_to_many :exercises, AceGrader.Exercises.Exercise, join_through: "exercises_classes"
 
     timestamps()
   end

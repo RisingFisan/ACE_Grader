@@ -6,7 +6,7 @@ defmodule AceGrader.Exercises.Exercise do
   @foreign_key_type :binary_id
   schema "exercises" do
     field :description, :string
-    field :public, :boolean, default: true
+    field :visibility, Ecto.Enum, values: [:public, :class, :private], default: :public
     field :title, :string
     field :language, Ecto.Enum, values: [:c, :haskell], default: :c
 
@@ -20,6 +20,11 @@ defmodule AceGrader.Exercises.Exercise do
     has_many :submissions, AceGrader.Submissions.Submission
     has_many :tests, AceGrader.Exercises.Test, on_replace: :delete
     has_many :parameters, AceGrader.Exercises.Parameter, on_replace: :delete
+
+    has_many :exercise_classes,
+      AceGrader.Exercises.ExerciseClass,
+      on_replace: :delete
+    has_many :classes, through: [:exercise_classes, :class]
 
     timestamps()
   end
@@ -42,10 +47,11 @@ defmodule AceGrader.Exercises.Exercise do
     end
 
     exercise
-    |> cast(attrs, [:title, :description, :public, :total_grade, :language, :author_id, :test_file, :template])
-    |> validate_required([:title, :description, :public])
+    |> cast(attrs, [:title, :description, :visibility, :total_grade, :language, :author_id, :test_file, :template])
+    |> validate_required([:title, :description, :visibility])
     |> cast_assoc(:tests, sort_param: :tests_order, drop_param: :tests_delete)
     |> cast_assoc(:parameters, sort_param: :params_order, drop_param: :params_delete)
+    |> cast_assoc(:exercise_classes)
     |> copy_test_positions()
     |> copy_param_positions()
     |> (& if validate_grade, do: validate_number(&1, :total_grade, equal_to: 100), else: &1).()
@@ -53,8 +59,8 @@ defmodule AceGrader.Exercises.Exercise do
 
   def changeset_duplicate(exercise, attrs) do
     exercise
-    |> cast(attrs, [:title, :description, :public, :total_grade, :author_id, :test_file, :template])
-    |> validate_required([:title, :description, :public])
+    |> cast(attrs, [:title, :description, :visibility, :total_grade, :author_id, :test_file, :template])
+    |> validate_required([:title, :description, :visibility])
     |> cast_assoc(:tests)
     |> cast_assoc(:parameters)
   end

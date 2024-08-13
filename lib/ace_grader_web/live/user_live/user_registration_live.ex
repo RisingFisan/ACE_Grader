@@ -31,9 +31,9 @@ defmodule AceGraderWeb.UserRegistrationLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:username]} type="text" label={gettext("Username")} placeholder="A12345" required />
-        <.input field={@form[:display_name]} type="text" label={gettext("Display name")} placeholder="Luz Noceda (she/her)" required />
-        <.input field={@form[:email]} type="email" label={gettext("Email")} required placeholder="name@email.com" />
+        <.input field={@form[:username]} type="text" label={gettext("Username")} placeholder="WA1983" required />
+        <.input field={@form[:display_name]} type="text" label={gettext("Display name")} placeholder="Jesse Faden 🔻" required />
+        <.input field={@form[:email]} type="email" label={gettext("Email")} required placeholder="hornet@hallownest.com" />
         <.input field={@form[:password]} type="password" label={gettext("Password")} required placeholder="*******" />
         <.input field={@form[:account_type]} type="radio" label={gettext("Account type")} options={Enum.zip(["student", "teacher"], [gettext("Student"), gettext("Teacher")])} required />
         <:actions>

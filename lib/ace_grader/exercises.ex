@@ -39,7 +39,7 @@ defmodule AceGrader.Exercises do
 
   """
   def list_public_exercises do
-    Repo.all(from(e in Exercise, where: e.public == true, order_by: [desc: e.inserted_at]))
+    Repo.all(from(e in Exercise, where: e.visibility == :public, order_by: [desc: e.inserted_at]))
   end
 
   # def list_exercises_by_user(user_id, only_public \\ true) do
@@ -51,7 +51,7 @@ defmodule AceGrader.Exercises do
   # end
 
   def list_exercises_by_user(user_id, only_public \\ true) do
-    Repo.all(from(e in Exercise, where: e.author_id == ^user_id and (e.public == true or ^only_public == false), order_by: [desc: e.inserted_at]))
+    Repo.all(from(e in Exercise, where: e.author_id == ^user_id and (e.visibility == :public or ^only_public == false), order_by: [desc: e.inserted_at]))
   end
 
   @doc """
@@ -68,26 +68,10 @@ defmodule AceGrader.Exercises do
       ** (Ecto.NoResultsError)
 
   """
-  def get_exercise!(id, preloads \\ true, params \\ %{}) do
+  def get_exercise!(id) do
     Repo.get!(Exercise, id)
     |> Repo.preload([:user, tests: from(t in Test, order_by: [asc: t.position]), parameters: from(p in Parameter, order_by: [asc: p.position])])
-    |> Repo.preload(if preloads, do: [submissions: from(get_submissions(params))], else: [])
   end
-
-  defp get_submissions(params) do
-    Submission
-    |> join(:inner, [s], u in assoc(s, :user), as: :user)
-    |> order_by(^sort_submissions_by(params["order_by"]))
-    |> preload([s,u], [user: u])
-  end
-
-  defp sort_submissions_by("date_desc"), do: [desc: :inserted_at]
-  defp sort_submissions_by("date_asc"), do: [asc: :inserted_at]
-  defp sort_submissions_by("grade_desc"), do: [desc: :total_grade]
-  defp sort_submissions_by("grade_asc"), do: [asc: :total_grade]
-  defp sort_submissions_by("name_desc"), do: [desc: dynamic([user: u], u.username)]
-  defp sort_submissions_by("name_asc"), do: [asc: dynamic([user: u], u.username)]
-  defp sort_submissions_by(_), do: [desc: :inserted_at]
 
   @doc """
   Creates a exercise.
@@ -122,6 +106,7 @@ defmodule AceGrader.Exercises do
   def update_exercise(%Exercise{} = exercise, attrs) do
     exercise
     |> Exercise.changeset(attrs)
+    |> IO.inspect()
     |> Repo.update()
   end
 
@@ -163,7 +148,7 @@ defmodule AceGrader.Exercises do
       "test_file" => exercise.test_file,
       "template" => exercise.template,
       "total_grade" => exercise.total_grade,
-      "public" => exercise.public,
+      "visibility" => exercise.visibility,
       "tests" => Enum.map(exercise.tests, & Map.from_struct(&1) |> Map.put(:temp_id, 0)),
       "parameters" => Enum.map(exercise.parameters, & Map.from_struct(&1) |> Map.put(:temp_id, 0)),
       "author_id" => user_id

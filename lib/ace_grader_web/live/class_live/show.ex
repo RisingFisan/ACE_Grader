@@ -11,25 +11,33 @@ defmodule AceGraderWeb.ClassLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    class = Classes.get_class!(id)
+    class = Classes.get_class!(id) |> AceGrader.Repo.preload(:exercises)
+    enrolled = socket.assigns.current_user.id in [ class.creator_id | Enum.map(class.members, & &1.id) ]
+    socket = assign(socket,
+      class: class,
+      join_url: "#{socket.endpoint.url}/classes/#{class.id}/join",
+      enrolled: enrolled,
+      page_title: page_title(socket.assigns.live_action, class))
     case socket.assigns.live_action do
       :edit ->
         if class.creator_id != socket.assigns.current_user.id do
           {:noreply,
           socket
           |> put_flash(:error, "You do not have permission to edit this class.")
-          |> redirect(to: ~p"/classes/#{class}")}
+          |> push_navigate(to: ~p"/classes/#{class}")}
         else
-          {:noreply,
-           socket
-           |> assign(:page_title, page_title(socket.assigns.live_action, class))
-           |> assign(:class, class)}
+          {:noreply, socket}
         end
       :show ->
-        {:noreply,
-         socket
-         |> assign(:page_title, page_title(socket.assigns.live_action, class))
-         |> assign(:class, class)}
+        {:noreply, socket}
+      :join ->
+        if enrolled do
+          {:noreply, socket
+            |> put_flash(:warning, "You're already in this class.")
+            |> push_patch(to: ~p"/classes/#{class}")}
+        else
+          {:noreply, socket}
+        end
     end
   end
 
@@ -66,4 +74,5 @@ defmodule AceGraderWeb.ClassLive.Show do
 
   defp page_title(:show, class), do: "Class #{class.name}"
   defp page_title(:edit, class), do: "Editing class #{class.name}"
+  defp page_title(:join, class), do: "Joining class #{class.name}"
 end

@@ -32,7 +32,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
     Process.demonitor(ref, [:flush]) # we flush the process before it dies, since we already have the result, and avoid needing another handle_info for the death message
     case result do
       {:ok, submission} -> {:noreply, socket |> assign(submission: submission)}
-      {:error, changeset} ->
+      {:error, _changeset} ->
         {:noreply, socket |> put_flash(:error, "Error grading submission! Please reload the page.")}
       {:retry, error_msg} ->
         {:noreply, socket |> put_flash(:error, error_msg)}

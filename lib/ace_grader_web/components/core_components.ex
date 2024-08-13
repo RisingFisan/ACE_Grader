@@ -515,7 +515,7 @@ defmodule AceGraderWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex flex-col-reverse md:flex-row md:items-center justify-between gap-6", @class]}>
+    <header class={[@actions != [] && "flex flex-col-reverse md:flex-row justify-between gap-6", @class]}>
       <div>
         <h1 class="text-3xl font-bold leading-8 text-zinc-800 dark:text-zinc-100">
           <%= render_slot(@inner_block) %>

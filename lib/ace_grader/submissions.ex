@@ -28,6 +28,47 @@ defmodule AceGrader.Submissions do
     Repo.all(from(s in Submission, where: s.author_id == ^user_id, order_by: [desc: s.inserted_at], preload: [:exercise]))
   end
 
+  def get_exercise_submissions(exercise, params) do
+    query = from s in Submission,
+      where: s.exercise_id == ^exercise.id,
+      join: u in assoc(s, :user),
+      order_by: ^sort_submissions_by(params["order_by"]),
+      preload: [user: u]
+
+    query = if params["unique"] == "true" do
+      from [s, u] in query, distinct: u.id
+    else
+      query
+    end
+
+    Repo.all(query)
+  end
+
+  def get_exercise_user_submissions(exercise, user, params) do
+    query = from s in Submission,
+      where: s.exercise_id == ^exercise.id,
+      join: u in assoc(s, :user),
+      where: u.id == ^user.id,
+      order_by: ^sort_submissions_by(params["order_by"]),
+      preload: [user: u]
+
+    query = if params["unique"] == "true" do
+      from [s, u] in query, distinct: u.id
+    else
+      query
+    end
+
+    Repo.all(query)
+  end
+
+  defp sort_submissions_by("date_desc"), do: [desc: :inserted_at]
+  defp sort_submissions_by("date_asc"), do: [asc: :inserted_at]
+  defp sort_submissions_by("grade_desc"), do: [desc: :total_grade]
+  defp sort_submissions_by("grade_asc"), do: [asc: :total_grade]
+  defp sort_submissions_by("name_desc"), do: [desc: dynamic([s, u], u.username)]
+  defp sort_submissions_by("name_asc"), do: [asc: dynamic([s, u], u.username)]
+  defp sort_submissions_by(_), do: [desc: :inserted_at]
+
   @doc """
   Gets a single submission.
 

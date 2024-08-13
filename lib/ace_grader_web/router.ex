@@ -93,6 +93,7 @@ defmodule AceGraderWeb.Router do
 
       live "/classes", ClassLive.Index, :index
       live "/classes/:id", ClassLive.Show, :show
+      live "/classes/:id/join", ClassLive.Show, :join
     end
   end
 

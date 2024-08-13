@@ -53,7 +53,8 @@ defmodule AceGraderWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {AceGraderWeb.Layouts, :app}
+        layout: {AceGraderWeb.Layouts, :app},
+        global_prefixes: ~w(x-)
 
       on_mount AceGraderWeb.RestoreLocale
       on_mount AceGraderWeb.SetCurrentPath

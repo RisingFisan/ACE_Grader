@@ -5,7 +5,7 @@ defmodule AceGraderWeb.ExerciseLive.Editor do
   alias AceGrader.Grader
 
   def mount(_params = %{"id" => id}, _session, socket) do
-    exercise = Exercises.get_exercise!(id, false)
+    exercise = Exercises.get_exercise!(id)
     submission = %Submissions.Submission{}
     attrs = %{
       exercise_id: exercise.id,

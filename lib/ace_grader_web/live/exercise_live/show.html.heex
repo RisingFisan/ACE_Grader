@@ -1,12 +1,14 @@
 <.header>
   <div class="flex items-center gap-4">
     <%= @exercise.title %>
-    <div :if={!@exercise.public} class="flex gap-2 items-end">
+    <div :if={@exercise.visibility == :private} class="flex gap-2 items-end">
       <.icon name="hero-eye-slash" class="w-8 h-8 hoverToShow"/>
       <p class="showOnHover text-lg font-normal"><%= gettext "Private exercise" %></p>
     </div>
+    <.icon name="hero-academic-cap" :if={@exercise.visibility == :class} class="w-8 h-8"/>
   </div>
   <:subtitle>
+    <p><%= "#{pgettext("exercise", "Language")}: #{String.capitalize(to_string(@exercise.language))}" %></p>
     <p><%= pgettext("exercise", "Created by") <> ":" %>
       <.link href={~p"/users/#{@exercise.user.username}"} class="text-violet-800 dark:text-violet-500">
         @<%= if @exercise.author_id, do: @exercise.user.username, else: "[DELETED]" %>
@@ -14,37 +16,40 @@
     </p>
   </:subtitle>
   <:actions>
-    <.back navigate={~p"/exercises"}><%= gettext "Back to exercises" %></.back>
+    <%!-- <.back navigate={~p"/exercises"}><%= gettext "Back to exercises" %></.back> --%>
   </:actions>
 </.header>
+
+<div class="h-5 w-full border-b border-zinc-500">
+</div>
 
 <div id="description" class="my-4" phx-update="ignore">
   <.markdown_text content={@exercise.description}/>
 </div>
 
 <div class="flex flex-col items-center py-4 gap-2">
-  <.link href={~p"/exercises/#{@exercise}/editor"}>
+  <.link navigate={~p"/exercises/#{@exercise}/editor"}>
     <.button disabled={@current_user == nil}><%= gettext "Open in Editor" %></.button>
   </.link>
   <p :if={@current_user == nil} class="font-light text-sm"><%= gettext "Only registered users can use the online editor." %></p>
   <div :if={@current_user != nil and @current_user.account_type != :student} class="flex flex-col items-center gap-3 border-t border-zinc-500 pt-2">
     <div :if={@is_owner} class="flex gap-3">
-      <.link href={~p"/exercises/#{@exercise}/edit"}>
-        <.button kind={:teacher} class="flex items-center">
-          <.icon name="hero-pencil-solid" class="w-5 h-5 mr-2" />
-          <%= gettext "Edit exercise" %>
+      <.link navigate={~p"/exercises/#{@exercise}/edit"}>
+        <.button kind={:teacher} class="flex items-center gap-2">
+          <.icon name="hero-pencil-solid" class="w-5 h-5" />
+          <%= gettext "Edit" %>
         </.button>
       </.link>
       <.link href={~p"/exercises/#{@exercise}/"} method="delete" data-confirm="Are you sure?">
-        <.button kind={:delete} class="flex items-center">
-          <.icon name="hero-trash-solid" class="w-5 h-5 mr-2" />
-          <%= gettext "Delete exercise" %>
+        <.button kind={:delete} class="flex items-center gap-2">
+          <.icon name="hero-trash-solid" class="w-5 h-5" />
+          <%= gettext "Delete" %>
         </.button>
       </.link>
     </div>
     <.link href={~p"/exercises/#{@exercise}/duplicate"} method="post">
-      <.button kind={:teacher} class="flex items-center">
-        <.icon name="hero-document-duplicate-solid" class="w-5 h-5 mr-2" />
+      <.button kind={:teacher} class="flex items-center gap-2">
+        <.icon name="hero-document-duplicate-solid" class="w-5 h-5" />
         <%= gettext "Duplicate exercise" %>
       </.button>
     </.link>
@@ -53,20 +58,34 @@
 
 <div :if={@current_user} class="mt-6 flex flex-col gap-4">
   <div class="flex flex-col sm:flex-row justify-between gap-2">
-  <h2 class="font-bold text-2xl"><%= (if @current_user.account_type == :student, do: (ngettext "My submission", "My submissions", length(@exercise.submissions)), else: gettext("Submissions")) %></h2>
-  <div :if={@current_user.account_type != :student} class="flex items-center gap-2 self-end">
-      <p><%= gettext("Sort by") %></p>
+  <h2 class="font-bold text-2xl"><%= (if @current_user.account_type == :student, do: (ngettext "My submission", "My submissions", length(@submissions)), else: gettext("Submissions")) %></h2>
+  <div :if={@current_user.account_type != :student}>
       <.simple_form :let={f} for={@order_and_filter_changeset} phx-change="order_and_filter" as="order_and_filter">
         <% options = [{pgettext("short", "Username"), "name_asc"}, {pgettext("short", "Username (Desc)"), "name_desc"},
                   {gettext("Date"), "date_asc"}, {gettext("Date (Desc)"), "date_desc"},
                   {gettext("Grade"), "grade_asc"}, {gettext("Grade (Desc)"), "grade_desc"}] %>
-        <.input field={f[:order_by]} type="select" options={options}/>
+        <div class="space-y-2">
+          <div class="flex justify-end items-center gap-4">
+            <div class="flex items-center gap-2">
+              <p><%= gettext("Sort by") %></p>
+              <.input field={f[:order_by]} type="select" options={options}/>
+            </div>
+            <div class="cursor-pointer p-3 rounded-full" phx-click={JS.toggle(to: "#filter-options") |> JS.toggle_class("bg-zinc-200 dark:bg-zinc-800")}>
+              <.icon name="hero-funnel" class="w-6 h-6"/>
+            </div>
+          </div>
+          <div id="filter-options" class="hidden bg-zinc-200 dark:bg-zinc-800 select-none px-3 py-1 rounded-md">
+            <.input field={f[:unique]} type="checkbox" label={gettext "Show only 1 submission per user."}/>
+          </div>
+        </div>
       </.simple_form>
     </div>
   </div>
-  <%= if length(@exercise.submissions) > 0 do %>
-    <.table id="submissions-table" rows={@exercise.submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
-      <:col :let={submission} label={gettext "Date"}><time id={"datetime_#{submission.id}"} phx-update="ignore" class="datetime" datetime={submission.inserted_at |> DateTime.from_naive!("Etc/UTC") |> to_string()}></time></:col>
+  <%= if length(@submissions) > 0 do %>
+    <.table id="submissions-table" rows={@submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
+      <:col :let={submission} label={gettext "Date"}>
+        <time x-text={"$store.formatDateTime('#{submission.inserted_at}')"} datetime={submission.inserted_at}/>
+      </:col>
       <:col :if={@current_user.account_type != :student} :let={submission} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
       <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
       <:action :if={@show_delete && @current_user.account_type != :student && @current_user.id == @exercise.author_id} :let={submission}>

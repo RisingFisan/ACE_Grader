@@ -31,31 +31,8 @@
   </button>
 </div>
 
-<div class="space-y-4">
-  <div id="editor-container" class="editor-container" phx-update="ignore">
-    <div id="editor-loading" class="editor-loading">
-      <p><%= gettext "Loading editor" %></p>
-      <.icon name="hero-cog-6-tooth" class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
-    </div>
-
-    <div id="editor" class="editor" phx-hook="Editor" data-language={@exercise.language}><p class="hidden"><%= @code %></p></div>
-  </div>
-  <div class="flex justify-end gap-2">
-    <button class={["border border-zinc-500 rounded-lg px-2 py-1",
-    (if @wrapped == 1, do: "bg-zinc-200 dark:bg-zinc-500")
-    ]
-    } phx-click="text_wrap" phx-value-wrap={@wrapped}>Text wrap</button>
-    <button class={["border border-zinc-500 rounded-lg px-1 py-1",
-    (if @expanded == 1, do: "bg-zinc-200 dark:bg-zinc-500")
-    ]
-    } phx-click="expand_editor" phx-value-expand={@expanded}>
-      <%= if @expanded == 0 do %>
-        <.icon name="hero-arrows-pointing-out" class="w-6"/>
-      <% else %>
-        <.icon name="hero-arrows-pointing-in" class="w-6"/>
-      <% end %>
-    </button>
-  </div>
+<.simple_form :let={f} for={@changeset} phx-submit="submit_code" id="submit_form" phx-change="update_code">
+  <.editor id="editor-component" language={@exercise.language} field={f[:code]} initial_value={@exercise.template} />
 
   <div class="grid grid-cols-1 sm:grid-cols-[1fr_min-content_1fr] justify-center place-items-center gap-2">
     <button id="test_button" 
@@ -68,10 +45,6 @@
     <div class="bg-zinc-300 dark:bg-zinc-600 h-[1px] sm:h-auto sm:w-[1px] place-self-stretch"></div>
     <.button id="submit_button" class="w-48 h-16 sm:place-self-start" phx-click={JS.push("show_confirm")}><span class="text-2xl"><%= gettext "Submit" %></span></.button>
   </div>
-</div>
-
-<.simple_form :let={f} hidden for={@changeset} phx-submit="submit_code" id="submit_form" phx-change="update_code">
-  <.input hidden type="hidden" field={f[:code]} id="editor-code" phx-update="ignore"></.input>
 </.simple_form>
 
 <.compilation_results :if={@success != nil} status={if @success, do: :success, else: :error} message={@compilation_msg}/>

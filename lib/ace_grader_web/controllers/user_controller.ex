@@ -7,6 +7,7 @@ defmodule AceGraderWeb.UserController do
 
   def show(conn, %{"username" => username}) do
     user = Accounts.get_user_by_username!(username)
+    IO.inspect(user.email)
     assigns = %{
       user: user,
       page_title: "#{user.username}",

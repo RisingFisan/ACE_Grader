@@ -64,7 +64,7 @@ defmodule AceGrader.Grader do
         end
       {:error, error} ->
         case error do
-          %HTTPoison.Error{reason: :econnrefused} ->
+          %HTTPoison.Error{reason: reason} when reason in [:econnrefused, :connect_timeout] ->
             {:retry, "Internal server error - grader is offline. Please try again later."}
           %HTTPoison.Error{reason: :timeout} ->
             {:retry, "Unexpected server timeout. Sometimes this happens and I still haven't figured out why. Just try again and it should work... probably."}
@@ -85,6 +85,7 @@ defmodule AceGrader.Grader do
   end
 
   def grade_submission(submission, liveview) do
+    IO.inspect(submission.status)
     if submission.status == :pending do
       case compile(submission, submission.id) do
         {:ok, warnings} ->

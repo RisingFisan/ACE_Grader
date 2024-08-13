@@ -33,13 +33,18 @@ import "../vendor/ace_editor/ext-searchbox"
 import Alpine from "alpinejs";
 
 window.Alpine = Alpine;
-Alpine.start();
 
 // window.addEventListener(`phx:get_code`, (e) => {
 //     document.getElementById("editor_code").value = editor.getValue();
 // })
 
-function start_editor(editor_id, language) {
+Alpine.store('ace', ace);
+Alpine.store('theme', getCurrentTheme());
+Alpine.store('formatDateTime', (v) => (new Date(v).toLocaleString("sv-SE", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone})));
+
+Alpine.start();
+
+function initEditor(editor_id, language) {
   const editor = ace.edit(editor_id, {
     maxLines: 20,
   });
@@ -65,51 +70,9 @@ function set_language(editor, language) {
 
 let Hooks = {}
 
-Hooks.Editor = {
-  mounted() {
-    const editor_id = this.el.id;
-    let language = this.el.getAttribute("data-language");
-    if (!language) language = "c";
-
-    const editor = start_editor(editor_id, language);
-    if (this.el.getAttribute("data-form") || false) {
-      editor.setOptions({maxLines: Infinity, wrap: "free"});
-    }
-    document.getElementById(`${editor_id}-loading`).style.display = "none";
-    document.getElementById(`${editor_id}-code`).value = editor.getValue();
-    editor.session.on('change', function(delta) {
-        // delta.start, delta.end, delta.lines, delta.action
-        document.getElementById(`${editor_id}-code`).value = editor.getValue();
-        document.getElementById(`${editor_id}-code`).dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    this.handleEvent("expand_editor", (data) => {
-      if(data.expand)
-        editor.setOptions({minLines: 12, maxLines: 100});
-      else
-        editor.setOptions({minLines: 0, maxLines: 20});
-    })
-    this.handleEvent("text_wrap", (data) => {
-      if(data.wrap)
-        editor.setOptions({wrap: "free"});
-      else
-        editor.setOptions({wrap: "off"});
-    })
-    this.handleEvent("set_file_data", (data) => {
-      for (const [key, value] of Object.entries(data.files)) {
-        if (editor_id.endsWith(key)) {
-          editor.setValue(value);
-          //editor.clearSelection();
-          editor.moveCursorTo(0, 0);
-        }
-      }
-      set_language(editor, data.language);
-    })
-  }
-}
-
 Hooks.EditorReadOnly = {
   mounted() {
-    const editor = start_editor(this.el.id);
+    const editor = initEditor(this.el.id);
     set_language(editor, this.el.getAttribute("data-language"));
     editor.setOptions({readOnly: true, minLines: 6, highlightActiveLine: false, highlightGutterLine: false});
     editor.renderer.$cursorLayer.element.style.display = "none"
@@ -204,9 +167,9 @@ function getCurrentTheme() {
   }
 }
 
-document.querySelectorAll(".datetime").forEach((el) => {
-  el.innerHTML = new Date(el.getAttribute("datetime")).toLocaleString("sv-SE", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
-})
+// document.querySelectorAll("time").forEach((el) => {
+//   el.innerHTML = new Date(el.getAttribute("datetime")).toLocaleString("sv-SE", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone});
+// })
 
 window.addEventListener("phx:update-grade", (e) => {
   const target = document.getElementById(e.detail.target_id);

@@ -7,16 +7,27 @@
   
   <:actions>
     <%= if assigns[:exercise] do %>
-      <.back changes={@changeset.changes != %{}} navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
+      <.back changes={@form.action != nil} navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
     <% else %>
-      <.back changes={@changeset.changes != %{}} navigate={~p"/exercises/"}><%= gettext "Back to exercises" %></.back>
+      <.back changes={@form.action != nil} navigate={~p"/exercises/"}><%= gettext "Back to exercises" %></.back>
     <% end %>
   </:actions>
 </.header>
 
+<script>
+window.addEventListener('phx:undo_language_change', (e) => {
+  document.getElementById('exercise_language').value = e.detail['language'];
+})
+</script>
+
+<.modal :if={@new_language != nil} show id="confirm_change_language" on_confirm={JS.push("confirm_change_language")} on_cancel={JS.push("cancel_change_language")}>
+  <p>Are you sure you want to change this exercise's language? Existing file data will be lost.</p>
+  <:confirm>Yes</:confirm>
+  <:cancel>No</:cancel>
+</.modal>
+
 <.simple_form 
-  :let={f}
-  for={@changeset} 
+  for={@form} 
   phx-change="validate" 
   phx-submit="save" 
   action={if assigns[:exercise], do: ~p"/exercises/#{@exercise}", else: ~p"/exercises"}
@@ -24,45 +35,62 @@
   <%!-- <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error> --%>
-  <.input field={f[:title]} type="text" label={gettext "Title"} />
+  <.input field={@form[:title]} type="text" label={gettext "Title"} />
   <div id="desc-container" phx-update="ignore">
-    <.input id="description-form" field={f[:description]} type="hidden" label={gettext("Description") <> " (Markdown)"}/>
-    <div id="description" class="text-lg border-2 dark:border-zinc-800" phx-hook="MdEditor"><p class="hidden"><%= f[:description].value %></p></div>
+    <.input id="description-form" field={@form[:description]} type="hidden" label={gettext("Description") <> " (Markdown)"}/>
+    <div id="description" class="text-lg border-2 dark:border-zinc-800" phx-hook="MdEditor"><p class="hidden"><%= @form[:description].value %></p></div>
   </div>
-  <.input field={f[:language]} type="select" options={[ {"C", "c"}, {"Haskell", "haskell"}] } label={pgettext("programming", "Language")} />
-  <.input field={f[:public]} type="checkbox" label={gettext("Public") <> "?"} />
-  <div>
-    <.label>
-      <%= gettext("Test file") %>
-    </.label>
-    <div id="editor_test_file-container" class="editor-container" phx-update="ignore">
-      <div id="editor_test_file-loading" class="editor-loading">
-        <p><%= gettext "Loading editor" %></p>
-        <.icon name="hero-cog-6-tooth" class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
-      </div>
-
-      <div id="editor_test_file" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}><%= f[:test_file].value %></div>
+  <.input field={@form[:language]} type="select" options={[ {"C", "c"}, {"Haskell", "haskell"}] } label={pgettext("programming", "Language")} phx-change="change_language"/>
+  <div class="flex items-center gap-4">
+    <div class="w-48">
+        <.input field={@form[:visibility]} type="select" options={[{gettext("Public"), "public"}, {gettext("Class"), "class"}, {gettext("Private"), "private"}]} label={gettext("Visibility")}/>
     </div>
-    <.input hidden type="hidden" field={f[:test_file]} id="editor_test_file-code" phx-update="ignore"></.input>
-   </div>
-  <div>
-    <.label>
-      <%= gettext("Submission template") %>
-    </.label>
-    <div id="editor_template-container" class="editor-container" phx-update="ignore">
-      <div id="editor_template-loading" class="editor-loading">
-        <p><%= gettext "Loading editor" %></p>
-        <.icon name="hero-cog-6-tooth" class="w-10 animate-[reverse-spin_3s_linear_infinite]"/>
-      </div>
-
-      <div id="editor_template" class="editor" phx-hook="Editor" data-form="true" data-language={to_string(f[:language].value)}><%= f[:template].value %></div>
+    <.help>
+      <p><b><%= gettext "Public" %>:</b> <%= gettext "This exercise is displayed on the \"Exercises\" page for anyone to solve." %></p>
+      <p><b><%= gettext "Class" %>:</b> <%= gettext "Only students from the specified class(es) can see this exercise." %></p>
+      <p><b><%= gettext "Private" %>:</b> <%= gettext "This exercise is accessible only through its URL." %></p>
+    </.help>
+  </div>
+  <div :if={@form[:visibility].value == :class}>
+    <%= for {class, i} <- Enum.with_index(@classes) do %>
+      <input type="checkbox" checked={class in @current_classes} name={"exercise[exercise_classes][#{i}][class_id]"} id={class.id} phx-update="ignore" value={class.id}/>
+        <%= class.name %>
+    <% end %>
+    <!--
+    WHAT TO DO:
+    1. get all classes in form.ex
+    2. make a fancy schamncy thingy with checkboxes here for each class
+    3. when saving, get all the checked classes and save them in the db (get classes twice for safety reasons)
+    -->
+  </div>
+  <div class="flex items-start gap-4">
+    <div class="flex-1">
+      <.label>
+        <%= gettext("Test file") %>
+      </.label>
+      <.editor id="test-file-component" field={@form[:test_file]} language={@form[:language].value}  initial_value={@form[:test_file].value} />
     </div>
-    <.input hidden type="hidden" field={f[:template]} id="editor_template-code" phx-update="ignore"></.input>
+    <.help right>
+      <p><%= gettext "This file is used to test the submitted code." %></p>
+      <p><%= gettext "For example, if the exercise consists of defining a function, this file should call that function to ensure that it is defined correctly." %></p>
+      <p><%= gettext "You can use the standard input/output alongside one or more tests (defined below) to check for specific cases." %></p>
+    </.help>
+  </div>
+  <div class="flex items-start gap-4">
+    <div class="flex-1">
+      <.label>
+        <%= gettext("Submission template") %>
+      </.label>
+      <.editor id="template-component" field={@form[:template]} language={@form[:language].value} initial_value={@form[:template].value} />
+    </div>
+    <.help right>
+      <p><%= gettext "This code is shown to students as a template that they must complete." %></p>
+      <p><%= gettext "You can use it to display a skeleton of the solution, provide initial values for specific variables or define helper functions, for example." %></p>
+    </.help>
   </div>
 
   <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
-  <.inputs_for :let={tf} field={f[:tests]}>
-    <!-- .input :if={is_nil(tf.data.temp_id)} field={tf[:id]} type="hidden" /-->
+  <.inputs_for :let={tf} field={@form[:tests]}>
     <input type="hidden" name="exercise[tests_order][]" value={tf.index} />
     <div class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-xl border-2 border-zinc-300 dark:border-zinc-700">
       <div class={["space-y-2", (if tf[:delete].value == "true", do: "blur-sm")]}>
@@ -72,16 +100,13 @@
           <div class="w-48">
             <.input field={tf[:type]} type="select" options={[ {gettext("Exact"), "exact"}, {gettext("Regex"), "regex"}, {gettext("Items"), "items"}] } label={gettext "Output type"} />
           </div>
-          <div class="cursor-pointer" phx-click={JS.toggle(to: "#test-type-tooltip-#{tf.index}")} >
-            <.icon name="hero-question-mark-circle" class="h-6 w-6 hover:text-gray-500 duration-200" />
-          </div>
-          <div class="relative">
-            <div id={"test-type-tooltip-#{tf.index}"} hidden class="absolute left-0 w-[512px] -top-20 bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none shadow-lg">
-              <p><b><%= gettext "Exact" %></b>: <%= gettext "verifies if the expected output coincides with the real output (ignoring leading and trailing whitespace)." %></p>
-              <p><b><%= gettext "Regex" %></b>: <%= gettext "verifies if the real output matches the regular expression specified in the expected output." %></p>
-              <p><b><%= gettext "Items" %></b>: <%= gettext "verifies if the real output contains all of the values specified in the expected output (one per line)." %></p>
+          <.help>
+            <div class="lg:w-[50vw] text-justify">
+              <p><b><%= gettext "Optional" %></b>: <%= gettext "if the parameter fails, a warning will be displayed, but it won't affect a submission's total grade." %></p>
+              <p><b><%= gettext "Graded" %></b>: <%= gettext "the parameter's grade contributes to a submission's total grade." %></p>
+              <p><b><%= gettext "Mandatory" %></b>: <%= gettext "the parameter must be passed in order for a submission to be graded, otherwise the total grade will always be 0%." %></p>
             </div>
-          </div>
+          </.help>
         </div>
         <.input field={tf[:expected_output]} type="textarea" label={gettext "Expected output"} mono />
         <.input field={tf[:grade]} type="range" min={0} max={100} label={ gettext "Grade %" }/>
@@ -94,16 +119,6 @@
           <p class="text-red-600"><%= gettext "Delete" %></p>
         </div>
       </label>
-      <%!-- <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
-        <%= if is_nil(tf.data.temp_id) do %>
-          <p><%= gettext "Delete" %></p>
-          <.icon name="hero-trash" class="w-6 h-6"/>
-          <.input field={tf[:delete]} type="checkbox" />
-        <% else %>
-          <.input field={tf[:temp_id]} type="hidden"/>
-          <a href="#" phx-click="remove-test" phx-value-remove={tf.data.temp_id}><.icon name="hero-x-mark" class="w-6 h-6" /></a>
-        <% end %>
-      </div> --%>
     </div>
   </.inputs_for>
   <label class="cursor-pointer flex flex-col items-center">
@@ -118,9 +133,8 @@
   </div> -->
 
   <h2 class="text-2xl font-bold"><%= gettext "Parameters" %></h2>
-  <%= if (f[:language].value |> to_string()) in ["c"] do %>
-  <.inputs_for :let={pf} field={f[:parameters]}>
-    <!--.input :if={is_nil(pf.data.temp_id)} field={pf[:id]} type="hidden" /-->
+  <%= if (@form[:language].value |> to_string()) in ["c"] do %>
+  <.inputs_for :let={pf} field={@form[:parameters]}>
     <input type="hidden" name="exercise[params_order][]" value={pf.index} />
     <div class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-xl border-2 border-zinc-300 dark:border-zinc-700">
       <div class={["space-y-2", (if pf[:delete].value == "true", do: "blur-sm")]}>
@@ -136,16 +150,11 @@
           <div class="w-48">
             <.input field={pf[:type]} type="select" options={[ {gettext("Optional"), "optional"}, {gettext("Graded"), "graded"}, {gettext("Mandatory"), "mandatory"}] } label={gettext "Parameter type"} />
           </div>
-          <div class="cursor-pointer" phx-click={JS.toggle(to: "#param-type-tooltip-#{pf.index}")} >
-            <.icon name="hero-question-mark-circle" class="h-6 w-6 hover:text-gray-500 duration-200" />
-          </div>
-          <div class="relative">
-            <div id={"param-type-tooltip-#{pf.index}"} hidden class="absolute left-0 w-[512px] -top-20 bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none shadow-lg">
-              <p><b><%= gettext "Optional" %></b>: <%= gettext "if the parameter fails, a warning will be displayed, but it won't affect a submission's total grade." %></p>
-              <p><b><%= gettext "Graded" %></b>: <%= gettext "the parameter's grade contributes to a submission's total grade." %></p>
-              <p><b><%= gettext "Mandatory" %></b>: <%= gettext "the parameter must be passed in order for a submission to be graded, otherwise the total grade will always be 0%." %></p>
-            </div>
-          </div>
+          <.help>
+            <p><b><%= gettext "Optional" %></b>: <%= gettext "if the parameter fails, a warning will be displayed, but it won't affect a submission's total grade." %></p>
+            <p><b><%= gettext "Graded" %></b>: <%= gettext "the parameter's grade contributes to a submission's total grade." %></p>
+            <p><b><%= gettext "Mandatory" %></b>: <%= gettext "the parameter must be passed in order for a submission to be graded, otherwise the total grade will always be 0%." %></p>
+          </.help>
         </div>
         <%= if pf[:type].value == :graded do %>
           <.input field={pf[:grade]} type="range" label={ gettext "Grade %" }/>
@@ -159,16 +168,6 @@
           <p class="text-red-600"><%= gettext "Delete" %></p>
         </div>
       </label>
-      <%!-- <div class="w-full flex items-center justify-end gap-2 px-4 text-red-600">
-        <%= if is_nil(pf.data.temp_id) do %>
-          <p><%= gettext "Delete" %></p>
-          <.icon name="hero-trash" class="w-6 h-6"/>
-          <.input field={pf[:delete]} type="checkbox" />
-        <% else %>
-          <.input field={pf[:temp_id]} type="hidden"/>
-          <a href="#" phx-click="remove-parameter" phx-value-remove={pf.data.temp_id}><.icon name="hero-x-mark" class="w-6 h-6" /></a>
-        <% end %>
-      </div> --%>
     </div>
   </.inputs_for>
   <label class="cursor-pointer flex flex-col items-center">
@@ -185,11 +184,13 @@
     <button type="button" phx-click="add-parameter" class="mx-auto bg-zinc-300 dark:bg-zinc-500 hover:bg-zinc-400 dark:hover:bg-zinc-400 px-4 py-2 rounded-lg duration-200"><%= "+ " <> gettext "Add parameter" %></button>
   </div> --%>
 
-  <.error :if={length(f[:total_grade].errors) > 0}><%= dgettext "errors", "The sum of every grade should equal 100!" %></.error>
+  <.error :if={length(@form[:total_grade].errors) > 0}><%= dgettext "errors", "The sum of every grade should equal 100!" %></.error>
   <:actions>
-    <.button id="submit-button" class="flex items-center gap-2">
-      <svg class="w-5 h-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V173.3c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32H64zm0 96c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V128zM224 288a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
-      <%= gettext "Save Exercise" %>
-    </.button>
+    <div class="fixed mx-auto bottom-6 left-1/2 -translate-x-1/2">
+      <.button id="submit-button" class="flex items-center gap-2">
+        <svg class="w-5 h-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V173.3c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32H64zm0 96c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V128zM224 288a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
+        <%= gettext "Save Exercise" %>
+      </.button>
+    </div>
   </:actions>
 </.simple_form>

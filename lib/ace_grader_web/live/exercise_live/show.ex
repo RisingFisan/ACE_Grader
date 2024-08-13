@@ -1,33 +1,36 @@
 defmodule AceGraderWeb.ExerciseLive.Show do
   use AceGraderWeb, :live_view
   alias AceGrader.Exercises
+  alias AceGrader.Submissions
 
   import Ecto.Changeset
 
-  def handle_params(params = %{"id" => id}, _url, socket) do
-    exercise = cond do
-      socket.assigns.current_user == nil -> Exercises.get_exercise!(id, false)
-      socket.assigns.current_user.account_type == :student ->
-        Exercises.get_exercise!(id, true, params)
-        |> Map.update!(:submissions, fn submissions ->
-          Enum.filter(submissions, fn submission ->
-            submission.author_id == socket.assigns.current_user.id
-          end)
-        end)
-      true -> Exercises.get_exercise!(id, true, params)
+  def handle_params(params, _url, socket) do
+    submissions = case Map.get(socket.assigns.current_user, :account_type) do
+      :student ->
+        Submissions.get_exercise_user_submissions(socket.assigns.exercise, socket.assigns.current_user, params)
+      :teacher ->
+        Submissions.get_exercise_submissions(socket.assigns.exercise, params)
+      _ ->
+        []
     end
     {
       :noreply,
       socket
       |> assign(:order_and_filter_changeset, order_and_filter_changeset(params))
-      |> assign(:exercise, exercise)
-      |> assign(:page_title, exercise.title)
-      |> assign(:is_owner, socket.assigns.current_user != nil and exercise.author_id == socket.assigns.current_user.id)
+      |> assign(:submissions, submissions)
     }
   end
 
-  def mount(_params = %{"id" => _id}, _session, socket) do
-    {:ok, socket |> assign(:show_delete, Application.get_env(:ace_grader, :dev_routes))}
+  def mount(_params = %{"id" => id}, _session, socket) do
+    exercise = Exercises.get_exercise!(id)
+    {:ok, socket
+      |> assign(
+        show_delete: Application.get_env(:ace_grader, :dev_routes),
+        exercise: exercise,
+        page_title: exercise.title,
+        is_owner: socket.assigns.current_user != nil and exercise.author_id == socket.assigns.current_user.id
+      )}
   end
 
   def handle_event("order_and_filter", %{"order_and_filter" => order_and_filter_params}, socket) do
@@ -47,9 +50,9 @@ defmodule AceGraderWeb.ExerciseLive.Show do
 
   defp order_and_filter_changeset(attrs) do
     cast(
-      {%{order_by: "date_desc"}, %{order_by: :string}},
+      {%{order_by: "date_desc", unique: false}, %{order_by: :string, unique: :boolean}},
       attrs,
-      [:order_by]
+      [:order_by, :unique]
     )
   end
 end

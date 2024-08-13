@@ -5,25 +5,46 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   alias AceGrader.Exercises.Exercise
 
   def mount(_params = %{"id" => id}, _session, socket) do
-    exercise = Exercises.get_exercise!(id)
+    exercise = Exercises.get_exercise!(id) |> AceGrader.Repo.preload(:classes)
     if !Exercise.is_owner?(exercise, socket.assigns.current_user) do
       {:ok, socket |> put_flash(:error, "You must be this exercise's owner in order to perform this operation!") |> redirect(to: ~p"/exercises/#{id}")}
     else
-      changeset = Exercises.change_exercise(exercise)
-      {:ok, socket |> assign(changeset: changeset, exercise: exercise, valid_grades: true, page_title: "Edit Exercise", language: exercise.language)}
+      form = Exercises.change_exercise(exercise) |> to_form()
+      {:ok, socket |> assign(
+        form: form,
+        exercise: exercise,
+        valid_grades: true,
+        page_title: "Edit Exercise",
+        language: exercise.language,
+        new_language: nil,
+        classes: (if exercise.visibility == :class, do: AceGrader.Classes.list_classes(), else: nil),
+        current_classes: exercise.classes) }
     end
   end
 
   def mount(_params, _session, socket) do
-    changeset = Exercises.change_exercise(%Exercise{})
+    exercise = %Exercise{}
+    language = exercise.language
+    form =
+      Exercises.change_exercise(exercise, visibility: :public)
       |> Ecto.Changeset.put_assoc(:tests, [%Exercises.Test{temp_id: get_temp_id()}])
+      |> Ecto.Changeset.put_change(:test_file, test_file(language))
+      |> Ecto.Changeset.put_change(:template, template(language))
+      |> to_form()
       # |> Ecto.Changeset.put_assoc(:parameters, [%Exercises.Parameter{temp_id: get_temp_id()}])
       # |> Ecto.Changeset.put_change(:test_file, """
 
       # """)
       # |> Ecto.Changeset.put_change(:template, )
-    language = to_string(%Exercise{}.language)
-    {:ok, socket |> assign(changeset: changeset, valid_grades: true, page_title: "New Exercise", language: language)
+
+    {:ok, socket |> assign(
+      form: form,
+      valid_grades: true,
+      page_title: "New Exercise",
+      language: language,
+      new_language: nil,
+      classes: nil,
+      current_classes: [])
       # |> push_event("set_file_data", %{language: language, files: %{test_file: test_file(language), template: template(language)}})
     }
   end
@@ -64,24 +85,47 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   end
 
   def handle_event("validate", %{"exercise" => exercise_params} = _params, socket) do
-    changeset =
+    form =
       %Exercise{}
       |> Exercises.change_exercise(exercise_params)
       |> Map.put(:action, :validate)
-      |> IO.inspect()
+      |> to_form()
 
-    # if language changes
-    if to_string(socket.assigns.language) != exercise_params["language"] do
-      {:noreply, assign(socket, changeset: changeset, language: exercise_params["language"])
-        |> push_event("set_file_data", %{language: exercise_params["language"], files: %{test_file: test_file(exercise_params["language"]), template: template(exercise_params["language"])}})
-      }
+    IO.inspect(exercise_params)
+
+    if {"visibility", "class"} in exercise_params do
+      {:noreply, assign(socket, form: form, classes: AceGrader.Classes.list_classes())}
     else
-      {:noreply, assign(socket, changeset: changeset)}
+      {:noreply, assign(socket, form: form)}
     end
   end
 
+  def handle_event("change_language", %{"exercise" => %{"language" => new_language}} = _params, socket) do
+      {:noreply, assign(socket, new_language: new_language)}
+  end
+
+  def handle_event("cancel_change_language", _params, socket) do
+    {:noreply, socket |> push_event("undo_language_change", %{"language" => socket.assigns.language}) |> assign(new_language: nil)}
+  end
+
+  def handle_event("confirm_change_language", _params, socket) do
+    new_language = socket.assigns.new_language
+    changeset =
+      socket.assigns.changeset
+      |> Ecto.Changeset.put_change(:language, new_language)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, changeset: changeset, language: new_language, new_language: nil)
+    |> push_event("change_language", %{
+      "language" => new_language,
+      "template" => template(new_language),
+      "test_file" => test_file(new_language)})}
+  end
+
   def handle_event("save", %{"exercise" => exercise_params} = _params, socket) do
-    exercise_params = Map.put(exercise_params, "author_id", socket.assigns.current_user.id)
+    exercise_params = exercise_params
+      |> Map.put("author_id", socket.assigns.current_user.id)
+
     if socket.assigns[:exercise] do
       case Exercises.update_exercise(socket.assigns.exercise, exercise_params) do
         {:ok, exercise} ->
@@ -137,34 +181,6 @@ defmodule AceGraderWeb.ExerciseLive.Form do
      assign(socket,
        changeset: changeset
      )}
-  end
-
-  def handle_event("remove-test", %{"remove" => remove_id}, socket) do
-    tests =
-      socket.assigns.changeset.changes.tests
-      |> Enum.reject(fn %{data: test} ->
-        test.temp_id == remove_id
-      end)
-
-    changeset =
-      socket.assigns.changeset
-      |> Ecto.Changeset.put_assoc(:tests, tests)
-
-    {:noreply, assign(socket, changeset: changeset)}
-  end
-
-  def handle_event("remove-parameter", %{"remove" => remove_id}, socket) do
-    parameters =
-      socket.assigns.changeset.changes.parameters
-      |> Enum.reject(fn %{data: parameter} ->
-        parameter.temp_id == remove_id
-      end)
-
-    changeset =
-      socket.assigns.changeset
-      |> Ecto.Changeset.put_assoc(:parameters, parameters)
-
-    {:noreply, assign(socket, changeset: changeset)}
   end
 
   def handle_event("change-slider", params = %{"_target" => [name]}, socket) do

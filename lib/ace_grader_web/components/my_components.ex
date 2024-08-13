@@ -1,11 +1,14 @@
 defmodule AceGraderWeb.MyComponents do
 
   use Phoenix.Component
+  use Phoenix.VerifiedRoutes,
+    endpoint: AceGraderWeb.Endpoint,
+    router: AceGraderWeb.Router
 
   alias Phoenix.LiveView.JS
   import AceGraderWeb.Gettext
   import Phoenix.HTML
-  import AceGraderWeb.CoreComponents, only: [icon: 1]
+  import AceGraderWeb.CoreComponents
 
   attr :tests, :list
   attr :error, :boolean, default: :false
@@ -59,11 +62,11 @@ defmodule AceGraderWeb.MyComponents do
             <AceGraderWeb.CoreComponents.icon name="hero-check_circle" :if={test.status == :success} class="w-12 h-12 text-green-600" />
             <div :if={test.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Error" %></p>
-              <AceGraderWeb.CoreComponents.icon name="hero-x_circle" class="w-12 h-12"/>
+              <AceGraderWeb.CoreComponents.icon name="hero-x-circle" class="w-12 h-12"/>
             </div>
             <div :if={test.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Failed" %></p>
-              <AceGraderWeb.CoreComponents.icon name="hero-x_circle" class="w-12 h-12"/>
+              <AceGraderWeb.CoreComponents.icon name="hero-x-circle" class="w-12 h-12"/>
             </div>
             <div :if={test.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Timeout" %></p>
@@ -110,15 +113,15 @@ defmodule AceGraderWeb.MyComponents do
             <.icon name="hero-check_circle" :if={parameter.status == :success} class="w-8 h-8 text-green-600" />
             <div :if={parameter.status == :error} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Error" %></p>
-              <.icon name="hero-x_circle" class="w-8 h-8"/>
+              <.icon name="hero-x-circle" class="w-8 h-8"/>
             </div>
             <div :if={parameter.status == :failed} class="flex items-center text-red-600 dark:text-red-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Failed" %></p>
-              <.icon name="hero-x_circle" class="w-8 h-8"/>
+              <.icon name="hero-x-circle" class="w-8 h-8"/>
             </div>
             <div :if={parameter.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Timeout" %></p>
-              <.icon name="hero-exclamation_circle" class="w-8 h-8"/>
+              <.icon name="hero-exclamation-circle" class="w-8 h-8"/>
             </div>
             <.icon name="hero-clock" :if={parameter.status == :pending} class="w-8 h-8" />
           </div>
@@ -169,14 +172,15 @@ defmodule AceGraderWeb.MyComponents do
   def exercise_list(assigns) do
     ~H"""
     <div class="flex flex-col gap-2">
-      <a :for={exercise <- @exercises} phx-click={@ex_click.(exercise)} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 cursor-pointer
+      <.link :for={exercise <- @exercises} navigate={~p"/exercises/#{exercise}"} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 cursor-pointer
         grid grid-cols-[1fr_max-content] gap-4">
         <div class="space-y-2">
           <div class="flex items-center gap-4">
             <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
             <div class="flex gap-2 items-end">
-              <.icon name="hero-eye-slash" :if={!exercise.public} class="w-6 h-6 hoverToShow"/>
+              <.icon name="hero-eye-slash" :if={exercise.visibility == :private} class="w-6 h-6 hoverToShow"/>
               <p class="showOnHover"><%= gettext "Private" %></p>
+              <.icon name="hero-academic-cap" :if={exercise.visibility == :class} class="w-6 h-6"/>
             </div>
           </div>
           <div class="text-sm line-clamp-2">
@@ -187,7 +191,158 @@ defmodule AceGraderWeb.MyComponents do
           <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
           <p class="text-zinc-600 dark:text-zinc-400 font-light"><%= exercise.language |> Atom.to_string() |> String.capitalize() %></p>
         </div>
-      </a>
+      </.link>
+    </div>
+    """
+  end
+
+  attr :right, :boolean, default: false
+
+  slot :inner_block, required: true
+
+  def help(assigns) do
+    ~H"""
+    <div x-data="{ show: false }" class="lg:relative">
+      <div x-on:mouseover=" show = true " x-on:mouseout="show = false " >
+        <.icon name="hero-question-mark-circle" class="h-6 w-6 hover:text-zinc-700 hover:dark:text-zinc-300 duration-200" />
+      </div>
+      <div x-show="show"
+        x-transition:enter="transition-opacity duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition-opacity duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class={"absolute left-2 right-2 mt-2 lg:left-[auto] lg:w-max #{if @right, do: 'lg:right-0', else: 'lg:right-[auto]'} bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-xl select-none z-50"}>
+        <%= render_slot(@inner_block) %>
+      </div>
+    </div>
+    """
+  end
+
+  attr :id, :string
+  attr :type, :string, values: ~w(normal read-only markdown), default: "normal"
+  attr :language, :string
+  attr :field, Phoenix.HTML.FormField
+  attr :initial_value, :string
+
+  def editor(%{type: "read-only"} = assigns) do
+    ~H"""
+    <div id={@id} phx-update="ignore">
+      <div
+        class="space-y-4"
+        x-data="{ editor: null, expand: false }"
+        x-init={"
+
+          language_file = (lang) => {
+            switch(lang) {
+              case 'c': return 'c_cpp';
+              default: return lang;
+            }
+          }
+
+          editor = $store.ace.edit($refs.editor, {
+            maxLines: 20,
+            readOnly: true,
+            wrap: 'free',
+            highlightActiveLine: false,
+            highlightGutterLine: false
+          });
+          editor.renderer.$cursorLayer.element.style.display = 'none'
+          if ($store.theme == 'Light') {
+            editor.setTheme('ace/theme/eclipse');
+          } else {
+            editor.setTheme('ace/theme/dracula');
+          }
+          editor.session.setMode(`ace/mode/${language_file('#{@language}')}`);
+          if($refs.editor_loading) {
+            $refs.editor_loading.remove();
+          }
+        "}
+      >
+        <div class="editor-container">
+          <div x-ref="editor_loading" class="editor-loading">
+            <p><%= gettext "Loading editor" %></p>
+            <.icon name="hero-cog-6-tooth" class="animate-[reverse-spin_3s_linear_infinite]"/>
+          </div>
+          <div x-ref="editor" class="editor"><%= @initial_value %></div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            class="border border-zinc-500 rounded-xl p-1"
+            x-bind:class=" expand ? 'bg-zinc-200 dark:bg-zinc-500' : ''"
+            @click="expand ? editor.setOptions({minLines: 0, maxLines: 20}) : editor.setOptions({minLines: 12, maxLines: 100}) ; expand = ! expand ">
+            <.icon x-show="!expand" name="hero-arrows-pointing-out" class="w-6"/>
+            <.icon x-show="expand" name="hero-arrows-pointing-in" class="w-6"/>
+          </button>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def editor(assigns) do
+    ~H"""
+    <div id={@id} phx-update="ignore">
+      <div
+        class="space-y-4"
+        x-data="{ editor: null, expand: false }"
+        x-init={"
+
+          language_file = (lang) => {
+            switch(lang) {
+              case 'c': return 'c_cpp';
+              default: return lang;
+            }
+          }
+
+          editor = $store.ace.edit($refs.editor, {
+            maxLines: 20,
+            wrap: 'free',
+          });
+          if ($store.theme == 'Light') {
+            editor.setTheme('ace/theme/eclipse');
+          } else {
+            editor.setTheme('ace/theme/dracula');
+          }
+          editor.session.setMode(`ace/mode/${language_file('#{@language}')}`);
+          $refs.editor_input.value = editor.getValue();
+          if($refs.editor_loading) {
+            $refs.editor_loading.remove();
+          }
+          editor.session.on('change', function(delta) {
+            $refs.editor_input.value = editor.getValue();
+            $refs.editor_input.dispatchEvent(new Event('input', { bubbles: true }));
+          });
+          window.addEventListener('phx:change_language', (e) => {
+            let v = e.detail['#{@field.field}'];
+            if (v) {
+              editor.setValue(v, -1);
+              editor.session.setMode(`ace/mode/${language_file(e.detail['language'])}`);
+            }
+          })
+        "}
+      >
+        <div class="editor-container">
+          <div x-ref="editor_loading" class="editor-loading">
+            <p><%= gettext "Loading editor" %></p>
+            <.icon name="hero-cog-6-tooth" class="animate-[reverse-spin_3s_linear_infinite]"/>
+          </div>
+          <input type="hidden" x-ref="editor_input" name={@field.name} value={@field.value}/>
+          <div x-ref="editor" class="editor"><%= @initial_value %></div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            class="border border-zinc-500 rounded-xl p-1"
+            x-bind:class=" expand ? 'bg-zinc-200 dark:bg-zinc-500' : ''"
+            @click="expand ? editor.setOptions({minLines: 0, maxLines: 20}) : editor.setOptions({minLines: 12, maxLines: 100}) ; expand = ! expand ">
+            <.icon x-show="!expand" name="hero-arrows-pointing-out" class="w-6"/>
+            <.icon x-show="expand" name="hero-arrows-pointing-in" class="w-6"/>
+          </button>
+        </div>
+      </div>
     </div>
     """
   end

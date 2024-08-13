@@ -12,6 +12,11 @@ body {
     font-family: 'Inter', 'Lexend', 'Atkinson Hyperlegible', sans-serif;
 }
 
+.hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
 [x-cloak] { display: none !important; }
 
 .editor-container {
