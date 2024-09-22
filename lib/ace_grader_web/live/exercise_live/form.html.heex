@@ -89,6 +89,13 @@ window.addEventListener('phx:undo_language_change', (e) => {
     </.help>
   </div>
 
+  <div class="flex items-center gap-3">
+  <.input field={@form[:testing_enabled]} type="checkbox" label={gettext "Enable testing before submitting?"}/>
+    <.help>
+      <p class="lg:w-[50vw]"><%= gettext "When this option is enabled, students are able to test their solution prior to submitting it, using the tests that are tagged as \"visible\"."%></p>
+    </.help>
+  </div>
+
   <h2 class="text-2xl font-bold"><%= gettext "Tests" %></h2>
   <.inputs_for :let={tf} field={@form[:tests]}>
     <input type="hidden" name="exercise[tests_order][]" value={tf.index} />
@@ -110,7 +117,7 @@ window.addEventListener('phx:undo_language_change', (e) => {
         </div>
         <.input field={tf[:expected_output]} type="textarea" label={gettext "Expected output"} mono />
         <.input field={tf[:grade]} type="range" min={0} max={100} label={ gettext "Grade %" }/>
-        <.input field={tf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
+        <.input field={tf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting? (only applies when testing before submitting is enabled)"} />
       </div>
       <label class="cursor-pointer">
         <input id={"checkbox_test_#{tf.index}"} type="checkbox" name="exercise[tests_delete][]" class="hidden" value={tf.index}/>
@@ -159,7 +166,7 @@ window.addEventListener('phx:undo_language_change', (e) => {
         <%= if pf[:type].value == :graded do %>
           <.input field={pf[:grade]} type="range" label={ gettext "Grade %" }/>
         <% end %>
-        <.input field={pf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting?"} />
+        <.input field={pf[:visible]} type="checkbox" label={ gettext "Visible to students before submitting? (only applies when testing before submitting is enabled)"} />
       </div>
       <label class="cursor-pointer">
         <input id={"checkbox_param_#{pf.index}"} type="checkbox" name="exercise[params_delete][]" class="hidden" value={pf.index}/>

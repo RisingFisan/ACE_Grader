@@ -551,6 +551,7 @@ defmodule AceGraderWeb.CoreComponents do
   slot :col, required: true do
     attr :label, :string
   end
+  slot :empty, doc: "What appears if the table is empty"
 
   slot :action, doc: "the slot for showing user actions in the last table column"
 
@@ -574,6 +575,11 @@ defmodule AceGraderWeb.CoreComponents do
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
           class="relative divide-y divide-zinc-100 dark:divide-zinc-800 border-t border-zinc-200 dark:border-zinc-600 text-sm leading-6 text-zinc-700 dark:text-zinc-100"
         >
+          <tr class="hidden only:table-row">
+            <td colspan={length(@col)}>
+              <%= render_slot(@empty) %>
+            </td>
+          </tr>
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
             <td
               :for={{col, i} <- Enum.with_index(@col)}

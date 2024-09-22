@@ -16,6 +16,7 @@ config :ace_grader,
 # Configures the endpoint
 config :ace_grader, AceGraderWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: AceGraderWeb.ErrorHTML, json: AceGraderWeb.ErrorJSON],
     layout: false

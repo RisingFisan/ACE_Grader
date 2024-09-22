@@ -9,7 +9,7 @@ defmodule AceGrader.Submissions.Submission do
     field :warnings, :string
     field :errors, :string
     field :status, Ecto.Enum, values: [:pending, :success, :error], default: :pending
-    field :total_grade, :integer
+    field :total_grade, :integer, default: 0
 
     has_many :tests, AceGrader.Submissions.Test
     has_many :parameters, AceGrader.Submissions.Parameter
@@ -27,5 +27,13 @@ defmodule AceGrader.Submissions.Submission do
     |> validate_required([:code, :exercise_id])
     |> cast_assoc(:tests)
     |> cast_assoc(:parameters)
+  end
+
+  def to_map(submission) do
+    submission
+    |> AceGrader.Repo.preload([:user, :tests, :parameters])
+    |> Map.update!(:user, fn %{username: username, id: id} -> %{username: username, id: id}  end)
+    |> Map.drop([:exercise, :__meta__, :author_id, :updated_at])
+    |> Map.from_struct()
   end
 end

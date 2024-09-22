@@ -6,7 +6,7 @@ defmodule AceGraderWeb.ExerciseLive.Show do
   import Ecto.Changeset
 
   def handle_params(params, _url, socket) do
-    submissions = case Map.get(socket.assigns.current_user, :account_type) do
+    submissions = case Map.get(socket.assigns.current_user || %{}, :account_type, nil) do
       :student ->
         Submissions.get_exercise_user_submissions(socket.assigns.exercise, socket.assigns.current_user, params)
       :teacher ->
@@ -18,7 +18,7 @@ defmodule AceGraderWeb.ExerciseLive.Show do
       :noreply,
       socket
       |> assign(:order_and_filter_changeset, order_and_filter_changeset(params))
-      |> assign(:submissions, submissions)
+      |> stream(:submissions, submissions, reset: true)
     }
   end
 
@@ -31,6 +31,29 @@ defmodule AceGraderWeb.ExerciseLive.Show do
         page_title: exercise.title,
         is_owner: socket.assigns.current_user != nil and exercise.author_id == socket.assigns.current_user.id
       )}
+  end
+
+  def handle_event("prompt_download", %{"file-type" => file_type}, socket) do
+    data = case file_type do
+      "json" ->
+        submissions = Submissions.get_exercise_submissions(socket.assigns.exercise)
+        |> Enum.map(fn submission -> AceGrader.Submissions.Submission.to_map(submission) end)
+
+        %{
+          exercise: socket.assigns.exercise,
+          submissions: submissions
+        }
+        |> Jason.encode!()
+        |> Jason.Formatter.pretty_print()
+
+      "csv" -> "hello world"
+    end
+
+    {:noreply, socket |> push_event("prompt_download", %{
+      "content" => data,
+      "filename" => "submissions",
+      "filetype" => file_type
+    })}
   end
 
   def handle_event("order_and_filter", %{"order_and_filter" => order_and_filter_params}, socket) do

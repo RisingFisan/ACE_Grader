@@ -31,6 +31,7 @@ import "../vendor/ace_editor/mode-markdown"
 import "../vendor/ace_editor/ext-searchbox"
 
 import Alpine from "alpinejs";
+import collapse from "@alpinejs/collapse";
 
 window.Alpine = Alpine;
 
@@ -40,8 +41,12 @@ window.Alpine = Alpine;
 
 Alpine.store('ace', ace);
 Alpine.store('theme', getCurrentTheme());
-Alpine.store('formatDateTime', (v) => (new Date(v).toLocaleString("sv-SE", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone})));
+Alpine.store('formatDateTime', (v) => {
+  const dateUTC = new Date(v + "Z");
+  return dateUTC.toLocaleString("sv-SE", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone})
+});
 
+Alpine.plugin(collapse);
 Alpine.start();
 
 function initEditor(editor_id, language) {
@@ -186,6 +191,29 @@ window.addEventListener("phx:update-grade", (e) => {
   else {
     target.value = parseInt(original.value);
   }
+})
+
+window.addEventListener("phx:prompt_download", (e) => {
+  let mimeType = null;
+  switch (e.detail.filetype) {
+    case "json":
+      mimeType = "application/json";
+      break;
+    case "csv":
+      mimeType = "text/csv";
+      break;
+    case _:
+      mimeType = "text/plain";
+  }
+
+  const textContent = e.detail.content;
+  const blob = new Blob([textContent], { type: mimeType });
+
+  const element = document.createElement('a');
+  element.setAttribute('href', URL.createObjectURL(blob));
+  element.setAttribute('download', e.detail.filename + "." + e.detail.filetype);
+  element.click();
+  URL.revokeObjectURL(element.href);
 })
 
 // document.querySelectorAll(".md-text").forEach((el) => {

@@ -103,15 +103,15 @@ defmodule AceGraderWeb.Router do
     get "/", PageController, :home
     get "/about", PageController, :about
 
-    resources "/exercises", ExerciseController, only: [:index]
-    get "/users/:username", UserController, :show
-
     delete "/users/log_out", UserSessionController, :delete
 
     live_session :current_user,
       on_mount: [{AceGraderWeb.UserAuth, :mount_current_user}] do
 
+      live "/exercises/", ExerciseLive.Index
       live "/exercises/:id", ExerciseLive.Show
+
+      live "/users/:username", UserLive.UserHome
 
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new

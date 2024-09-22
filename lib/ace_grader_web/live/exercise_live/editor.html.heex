@@ -34,15 +34,15 @@
 <.simple_form :let={f} for={@changeset} phx-submit="submit_code" id="submit_form" phx-change="update_code">
   <.editor id="editor-component" language={@exercise.language} field={f[:code]} initial_value={@exercise.template} />
 
-  <div class="grid grid-cols-1 sm:grid-cols-[1fr_min-content_1fr] justify-center place-items-center gap-2">
+  <div class="flex justify-center place-items-center gap-4">
     <button id="test_button" 
+      :if={@exercise.testing_enabled}
       type="button"
       class="w-36 sm:justify-self-end font-bold text-xl bg-zinc-300 dark:bg-zinc-700 px-4 py-2 rounded-xl hover:bg-zinc-400 dark:hover:bg-zinc-600 disabled:text-zinc-400 disabled:cursor-not-allowed" 
       phx-click="test_code"
       disabled={@api_status == :offline or @testing}>
       <%= if @testing, do: gettext("Running..."), else: pgettext("verb", "Test") %>
     </button>
-    <div class="bg-zinc-300 dark:bg-zinc-600 h-[1px] sm:h-auto sm:w-[1px] place-self-stretch"></div>
     <.button id="submit_button" class="w-48 h-16 sm:place-self-start" phx-click={JS.push("show_confirm")}><span class="text-2xl"><%= gettext "Submit" %></span></.button>
   </div>
 </.simple_form>

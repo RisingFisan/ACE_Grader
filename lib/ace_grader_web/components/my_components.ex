@@ -136,8 +136,9 @@ defmodule AceGraderWeb.MyComponents do
 
   def compilation_results(assigns) do
     ~H"""
-    <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4 text-xl md:text-2xl space-y-2 md:space-y-4">
-      <div class="flex justify-between" phx-click={if @message != "", do: JS.toggle(to: "#compilation_message", in: {"ease-in duration-200", "h-0 opacity-0", "h-12 opacity-5"}, out: {"ease-out duration-200", "h-12 opacity-5", "h-0 opacity-0"})}>
+    <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4 text-xl md:text-2xl space-y-2 md:space-y-4"
+      x-data={"{ compilationMessage: false }"}>
+      <div class="flex justify-between" x-on:click="compilationMessage = !compilationMessage">
         <p class="font-bold"><%= gettext "Compilation" %></p>
         <div>
           <%= if @status == :success and (@message == nil or @message == "") do %>
@@ -145,53 +146,29 @@ defmodule AceGraderWeb.MyComponents do
               <.icon name="hero-check" class="w-8 h-8"/><p><%= gettext "Successful" %></p>
             </div>
           <% else %>
-            <%= if @status == :success do %>
-              <div class="flex items-center text-yellow-600 gap-2 font-bold">
-                <.icon name="hero-exclamation-triangle" class="w-6 h-6 md:w-8 md:h-8"/>
-                <p><%= gettext "Warning" %></p>
-                <.icon name="hero-chevron-down" class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"/>
-              </div>
-            <% else %>
-              <div class="flex items-center text-red-600 gap-2 font-bold">
-                <.icon name="hero-exclamation-circle" class="w-6 h-6 md:w-8 md:h-8"/>
-                <p><%= gettext "Error" %></p>
-                <.icon name="hero-chevron-down" class="w-6 md:w-8 h-6 self-end text-gray-500 animate-bounce"/>
-              </div>
+            <%= case @status do %>
+              <% :success -> %>
+                <div class="flex items-center text-yellow-600 gap-2 font-bold">
+                  <.icon name="hero-exclamation-triangle" class="w-6 h-6 md:w-8 md:h-8"/>
+                  <p><%= gettext "Warning" %></p>
+                  <.icon name="hero-chevron-down" class="w-4 md:w-8 h-4 md:h-6 self-end text-gray-500 animate-bounce"/>
+                </div>
+              <% :error -> %>
+                <div class="flex items-center text-red-600 gap-2 font-bold">
+                  <.icon name="hero-exclamation-circle" class="w-6 h-6 md:w-8 md:h-8"/>
+                  <p><%= gettext "Error" %></p>
+                  <.icon name="hero-chevron-down" class="w-4 md:w-8 h-4 md:h-6 self-end text-gray-500 animate-bounce"/>
+                </div>
+              <% :pending -> %>
+                <div class="flex items center text-gray-600 gap-2 font-bold">
+                  <.icon name="hero-clock" class="w-6 h-6 md:w-8 md:h-8"/>
+                  <p><%= gettext "Pending" %></p>
+                </div>
             <% end %>
           <% end %>
         </div>
       </div>
-      <pre :if={@message} id="compilation_message" class="break-all whitespace-pre-wrap text-lg hidden"><%= String.trim(@message) %></pre>
-    </div>
-    """
-  end
-
-  attr :exercises, :list, default: []
-  attr :ex_click, :any, default: nil, doc: "The function for handling phx-click on each exercise."
-
-  def exercise_list(assigns) do
-    ~H"""
-    <div class="flex flex-col gap-2">
-      <.link :for={exercise <- @exercises} navigate={~p"/exercises/#{exercise}"} class="w-full h-24 bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600 rounded-lg px-4 py-2 cursor-pointer
-        grid grid-cols-[1fr_max-content] gap-4">
-        <div class="space-y-2">
-          <div class="flex items-center gap-4">
-            <h3 class="text-2xl font-bold"><%= exercise.title %></h3>
-            <div class="flex gap-2 items-end">
-              <.icon name="hero-eye-slash" :if={exercise.visibility == :private} class="w-6 h-6 hoverToShow"/>
-              <p class="showOnHover"><%= gettext "Private" %></p>
-              <.icon name="hero-academic-cap" :if={exercise.visibility == :class} class="w-6 h-6"/>
-            </div>
-          </div>
-          <div class="text-sm line-clamp-2">
-            <p class="whitespace-pre-line"><%= exercise.description %></p>
-          </div>
-        </div>
-        <div class="justify-self-end text-right">
-          <p><%= exercise.inserted_at |> NaiveDateTime.to_date |> Date.to_string %></p>
-          <p class="text-zinc-600 dark:text-zinc-400 font-light"><%= exercise.language |> Atom.to_string() |> String.capitalize() %></p>
-        </div>
-      </.link>
+      <pre :if={@message} x-show="compilationMessage" id="compilation_message" class="break-all whitespace-pre-wrap text-lg" x-collapse><%= String.trim(@message) %></pre>
     </div>
     """
   end
@@ -273,8 +250,8 @@ defmodule AceGraderWeb.MyComponents do
             class="border border-zinc-500 rounded-xl p-1"
             x-bind:class=" expand ? 'bg-zinc-200 dark:bg-zinc-500' : ''"
             @click="expand ? editor.setOptions({minLines: 0, maxLines: 20}) : editor.setOptions({minLines: 12, maxLines: 100}) ; expand = ! expand ">
-            <.icon x-show="!expand" name="hero-arrows-pointing-out" class="w-6"/>
-            <.icon x-show="expand" name="hero-arrows-pointing-in" class="w-6"/>
+            <span x-show="!expand"><.icon name="hero-arrows-pointing-out" class="w-6"/></span>
+            <span x-show="expand"><.icon name="hero-arrows-pointing-in" class="w-6"/></span>
           </button>
         </div>
       </div>
@@ -338,8 +315,8 @@ defmodule AceGraderWeb.MyComponents do
             class="border border-zinc-500 rounded-xl p-1"
             x-bind:class=" expand ? 'bg-zinc-200 dark:bg-zinc-500' : ''"
             @click="expand ? editor.setOptions({minLines: 0, maxLines: 20}) : editor.setOptions({minLines: 12, maxLines: 100}) ; expand = ! expand ">
-            <.icon x-show="!expand" name="hero-arrows-pointing-out" class="w-6"/>
-            <.icon x-show="expand" name="hero-arrows-pointing-in" class="w-6"/>
+            <span x-show="!expand"><.icon name="hero-arrows-pointing-out" class="w-6"/></span>
+            <span x-show="expand"><.icon name="hero-arrows-pointing-in" class="w-6"/></span>
           </button>
         </div>
       </div>

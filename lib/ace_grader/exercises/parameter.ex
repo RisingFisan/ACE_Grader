@@ -4,6 +4,7 @@ defmodule AceGrader.Exercises.Parameter do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Jason.Encoder, only: [:exercise_id, :description, :grade, :key, :negative, :type, :value]}
   schema "parameters" do
     field :description, :string
     field :grade, :integer

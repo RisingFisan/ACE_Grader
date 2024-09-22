@@ -4,6 +4,23 @@ defmodule AceGrader.Grader.API do
   end
 end
 
+defmodule AceGrader.Grader.Supervisor do
+  use Supervisor
+
+  def start_link(_) do
+    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  def init([]) do
+    children = [
+      AceGrader.Grader.APICheck,
+      AceGrader.Grader.APIStatus
+    ]
+
+    Supervisor.init(children, strategy: :one_for_one)
+  end
+end
+
 defmodule AceGrader.Grader.APICheck do
   use GenServer
 
@@ -57,10 +74,12 @@ defmodule AceGrader.Grader.APIStatus do
     Agent.start_link(fn -> :offline end, name: __MODULE__)
   end
 
+  @spec update_status(:online | :offline | :error) :: :ok
   def update_status(status) do
     Agent.update(__MODULE__, fn _ -> status end)
   end
 
+  @spec get_status() :: :online | :offline | :error
   def get_status do
     Agent.get(__MODULE__, fn status -> status end)
   end

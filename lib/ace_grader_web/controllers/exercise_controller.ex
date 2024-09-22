@@ -41,7 +41,7 @@ defmodule AceGraderWeb.ExerciseController do
           end)
         end)
       else
-        Exercises.get_exercise!(id, conn.assigns.current_user != nil)
+        Exercises.get_exercise!(id)
       end
     is_owner = Exercise.is_owner?(exercise, conn.assigns.current_user)
     render(conn, :show, exercise: exercise, is_owner: is_owner, show_delete: Application.get_env(:ace_grader, :dev_routes))
@@ -52,7 +52,7 @@ defmodule AceGraderWeb.ExerciseController do
     case Exercises.duplicate_exercise(exercise, conn.assigns.current_user.id) do
       {:ok, exercise} ->
         conn
-        |> put_flash(:info, "Exercise duplicated successfully.")
+        |> put_flash(:info, "Exercise duplicated successfully. Visibility has been set to private by default. You can change this in the exercise settings.")
         |> redirect(to: ~p"/exercises/#{exercise}")
 
       {:error, %Ecto.Changeset{} = _changeset} ->

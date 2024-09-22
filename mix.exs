@@ -61,7 +61,8 @@ defmodule AceGrader.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:tz, "~> 0.26.1"},
       {:earmark, "~> 1.4"},
-      {:httpoison, "~> 2.0"}
+      {:httpoison, "~> 2.0"},
+      {:bandit, "~> 1.2"}
     ]
   end
 

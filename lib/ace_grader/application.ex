@@ -19,9 +19,8 @@ defmodule AceGrader.Application do
       # Start the Endpoint (http/https)
       AceGraderWeb.Endpoint,
       # Start a worker by calling: AceGrader.Worker.start_link(arg)
-      # {AceGrader.Worker, arg}
-      AceGrader.Grader.APICheck,
-      AceGrader.Grader.APIStatus,
+      # {AceGrader.Worker, arg},
+      AceGrader.Grader.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

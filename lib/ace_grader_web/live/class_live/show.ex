@@ -11,7 +11,7 @@ defmodule AceGraderWeb.ClassLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    class = Classes.get_class!(id) |> AceGrader.Repo.preload(:exercises)
+    class = Classes.get_class!(id)
     enrolled = socket.assigns.current_user.id in [ class.creator_id | Enum.map(class.members, & &1.id) ]
     socket = assign(socket,
       class: class,

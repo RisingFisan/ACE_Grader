@@ -1,17 +1,25 @@
+defmodule AceGrader.Exercises.Languages do
+  def supported_languages do
+    [:c, :haskell]
+  end
+end
+
 defmodule AceGrader.Exercises.Exercise do
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Jason.Encoder, only: [:id, :title, :description, :language, :author_id, :visibility, :test_file, :template, :tests, :parameters]}
   schema "exercises" do
     field :description, :string
     field :visibility, Ecto.Enum, values: [:public, :class, :private], default: :public
     field :title, :string
-    field :language, Ecto.Enum, values: [:c, :haskell], default: :c
+    field :language, Ecto.Enum, values: AceGrader.Exercises.Languages.supported_languages, default: :c
 
     field :test_file, :string
     field :template, :string
+    field :testing_enabled, :boolean, default: false
 
     field :total_grade, :integer, virtual: true
 
@@ -47,8 +55,8 @@ defmodule AceGrader.Exercises.Exercise do
     end
 
     exercise
-    |> cast(attrs, [:title, :description, :visibility, :total_grade, :language, :author_id, :test_file, :template])
-    |> validate_required([:title, :description, :visibility])
+    |> cast(attrs, [:title, :description, :visibility, :total_grade, :language, :author_id, :test_file, :template, :testing_enabled])
+    |> validate_required([:title, :description, :language, :visibility, :testing_enabled])
     |> cast_assoc(:tests, sort_param: :tests_order, drop_param: :tests_delete)
     |> cast_assoc(:parameters, sort_param: :params_order, drop_param: :params_delete)
     |> cast_assoc(:exercise_classes)
@@ -59,8 +67,8 @@ defmodule AceGrader.Exercises.Exercise do
 
   def changeset_duplicate(exercise, attrs) do
     exercise
-    |> cast(attrs, [:title, :description, :visibility, :total_grade, :author_id, :test_file, :template])
-    |> validate_required([:title, :description, :visibility])
+    |> cast(attrs, [:title, :description, :visibility, :total_grade, :language, :author_id, :test_file, :template, :testing_enabled])
+    |> validate_required([:title, :description, :language, :visibility, :testing_enabled])
     |> cast_assoc(:tests)
     |> cast_assoc(:parameters)
   end

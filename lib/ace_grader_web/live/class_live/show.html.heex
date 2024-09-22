@@ -30,7 +30,7 @@
 </div>
 
 <div class="space-y-5">
-  <div :if={@current_user.account_type == :teacher} class="p-4 mx-4 border-y-2 flex flex-col md:flex-row gap-2 items-center border-zinc-100 dark:border-zinc-700">
+  <div :if={@current_user.account_type == :teacher} class="p-4 mx-4 border-y-2 flex flex-col md:flex-row gap-5 items-center border-zinc-100 dark:border-zinc-700">
     <p class="flex-shrink-0 text-center">Use the following link to invite students to this class: </p>
     <div class="bg-zinc-200 dark:bg-zinc-500 rounded-md relative grid grid-cols-[min-content,1fr] items-center" x-data="{ copied: false }">
       <button type="button" class="px-2 py-1 bg-zinc-400" x-on:click={"navigator.clipboard.writeText('#{@join_url}'); copied = true; setTimeout(() => copied = false, 2000)"} ><.icon name="hero-clipboard" class="w-5 h-5 text-zinc-900" />
@@ -77,7 +77,13 @@
   </div>
   <div :if={ @enrolled } class="space-y-3">
     <h2 class="text-2xl font-bold">Exercises for this class</h2>
-    <.exercise_list exercises={@class.exercises} />
+    <.live_component
+      module={AceGraderWeb.ExerciseLive.ListComponent}
+      id="exercise_list"
+      type={:class}
+      class={@class}
+      user={@current_user}
+    />
   </div>
 </div>
 
@@ -94,7 +100,7 @@
   />
 </.modal>
 
-<.modal :if={@live_action == :join} id="class-join-modal" show on_confirm="join-class" on_cancel={JS.patch(~p"/classes/#{@class}")}>
+<.modal :if={@live_action == :join} id="class-join-modal" show on_confirm={JS.push("join-class")} on_cancel={JS.patch(~p"/classes/#{@class}")}>
   Are you sure you want to join this class?
   <:confirm>Join</:confirm>
   <:cancel>Cancel</:cancel>

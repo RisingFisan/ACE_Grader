@@ -25,7 +25,7 @@
         ]}>
           <%= gettext "Exercises" %>
         </.link>
-        <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
+        <.link :if={@current_user} href={~p"/classes"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
           (if String.trim_trailing(@current_path, "/") == "/classes", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
         ]}>
           <%= gettext "Classes" %>

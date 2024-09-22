@@ -4,6 +4,7 @@ defmodule AceGrader.Submissions.Test do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Jason.Encoder, only: [:submission_id, :grade, :input, :type, :expected_output, :actual_output, :description, :status]}
   schema "submission_tests" do
     field :grade, :integer
     field :input, :string

@@ -58,49 +58,63 @@
 
 <div :if={@current_user} class="mt-6 flex flex-col gap-4">
   <div class="flex flex-col sm:flex-row justify-between gap-2">
-  <h2 class="font-bold text-2xl"><%= (if @current_user.account_type == :student, do: (ngettext "My submission", "My submissions", length(@submissions)), else: gettext("Submissions")) %></h2>
-  <div :if={@current_user.account_type != :student}>
-      <.simple_form :let={f} for={@order_and_filter_changeset} phx-change="order_and_filter" as="order_and_filter">
-        <% options = [{pgettext("short", "Username"), "name_asc"}, {pgettext("short", "Username (Desc)"), "name_desc"},
-                  {gettext("Date"), "date_asc"}, {gettext("Date (Desc)"), "date_desc"},
-                  {gettext("Grade"), "grade_asc"}, {gettext("Grade (Desc)"), "grade_desc"}] %>
-        <div class="space-y-2">
-          <div class="flex justify-end items-center gap-4">
-            <div class="flex items-center gap-2">
-              <p><%= gettext("Sort by") %></p>
-              <.input field={f[:order_by]} type="select" options={options}/>
-            </div>
-            <div class="cursor-pointer p-3 rounded-full" phx-click={JS.toggle(to: "#filter-options") |> JS.toggle_class("bg-zinc-200 dark:bg-zinc-800")}>
-              <.icon name="hero-funnel" class="w-6 h-6"/>
-            </div>
-          </div>
-          <div id="filter-options" class="hidden bg-zinc-200 dark:bg-zinc-800 select-none px-3 py-1 rounded-md">
-            <.input field={f[:unique]} type="checkbox" label={gettext "Show only 1 submission per user."}/>
-          </div>
+    <div class="flex items-start gap-4">
+      <h2 class="font-bold text-2xl"><%= (if @current_user.account_type == :student, do: (gettext "My submissions"), else: gettext("Submissions")) %></h2>
+      <div :if={@current_user.id == @exercise.author_id}>
+        <button 
+          type="button" 
+          class="flex items-center gap-1 bg-violet-800 hover:bg-violet-700 aria-pressed:bg-violet-700 text-violet-50 rounded-t-md px-2 py-1 rounded-b-md" 
+          phx-click={JS.toggle(to: "#download_options", display: "flex") |> JS.toggle_class("rounded-b-md") |> JS.toggle_attribute({"aria-pressed", "true", "false"})}>
+          <.icon name="hero-table-cells-solid"/>
+          <span>Export</span>
+        </button>
+        <div id="download_options" class="flex-col bg-violet-600 text-violet-100 divide-y [&>*]:border-violet-400 hidden">
+          <button type="button" class="hover:font-bold" phx-click="prompt_download" phx-throttle="5000" phx-value-file-type="json">JSON</button>
+          <button type="button" class="hover:font-bold cursor-not-allowed" disabled phx-click="prompt_download" phx-throttle="5000" phx-value-file-type="csv">CSV</button>
         </div>
-      </.simple_form>
+      </div>
+    </div>
+    <div :if={@current_user.account_type != :student}>
+        <.simple_form :let={f} for={@order_and_filter_changeset} phx-change="order_and_filter" as="order_and_filter">
+          <% options = [{pgettext("short", "Username"), "name_asc"}, {pgettext("short", "Username (Desc)"), "name_desc"},
+                    {gettext("Date"), "date_asc"}, {gettext("Date (Desc)"), "date_desc"},
+                    {gettext("Grade"), "grade_asc"}, {gettext("Grade (Desc)"), "grade_desc"}] %>
+          <div class="space-y-2">
+            <div class="flex justify-end items-center gap-4">
+              <div class="flex items-center gap-2">
+                <p><%= gettext("Sort by") %></p>
+                <.input field={f[:order_by]} type="select" options={options}/>
+              </div>
+              <div class="cursor-pointer p-3 rounded-full" phx-click={JS.toggle(to: "#filter-options") |> JS.toggle_class("bg-zinc-200 dark:bg-zinc-800")}>
+                <.icon name="hero-funnel" class="w-6 h-6"/>
+              </div>
+            </div>
+            <div id="filter-options" class="hidden bg-zinc-200 dark:bg-zinc-800 select-none px-3 py-1 rounded-md">
+              <.input field={f[:unique]} type="checkbox" label={gettext "Show only 1 submission per user."}/>
+            </div>
+          </div>
+        </.simple_form>
     </div>
   </div>
-  <%= if length(@submissions) > 0 do %>
-    <.table id="submissions-table" rows={@submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{&1}")}>
-      <:col :let={submission} label={gettext "Date"}>
+    <.table id="submissions-table" rows={@streams.submissions} row_click={&JS.navigate(~p"/exercises/#{@exercise}/submissions/#{elem(&1, 1)}")}>
+      <:col :let={{_sub_id, submission}} label={gettext "Date"}>
         <time x-text={"$store.formatDateTime('#{submission.inserted_at}')"} datetime={submission.inserted_at}/>
       </:col>
-      <:col :if={@current_user.account_type != :student} :let={submission} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
-      <:col :let={submission} label={gettext "Total grade"}><%= submission.total_grade %>%</:col>
-      <:action :if={@show_delete && @current_user.account_type != :student && @current_user.id == @exercise.author_id} :let={submission}>
+      <:col :if={@current_user.account_type != :student} :let={{_sub_id, submission}} label={gettext "User"}><%= "#{submission.user.display_name} (@#{submission.user.username})" %></:col>
+      <:col :let={{_sub_id, submission}} label={gettext "Total grade"}><%= if submission.status == :pending, do: "Ungraded", else: "#{submission.total_grade}%" %></:col>
+      <:action :if={@show_delete && @current_user.account_type != :student && @current_user.id == @exercise.author_id} :let={{_sub_id, submission}}>
         <.link href={~p"/exercises/#{@exercise}/submissions/#{submission}"} method="delete" data-confirm="Are you sure?">
           <%= gettext "Delete" %>
         </.link>
       </:action>
+      <:empty>
+        <p class="font-light">
+          <%= if @current_user.account_type == :student do %>
+            You have not submitted anything yet.
+          <% else %>
+            There are no submissions for this exercise yet.
+          <% end %>
+        </p>
+      </:empty>
     </.table>
-  <% else %>
-    <p class="font-light">
-      <%= if @current_user.account_type == :student do %>
-        You have not submitted anything yet.
-      <% else %>
-        There are no submissions for this exercise yet.
-      <% end %>
-    </p>
-  <% end %>
 </div>

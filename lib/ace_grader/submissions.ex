@@ -28,7 +28,7 @@ defmodule AceGrader.Submissions do
     Repo.all(from(s in Submission, where: s.author_id == ^user_id, order_by: [desc: s.inserted_at], preload: [:exercise]))
   end
 
-  def get_exercise_submissions(exercise, params) do
+  def get_exercise_submissions(exercise, params \\ %{}) do
     query = from s in Submission,
       where: s.exercise_id == ^exercise.id,
       join: u in assoc(s, :user),

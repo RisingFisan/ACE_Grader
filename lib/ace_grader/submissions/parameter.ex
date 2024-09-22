@@ -4,6 +4,7 @@ defmodule AceGrader.Submissions.Parameter do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
+  @derive {Jason.Encoder, only: [:submission_id, :description, :grade, :key, :negative, :status, :type, :value]}
   schema "submission_parameters" do
     field :description, :string
     field :grade, :integer
