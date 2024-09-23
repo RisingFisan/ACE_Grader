@@ -5,7 +5,6 @@ defmodule AceGraderWeb.MyComponents do
     endpoint: AceGraderWeb.Endpoint,
     router: AceGraderWeb.Router
 
-  alias Phoenix.LiveView.JS
   import AceGraderWeb.Gettext
   import Phoenix.HTML
   import AceGraderWeb.CoreComponents

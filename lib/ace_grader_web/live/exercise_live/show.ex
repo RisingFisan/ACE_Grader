@@ -5,19 +5,16 @@ defmodule AceGraderWeb.ExerciseLive.Show do
 
   import Ecto.Changeset
 
+  @page_size 10
+
   def handle_params(params, _url, socket) do
-    submissions = case Map.get(socket.assigns.current_user || %{}, :account_type, nil) do
-      :student ->
-        Submissions.get_exercise_user_submissions(socket.assigns.exercise, socket.assigns.current_user, params)
-      :teacher ->
-        Submissions.get_exercise_submissions(socket.assigns.exercise, params)
-      _ ->
-        []
-    end
+    changeset = params |> order_and_filter_changeset()
+    submissions = fetch_submissions(socket.assigns.exercise, socket.assigns.current_user, changeset |> apply_changes(), 1)
     {
       :noreply,
       socket
-      |> assign(:order_and_filter_changeset, order_and_filter_changeset(params))
+      |> assign(:order_and_filter_changeset, changeset)
+      |> assign(:page, (if length(submissions) == @page_size, do: 1, else: -1))
       |> stream(:submissions, submissions, reset: true)
     }
   end
@@ -71,11 +68,34 @@ defmodule AceGraderWeb.ExerciseLive.Show do
     end
   end
 
+  def handle_event("load_more_submissions", _params, socket) do
+    params = socket.assigns.order_and_filter_changeset |> apply_changes()
+    page = socket.assigns.page + 1
+    submissions = fetch_submissions(socket.assigns.exercise, socket.assigns.current_user, params, page)
+    if length(submissions) == @page_size do
+      {:noreply, socket
+      |> assign(:page, page)
+      |> stream(:submissions, submissions, at: -1)}
+    else
+      {:noreply, socket |> assign(:page, -1)}
+    end
+  end
+
   defp order_and_filter_changeset(attrs) do
     cast(
       {%{order_by: "date_desc", unique: false}, %{order_by: :string, unique: :boolean}},
       attrs,
       [:order_by, :unique]
     )
+  end
+
+  defp fetch_submissions(_, nil, _, _), do: []
+  defp fetch_submissions(exercise, user, %{order_by: _, unique: _} = params, page) do
+    case Map.get(user, :account_type) do
+      :student ->
+        Submissions.get_exercise_user_submissions(exercise, user, params, page, @page_size)
+      _ ->
+        Submissions.fetch_submissions(exercise, params, page, @page_size)
+    end
   end
 end
