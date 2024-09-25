@@ -327,7 +327,7 @@ defmodule AceGraderWeb.MyComponents do
 
   def markdown_text(assigns) do
     ~H"""
-    <div class="space-y-3 md-text leading-relaxed"><%= @content |> Earmark.as_html!(code_class_prefix: "language-") |> raw %></div>
+    <div id="markdown-text" class="space-y-3 md-text leading-relaxed" phx-hook="Markdown"><%= @content |> Earmark.as_html!(code_class_prefix: "language-") |> raw %></div>
     """
   end
 

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@alpinejs/collapse": "^3.14.1",
-    "alpinejs": "^3.14.1"
+    "alpinejs": "^3.14.1",
+    "highlight.js": "^11.10.0"
   }
 }

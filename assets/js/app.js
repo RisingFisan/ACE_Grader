@@ -35,10 +35,6 @@ import collapse from "@alpinejs/collapse";
 
 window.Alpine = Alpine;
 
-// window.addEventListener(`phx:get_code`, (e) => {
-//     document.getElementById("editor_code").value = editor.getValue();
-// })
-
 Alpine.store('ace', ace);
 Alpine.store('theme', getCurrentTheme());
 Alpine.store('formatDateTime', (v) => {
@@ -49,55 +45,14 @@ Alpine.store('formatDateTime', (v) => {
 Alpine.plugin(collapse);
 Alpine.start();
 
-function initEditor(editor_id, language) {
-  const editor = ace.edit(editor_id, {
-    maxLines: 20,
-  });
-  if (getCurrentTheme() == "Light") { 
-    editor.setTheme("ace/theme/eclipse");
-  } else {
-    editor.setTheme("ace/theme/dracula");
-  }
-  set_language(editor, language);
-  return editor;
-}
+import hljs from "highlight.js/lib/core";
+import hljs_c from "highlight.js/lib/languages/c";
+import hljs_haskell from "highlight.js/lib/languages/haskell";
 
-function set_language(editor, language) {
-  switch (language) {
-    case "c":
-      editor.session.setMode("ace/mode/c_cpp");
-      break;
-    case "haskell":
-      editor.session.setMode("ace/mode/haskell");
-      break;
-  }
-}
+hljs.registerLanguage('c', hljs_c);
+hljs.registerLanguage('haskell', hljs_haskell);
 
 let Hooks = {}
-
-Hooks.EditorReadOnly = {
-  mounted() {
-    const editor = initEditor(this.el.id);
-    set_language(editor, this.el.getAttribute("data-language"));
-    editor.setOptions({readOnly: true, minLines: 6, highlightActiveLine: false, highlightGutterLine: false});
-    editor.renderer.$cursorLayer.element.style.display = "none"
-    this.handleEvent("expand_editor", (data) => {
-      if(data.expand == "true")
-        editor.setOptions({minLines: 20, maxLines: 100});
-      else
-        editor.setOptions({minLines: 6, maxLines: 20});
-    })
-  }
-}
-
-Hooks.TestButton = {
-  mounted() {
-    this.el.addEventListener("click", (e) => {
-      this.pushEvent("pre_test_code")
-      this.pushEvent("test_code", {"code": ace.edit("editor").getValue()})
-    })
-  }
-}
 
 Hooks.MdEditor = {
   mounted() {
@@ -121,9 +76,20 @@ Hooks.MdEditor = {
       document.getElementById("description-form").value = editor.getValue();
       document.getElementById(`description-form`).dispatchEvent(new Event('input', { bubbles: true }));
     });
-    // let theme = "dracula";
-    // if (getCurrentTheme() == "Light") { theme = "eclipse"; }
-    // let easyMDE = new EasyMDE({element: this.el, status: false, spellChecker: false, sideBySideFullscreen: false, toolbar: ["bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "|", "guide"], theme: theme });
+  }
+}
+
+Hooks.Markdown = {
+  mounted() {
+    this.highlightCode();
+  },
+  updated() {
+    this.highlightCode();
+  },
+  highlightCode() {
+    this.el.querySelectorAll("pre code").forEach((block) => {
+      hljs.highlightElement(block);
+    });
   }
 }
 

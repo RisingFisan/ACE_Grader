@@ -15,13 +15,24 @@
     <meta property="og:description" :if={assigns[:page_description]} content={assigns[:page_description]} />
     <meta property="og:site_name" content="ACE Grader" />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <link rel="stylesheet" id="hljs-dark-theme" href={~p"/css/hljs_dracula.css"} disabled />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}></script>
     <script>
       function applyTheme() {
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');
+          document.getElementById('hljs-dark-theme').disabled = false;
+
+          document.querySelectorAll('.ace_editor').forEach(function(editor) {
+            editor.env.editor.setTheme('ace/theme/dracula');
+          });
         } else {
           document.documentElement.classList.remove('dark');
+          document.getElementById('hljs-dark-theme').disabled = true;
+
+          document.querySelectorAll('.ace_editor').forEach(function(editor) {
+            editor.env.editor.setTheme('ace/theme/eclipse');
+          });
         }
       }
 

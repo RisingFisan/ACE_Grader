@@ -5,29 +5,31 @@
   </:actions>
 </.header>
 
-<div id="description" class="description" phx-update="ignore">
-  <.markdown_text content={@submission.exercise.description}/>
-</div>
+<div x-data="{ description: false }">
+  <div id="description" x-show="description" x-collapse.duration.1000ms.min.80px x-cloak>
+    <.markdown_text content={@submission.exercise.description} />
+  </div>
 
-<div class="flex flex-col items-center pt-4">
-  <button class="bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-lg description" phx-click={JS.toggle(to: ".description")}>
-    <div class="flex items-center gap-1">
-    <.icon name="hero-chevron-double-up" class="w-4 h-4" />
-    <p class="tracking-wide">
-      <%= gettext("Hide description") %>
-    </p>
-    <.icon name="hero-chevron-double-up" class="w-4 h-4" />
-    </div>
-  </button>
-  <button class="bg-zinc-300 dark:bg-zinc-600 px-4 py-2 rounded-lg description" hidden phx-click={JS.toggle(to: ".description")}>
-    <div class="flex items-center gap-1">
-    <.icon name="hero-chevron-double-down" class="w-4 h-4" />
-    <p class="tracking-wide">
-      <%= gettext("Show description") %>
-    </p>
-    <.icon name="hero-chevron-double-down" class="w-4 h-4" />
-    </div>
-  </button>
+  <div class="flex flex-col items-center">
+    <button class="text-zinc-600 dark:text-zinc-200 description" x-show="description" @click="description = false">
+      <div class="flex items-center gap-1">
+      <.icon name="hero-chevron-double-up" class="w-4 h-4" />
+      <p class="tracking-wide">
+        <%= gettext("Collapse") %>
+      </p>
+      <.icon name="hero-chevron-double-up" class="w-4 h-4" />
+      </div>
+    </button>
+    <button class="text-zinc-600 dark:text-zinc-200 description" x-show="!description" @click="description = true">
+      <div class="flex items-center gap-1">
+      <.icon name="hero-chevron-double-down" class="w-4 h-4"/>
+      <p class="tracking-wide">
+        <%= gettext("Show full description") %>
+      </p>
+      <.icon name="hero-chevron-double-down" class="w-4 h-4" />
+      </div>
+    </button>
+  </div>
 </div>
 
 <div class="flex gap-4 justify-between items-center mt-4 md:mt-8">
