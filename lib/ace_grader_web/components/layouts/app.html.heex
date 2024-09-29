@@ -16,17 +16,17 @@
       <div class="md:hidden w-0 flex-1">
         <.icon name="hero-bars-3" class="w-8 h-8 cursor-pointer" x-on:click=" mobile_menu = ! mobile_menu "/>
       </div>
-      <div class="flex flex-1 items-center flex-col md:flex-row gap-8 xl:gap-16 w-0">
+      <div class="flex flex-1 items-center flex-col md:flex-row gap-12 xl:gap-16 w-0">
         <a href="/" class="flex items-center h-16 flex-shrink-0">
           <img src={~p"/images/ACEGrader_violet.svg"} alt="ACE Grader" class="h-14 w-max"/>
         </a>
-        <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
-          (if String.trim_trailing(@current_path, "/") == "/exercises", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
+        <.link href={~p"/exercises"} class={["hidden md:flex text-xl tracking-wider font-light ",
+          (if String.trim_trailing(@current_path, "/") == "/exercises", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-600 dark:text-zinc-200")
         ]}>
           <%= gettext "Exercises" %>
         </.link>
-        <.link :if={@current_user} href={~p"/classes"} class={["hidden md:flex text-xl tracking-wider font-extralight ",
-          (if String.trim_trailing(@current_path, "/") == "/classes", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-800 dark:text-zinc-200")
+        <.link :if={@current_user} href={~p"/classes"} class={["hidden md:flex text-xl tracking-wider font-light ",
+          (if String.trim_trailing(@current_path, "/") == "/classes", do: "text-violet-700 dark:text-violet-400", else: "text-zinc-600 dark:text-zinc-200")
         ]}>
           <%= gettext "Classes" %>
         </.link>
@@ -64,14 +64,14 @@
     <div id="options-overlay" x-show=" open " x-on:click=" open = false " class="w-full h-full fixed z-10"></div>
     <div
       id="mobile-menu" 
-      class="h-min w-full bg-white dark:bg-zinc-800 px-4 py-2 flex flex-col divide-y [&>*]:border-zinc-500 [&>*]:py-1 text-xl tracking-wider font-extralight text-zinc-200 "
+      class="h-min w-full bg-white dark:bg-zinc-800 px-4 py-2 flex flex-col divide-y [&>*]:border-zinc-500 [&>*]:py-1 text-xl tracking-wider font-extralight text-zinc-800 dark:text-zinc-200"
       x-show=" mobile_menu "
       x-cloak
       >
       <.link href={~p"/exercises"} class={(if @current_path == "/exercises", do: "text-violet-700 dark:text-violet-400 font-bold")}>
         <%= gettext "Exercises" %>
       </.link>
-      <.link :if={@current_user && @current_user.account_type != :student} href={~p"/classes"} class={(if @current_path == "/classes", do: "text-violet-700 dark:text-violet-400 font-bold")}>
+      <.link :if={@current_user} href={~p"/classes"} class={(if @current_path == "/classes", do: "text-violet-700 dark:text-violet-400 font-bold")}>
         <%= gettext "Classes" %>
       </.link>
       <.link :if={!@current_user} href={~p"/users/log_in"} class="font-bold">

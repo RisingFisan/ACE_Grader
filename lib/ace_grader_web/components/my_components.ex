@@ -15,7 +15,7 @@ defmodule AceGraderWeb.MyComponents do
 
   def test_results(assigns) do
     ~H"""
-    <div :if={length(@tests) > 0} class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4">
+    <div :if={length(@tests) > 0} class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] px-5 md:px-8 py-2 md:py-4">
       <h2 class="text-xl md:text-2xl font-bold"><%= gettext "Tests" %></h2>
       <div class="space-y-4">
         <div :for={{test, i} <- @tests |> Enum.with_index(1)}
@@ -86,7 +86,7 @@ defmodule AceGraderWeb.MyComponents do
 
   def parameter_results(assigns) do
     ~H"""
-    <div :if={length(@parameters) > 0} class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4">
+    <div :if={length(@parameters) > 0} class="space-y-2 md:space-y-4 bg-zinc-300 dark:bg-zinc-800 rounded-[24px] px-5 md:px-8 py-2 md:py-4">
       <h2 class="text-xl md:text-2xl font-bold"><%= gettext "Parameters" %></h2>
       <div class="space-y-4">
         <div :for={parameter <- @parameters}
@@ -135,7 +135,7 @@ defmodule AceGraderWeb.MyComponents do
 
   def compilation_results(assigns) do
     ~H"""
-    <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[24px] md:rounded-[32px] px-5 md:px-8 py-2 md:py-4 text-xl md:text-2xl space-y-2 md:space-y-4"
+    <div class="bg-zinc-300 dark:bg-zinc-800 rounded-[24px] px-5 md:px-8 py-2 md:py-4 text-xl md:text-2xl space-y-2 md:space-y-4"
       x-data={"{ compilationMessage: false }"}>
       <div class="flex justify-between" x-on:click="compilationMessage = !compilationMessage">
         <p class="font-bold"><%= gettext "Compilation" %></p>
@@ -196,6 +196,14 @@ defmodule AceGraderWeb.MyComponents do
     """
   end
 
+  defp language_file(language) do
+    case language do
+      :c -> "c_cpp"
+      _ -> to_string(language)
+    end
+    |> IO.inspect()
+  end
+
   attr :id, :string
   attr :type, :string, values: ~w(normal read-only markdown), default: "normal"
   attr :language, :string
@@ -203,44 +211,76 @@ defmodule AceGraderWeb.MyComponents do
   attr :initial_value, :string
 
   def editor(%{type: "read-only"} = assigns) do
+    assigns
+    |> assign(type: nil)
+    |> assign(:x_init, """
+      editor = $store.ace.edit($refs.editor, {
+        maxLines: 20,
+        readOnly: true,
+        wrap: 'free',
+        highlightActiveLine: false,
+        highlightGutterLine: false
+      });
+      editor.renderer.$cursorLayer.element.style.display = 'none'
+      if ($store.theme == 'Light') {
+        editor.setTheme('ace/theme/eclipse');
+      } else {
+        editor.setTheme('ace/theme/dracula');
+      }
+      editor.session.setMode(`ace/mode/#{language_file(assigns.language)}`);
+      if($refs.editor_loading) {
+        $refs.editor_loading.remove();
+      }
+    """)
+    |> editor()
+  end
+  def editor(%{type: "normal"} = assigns) do
+    assigns
+    |> assign(type: nil)
+    |> assign(:x_init, """
+      editor = $store.ace.edit($refs.editor, {
+        maxLines: 20,
+        wrap: 'free',
+      });
+      if ($store.theme == 'Light') {
+        editor.setTheme('ace/theme/eclipse');
+      } else {
+        editor.setTheme('ace/theme/dracula');
+      }
+      editor.session.setMode(`ace/mode/#{language_file(assigns.language)}`);
+      $refs.editor_input.value = editor.getValue();
+      if($refs.editor_loading) {
+        $refs.editor_loading.remove();
+      }
+      editor.session.on('change', function(delta) {
+        $refs.editor_input.value = editor.getValue();
+        $refs.editor_input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      window.addEventListener('phx:change_language', (e) => {
+        let v = e.detail['#{assigns.field.field}'];
+        if (v) {
+          editor.setValue(v, -1);
+          editor.session.setMode(`ace/mode/${language_file(e.detail['language'])}`);
+        }
+      })
+    """)
+    |> editor()
+  end
+
+  def editor(%{x_init: _} = assigns) do
     ~H"""
     <div id={@id} phx-update="ignore">
       <div
         class="space-y-4"
         x-data="{ editor: null, expand: false }"
-        x-init={"
-
-          language_file = (lang) => {
-            switch(lang) {
-              case 'c': return 'c_cpp';
-              default: return lang;
-            }
-          }
-
-          editor = $store.ace.edit($refs.editor, {
-            maxLines: 20,
-            readOnly: true,
-            wrap: 'free',
-            highlightActiveLine: false,
-            highlightGutterLine: false
-          });
-          editor.renderer.$cursorLayer.element.style.display = 'none'
-          if ($store.theme == 'Light') {
-            editor.setTheme('ace/theme/eclipse');
-          } else {
-            editor.setTheme('ace/theme/dracula');
-          }
-          editor.session.setMode(`ace/mode/${language_file('#{@language}')}`);
-          if($refs.editor_loading) {
-            $refs.editor_loading.remove();
-          }
-        "}
+        x-init={@x_init}
       >
         <div class="editor-container">
           <div x-ref="editor_loading" class="editor-loading">
             <p><%= gettext "Loading editor" %></p>
             <.icon name="hero-cog-6-tooth" class="animate-[reverse-spin_3s_linear_infinite]"/>
           </div>
+          <input :if={@field} type="hidden" x-ref="editor_input" name={@field.name} value={@field.value}/>
           <div x-ref="editor" class="editor"><%= @initial_value %></div>
         </div>
         <div class="flex justify-end gap-2">
@@ -258,66 +298,34 @@ defmodule AceGraderWeb.MyComponents do
     """
   end
 
-  def editor(assigns) do
+  attr :text, :string, required: true, doc: "The text to be displayed"
+
+  def description(assigns) do
     ~H"""
-    <div id={@id} phx-update="ignore">
-      <div
-        class="space-y-4"
-        x-data="{ editor: null, expand: false }"
-        x-init={"
+    <div x-data="{ description: false }">
+      <div id="description" x-show="description" x-collapse.duration.800ms x-cloak>
+        <.markdown_text content={@text} />
+      </div>
 
-          language_file = (lang) => {
-            switch(lang) {
-              case 'c': return 'c_cpp';
-              default: return lang;
-            }
-          }
-
-          editor = $store.ace.edit($refs.editor, {
-            maxLines: 20,
-            wrap: 'free',
-          });
-          if ($store.theme == 'Light') {
-            editor.setTheme('ace/theme/eclipse');
-          } else {
-            editor.setTheme('ace/theme/dracula');
-          }
-          editor.session.setMode(`ace/mode/${language_file('#{@language}')}`);
-          $refs.editor_input.value = editor.getValue();
-          if($refs.editor_loading) {
-            $refs.editor_loading.remove();
-          }
-          editor.session.on('change', function(delta) {
-            $refs.editor_input.value = editor.getValue();
-            $refs.editor_input.dispatchEvent(new Event('input', { bubbles: true }));
-          });
-          window.addEventListener('phx:change_language', (e) => {
-            let v = e.detail['#{@field.field}'];
-            if (v) {
-              editor.setValue(v, -1);
-              editor.session.setMode(`ace/mode/${language_file(e.detail['language'])}`);
-            }
-          })
-        "}
-      >
-        <div class="editor-container">
-          <div x-ref="editor_loading" class="editor-loading">
-            <p><%= gettext "Loading editor" %></p>
-            <.icon name="hero-cog-6-tooth" class="animate-[reverse-spin_3s_linear_infinite]"/>
+      <div class="flex flex-col items-center">
+        <button class="text-zinc-600 dark:text-zinc-300 bg-zinc-200 dark:bg-zinc-700 p-2 rounded-lg" x-show="description" x-cloak @click="description = false">
+          <div class="flex items-center gap-1">
+          <.icon name="hero-chevron-double-up" class="w-4 h-4" />
+          <p class="tracking-wide">
+            <%= gettext("Collapse") %>
+          </p>
+          <.icon name="hero-chevron-double-up" class="w-4 h-4" />
           </div>
-          <input type="hidden" x-ref="editor_input" name={@field.name} value={@field.value}/>
-          <div x-ref="editor" class="editor"><%= @initial_value %></div>
-        </div>
-        <div class="flex justify-end gap-2">
-          <button
-            type="button"
-            class="border border-zinc-500 rounded-xl p-1"
-            x-bind:class=" expand ? 'bg-zinc-200 dark:bg-zinc-500' : ''"
-            @click="expand ? editor.setOptions({minLines: 0, maxLines: 20}) : editor.setOptions({minLines: 12, maxLines: 100}) ; expand = ! expand ">
-            <span x-show="!expand"><.icon name="hero-arrows-pointing-out" class="w-6"/></span>
-            <span x-show="expand"><.icon name="hero-arrows-pointing-in" class="w-6"/></span>
-          </button>
-        </div>
+        </button>
+        <button class="text-zinc-600 dark:text-zinc-300 bg-zinc-200 dark:bg-zinc-700 p-2 rounded-lg" x-show="!description" @click="description = true">
+          <div class="flex items-center gap-1">
+          <.icon name="hero-chevron-double-down" class="w-4 h-4"/>
+          <p class="tracking-wide">
+            <%= gettext("Show description") %>
+          </p>
+          <.icon name="hero-chevron-double-down" class="w-4 h-4" />
+          </div>
+        </button>
       </div>
     </div>
     """

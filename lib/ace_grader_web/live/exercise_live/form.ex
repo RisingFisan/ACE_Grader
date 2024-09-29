@@ -91,8 +91,6 @@ defmodule AceGraderWeb.ExerciseLive.Form do
       |> Map.put(:action, :validate)
       |> to_form()
 
-    IO.inspect(exercise_params)
-
     if {"visibility", "class"} in exercise_params do
       {:noreply, assign(socket, form: form, classes: AceGrader.Classes.list_classes())}
     else

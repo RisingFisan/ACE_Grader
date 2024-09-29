@@ -8,6 +8,9 @@
 </.header>
 
 <div id="classes" phx-update="stream" class="py-4 flex flex-col gap-1">
+  <div class="hidden only:block">
+    <p><%= gettext "You are not enrolled in any classes yet." %></p>
+  </div>
   <div :for={{id, class} <- @streams.classes} class="flex justify-between px-4 py-2 rounded-lg cursor-pointer bg-zinc-100 dark:bg-zinc-700 hover:bg-zinc-200 hover:dark:bg-zinc-600"
     phx-click={JS.navigate(~p"/classes/#{class}")}
   >

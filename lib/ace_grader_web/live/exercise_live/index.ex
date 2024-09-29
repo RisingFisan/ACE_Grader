@@ -9,7 +9,7 @@ defmodule AceGraderWeb.ExerciseLive.Index do
     ~H"""
     <div class="space-y-8">
       <.header>
-        <%= gettext "Exercise List" %>
+        <%= gettext "Exercises" %>
         <:subtitle :if={@current_user}>
           <%= gettext "Every exercise that is either public, created by you, or from one of your classes." %>
         </:subtitle>

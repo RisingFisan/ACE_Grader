@@ -6,32 +6,7 @@
   <.back navigate={~p"/exercises/#{@exercise}"}><%= gettext "Back to exercise" %></.back>
 </div>
 
-<div x-data="{ description: false }">
-  <div id="description" x-show="description" x-collapse.duration.1000ms.min.80px x-cloak>
-    <.markdown_text content={@exercise.description} />
-  </div>
-
-  <div class="flex flex-col items-center">
-    <button class="text-zinc-600 dark:text-zinc-200 description" x-show="description" @click="description = false">
-      <div class="flex items-center gap-1">
-      <.icon name="hero-chevron-double-up" class="w-4 h-4" />
-      <p class="tracking-wide">
-        <%= gettext("Collapse") %>
-      </p>
-      <.icon name="hero-chevron-double-up" class="w-4 h-4" />
-      </div>
-    </button>
-    <button class="text-zinc-600 dark:text-zinc-200 description" x-show="!description" @click="description = true">
-      <div class="flex items-center gap-1">
-      <.icon name="hero-chevron-double-down" class="w-4 h-4"/>
-      <p class="tracking-wide">
-        <%= gettext("Show full description") %>
-      </p>
-      <.icon name="hero-chevron-double-down" class="w-4 h-4" />
-      </div>
-    </button>
-  </div>
-</div>
+<.description text={@exercise.description} />
 
 <.simple_form :let={f} for={@changeset} phx-submit="submit_code" id="submit_form" phx-change="update_code">
   <.editor id="editor-component" language={@exercise.language} field={f[:code]} initial_value={@exercise.template} />

@@ -264,14 +264,14 @@ defmodule AceGraderWeb.CoreComponents do
       type={@type}
       class={[
         "phx-submit-loading:opacity-75 rounded-lg disabled:bg-zinc-600 dark:disabled:bg-zinc-800",
-        "disabled:cursor-not-allowed py-3 px-5",
+        "disabled:cursor-not-allowed py-3 px-5 transition",
         "text-lg font-semibold leading-6 text-white active:text-white/80",
         (case @kind do
           :teacher -> "bg-orange-700 hover:bg-orange-600"
           :delete -> "bg-red-700 hover:bg-red-600"
           :normal -> "bg-violet-800 hover:bg-violet-700"
         end),
-        @dark && "dark:bg-zinc-800 dark:hover:bg-violet-900",
+        @dark && "dark:bg-violet-900 dark:hover:bg-violet-800",
         @class
       ]}
       {@rest}
@@ -517,7 +517,7 @@ defmodule AceGraderWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex flex-col-reverse md:flex-row justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-3xl font-bold leading-8 text-zinc-800 dark:text-zinc-100">
+        <h1 class="text-4xl font-bold leading-8 text-zinc-800 dark:text-zinc-100">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-200">

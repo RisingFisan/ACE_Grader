@@ -75,7 +75,6 @@ defmodule AceGraderWeb.ExerciseLive.ListComponent do
   end
 
   def handle_event("order_and_filter", %{"order_by" => order_by, "languages" => languages}, socket) do
-    IO.inspect(languages)
     category = cond do
       socket.assigns[:current_user?] -> {:user, socket.assigns.user, socket.assigns.current_user?}
       socket.assigns[:class] -> {:class, socket.assigns.class}
@@ -91,7 +90,6 @@ defmodule AceGraderWeb.ExerciseLive.ListComponent do
   end
 
   defp get_exercises(category, order_by, languages \\ []) do
-    IO.inspect(category)
     case category do
       {:public, user} -> Exercises.list_public_exercises(order_by: order_by, user_id: (if user, do: user.id, else: nil), languages: languages)
       {:user, user, self} -> Exercises.list_exercises_by_user(user.id, not self, order_by: order_by, languages: languages)

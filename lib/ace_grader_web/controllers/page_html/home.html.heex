@@ -25,6 +25,11 @@
           <%= gettext "Go to Exercises" %>
         </.button>
       </.link>
+      <.link :if={@current_user} href={~p"/classes"}>
+        <.button dark>
+          <%= gettext "Go to Classes" %>
+        </.button>
+      </.link>
     </div>
   </div>
 </div>

@@ -3,29 +3,6 @@
     <img src={"/images/ACEGrader_white.svg"} alt="ACE Grader" class="w-48 md:w-64"/>
     <p class="font-light tracking-wider text-xl text-center px-16"><%= gettext "Automatic Code Evaluator and Grader" %></p>
   </div>
-  <div class="flex flex-col items-center gap-4">
-    <h2 :if={@current_user} class="text-2xl md:text-4xl font-bold"><%= gettext("Welcome back, %{name}!", name: @current_user.display_name) %></h2>
-    <div class="flex flex-col md:flex-row items-center gap-4">
-      <%= if @current_user do %>
-        <.link href={~p"/users/#{@current_user.username}"}>
-          <.button dark>
-            <%= gettext "Go to my account" %>
-          </.button>
-        </.link>
-      <% else %>
-        <.link :if={!@current_user} href={~p"/users/log_in"}>
-          <.button dark>
-            <%= gettext "Log in" %>
-          </.button>
-        </.link>
-      <% end %>
-      <.link href={~p"/exercises"}>
-        <.button dark>
-          <%= gettext "Go to Exercises" %>
-        </.button>
-      </.link>
-    </div>
-  </div>
 </div>
 <div class="px-4 py-6 sm:py-12 md:px-8 lg:px-12 xl:px-16 flex flex-col items-center md:items-start gap-6">
   <p><%= gettext "ACE Grader was developed by Sofia Santos as part of her Master's Thesis in Software Engineering at Universidade do Minho. Sofia was supervised by Professor Pedro Rangel Henriques and Professor Alda Gancarski." %></p>

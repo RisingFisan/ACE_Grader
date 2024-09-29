@@ -158,7 +158,6 @@ defmodule AceGrader.Exercises do
   def update_exercise(%Exercise{} = exercise, attrs) do
     exercise
     |> Exercise.changeset(attrs)
-    |> IO.inspect()
     |> Repo.update()
   end
 

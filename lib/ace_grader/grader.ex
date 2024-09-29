@@ -73,19 +73,9 @@ defmodule AceGrader.Grader do
             {:retry, "Unexpected error."}
         end
     end
-
-    # File.write("#{path}/sub.c", submission.code)
-    # File.write("#{path}/main.c", submission.exercise.test_file)
-    # case System.cmd("gcc", ~w(main.c sub.c -o main), stderr_to_stdout: true, cd: path) do
-    #   {warnings, 0} ->
-    #     {:ok, warnings}
-    #   {warnings, _} ->
-    #     {:error, warnings}
-    # end
   end
 
   def grade_submission(submission, liveview) do
-    IO.inspect(submission.status)
     if submission.status == :pending do
       case compile(submission, submission.id) do
         {:ok, warnings} ->

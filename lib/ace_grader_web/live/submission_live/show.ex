@@ -6,6 +6,7 @@ defmodule AceGraderWeb.SubmissionLive.Show do
 
   def mount(_params = %{"id" => id, "exercise_id" => exercise_id}, _assigns, socket) do
     submission = Submissions.get_submission!(id)
+    IO.inspect(submission)
     if socket.assigns.current_user.account_type == :student && submission.author_id != socket.assigns.current_user.id do
       {:ok, socket |> put_flash(:error, "You do not have permission to view this submission.") |> push_navigate(to: "/exercises/#{exercise_id}")}
     else
