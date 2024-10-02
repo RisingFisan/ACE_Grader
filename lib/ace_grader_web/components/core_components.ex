@@ -253,7 +253,7 @@ defmodule AceGraderWeb.CoreComponents do
   attr :type, :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
-  attr :kind, :atom, values: [:normal, :teacher, :delete], default: :normal
+  attr :kind, :atom, values: [:normal, :teacher, :delete, :grey], default: :normal
   attr :dark, :boolean, default: false
 
   slot :inner_block, required: true
@@ -270,6 +270,7 @@ defmodule AceGraderWeb.CoreComponents do
           :teacher -> "bg-orange-700 hover:bg-orange-600"
           :delete -> "bg-red-700 hover:bg-red-600"
           :normal -> "bg-violet-800 hover:bg-violet-700"
+          :grey -> "bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500"
         end),
         @dark && "dark:bg-violet-900 dark:hover:bg-violet-800",
         @class

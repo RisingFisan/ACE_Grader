@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # Run the grader
-waitress-serve --port=$PORT grader:app
+waitress-serve --port=$PORT main:app

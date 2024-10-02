@@ -31,7 +31,7 @@ window.addEventListener('phx:undo_language_change', (e) => {
   phx-change="validate" 
   phx-submit="save" 
   action={if assigns[:exercise], do: ~p"/exercises/#{@exercise}", else: ~p"/exercises"}
-  class="mt-8">
+  class="my-8">
   <%!-- <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error> --%>
@@ -56,12 +56,6 @@ window.addEventListener('phx:undo_language_change', (e) => {
       <input type="checkbox" checked={class in @current_classes} name={"exercise[exercise_classes][#{i}][class_id]"} id={class.id} phx-update="ignore" value={class.id}/>
         <%= class.name %>
     <% end %>
-    <!--
-    WHAT TO DO:
-    1. get all classes in form.ex
-    2. make a fancy schamncy thingy with checkboxes here for each class
-    3. when saving, get all the checked classes and save them in the db (get classes twice for safety reasons)
-    -->
   </div>
   <div class="flex items-start gap-4">
     <div class="flex-1">
@@ -192,8 +186,13 @@ window.addEventListener('phx:undo_language_change', (e) => {
   </div> --%>
 
   <.error :if={length(@form[:total_grade].errors) > 0}><%= dgettext "errors", "The sum of every grade should equal 100!" %></.error>
+  <input name="exercise[preview_input]" type="hidden" label={gettext "Preview input"} />
   <:actions>
-    <div class="fixed mx-auto bottom-6 left-1/2 -translate-x-1/2">
+    <div class="fixed mx-auto bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+      <.button type="button" id="preview-button" class="flex items-center gap-2" kind={:grey} phx-click={AceGraderWeb.CoreComponents.show_modal("preview-modal")}>
+        <.icon name="hero-eye" class="w-5 h-5"/>
+        <%= gettext "Preview" %>
+      </.button>
       <.button id="submit-button" class="flex items-center gap-2">
         <svg class="w-5 h-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V173.3c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32H64zm0 96c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V128zM224 288a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
         <%= gettext "Save Exercise" %>
@@ -201,3 +200,19 @@ window.addEventListener('phx:undo_language_change', (e) => {
     </div>
   </:actions>
 </.simple_form>
+
+<.modal id="preview-modal" >
+  <div class="space-y-8">
+    <h2 class="text-2xl font-bold"><%= gettext "Preview" %></h2>
+    <div class="p-4 space-y-4">
+      <div>
+        <h3 class="text-xl font-bold"><%= @form[:title].value %></h3>
+        <div class="mt-2">
+          <.markdown_text content={@form[:description].value} />
+        </div>
+      </div>
+      <hr class="my-4 border-t-2 border-zinc-300 dark:border-zinc-600"/>
+      <.editor id="preview-editor" language={@form[:language].value} initial_value={@form[:template].value} field={@form[:preview_input]}/>
+    </div>
+  </div>
+</.modal>

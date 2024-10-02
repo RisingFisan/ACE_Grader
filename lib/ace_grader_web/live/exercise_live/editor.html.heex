@@ -20,7 +20,7 @@
       disabled={@api_status == :offline or @testing}>
       <%= if @testing, do: gettext("Running..."), else: pgettext("verb", "Test") %>
     </button>
-    <.button id="submit_button" class="w-48 h-16 sm:place-self-start" phx-click={JS.push("show_confirm")}><span class="text-2xl"><%= gettext "Submit" %></span></.button>
+    <.button type="button" id="submit_button" class="w-48 h-16 sm:place-self-start" phx-click={JS.push("show_confirm")}><span class="text-2xl"><%= gettext "Submit" %></span></.button>
   </div>
 </.simple_form>
 

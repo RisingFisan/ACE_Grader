@@ -26,16 +26,11 @@ defmodule AceGraderWeb.ExerciseLive.Form do
     exercise = %Exercise{}
     language = exercise.language
     form =
-      Exercises.change_exercise(exercise, visibility: :public)
+      Exercises.change_exercise(exercise, %{visibility: :public})
       |> Ecto.Changeset.put_assoc(:tests, [%Exercises.Test{temp_id: get_temp_id()}])
       |> Ecto.Changeset.put_change(:test_file, test_file(language))
       |> Ecto.Changeset.put_change(:template, template(language))
       |> to_form()
-      # |> Ecto.Changeset.put_assoc(:parameters, [%Exercises.Parameter{temp_id: get_temp_id()}])
-      # |> Ecto.Changeset.put_change(:test_file, """
-
-      # """)
-      # |> Ecto.Changeset.put_change(:template, )
 
     {:ok, socket |> assign(
       form: form,
@@ -49,6 +44,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
     }
   end
 
+  @spec test_file(binary) :: binary
   def test_file("c") do
     """
     #include <stdio.h>
@@ -194,5 +190,7 @@ defmodule AceGraderWeb.ExerciseLive.Form do
   end
 
   defp get_temp_id, do: :crypto.strong_rand_bytes(5) |> Base.url_encode64
+
+
 
 end

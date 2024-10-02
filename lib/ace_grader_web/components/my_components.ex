@@ -69,7 +69,7 @@ defmodule AceGraderWeb.MyComponents do
             </div>
             <div :if={test.status == :timeout} class="flex items-center text-orange-600 dark:text-orange-400 tracking-wider gap-2 text-xl">
               <p><%= gettext "Timeout" %></p>
-              <AceGraderWeb.CoreComponents.icon name="hero-exclamation_circle" class="w-12 h-12"/>
+              <AceGraderWeb.CoreComponents.icon name="hero-exclamation-circle" class="w-12 h-12"/>
             </div>
             <AceGraderWeb.CoreComponents.icon name="hero-clock" :if={test.status == :pending} class="w-12 h-12" />
           </div>
@@ -201,7 +201,6 @@ defmodule AceGraderWeb.MyComponents do
       :c -> "c_cpp"
       _ -> to_string(language)
     end
-    |> IO.inspect()
   end
 
   attr :id, :string
@@ -213,6 +212,7 @@ defmodule AceGraderWeb.MyComponents do
   def editor(%{type: "read-only"} = assigns) do
     assigns
     |> assign(type: nil)
+    |> assign(field: false)
     |> assign(:x_init, """
       editor = $store.ace.edit($refs.editor, {
         maxLines: 20,
@@ -256,13 +256,17 @@ defmodule AceGraderWeb.MyComponents do
         $refs.editor_input.value = editor.getValue();
         $refs.editor_input.dispatchEvent(new Event('input', { bubbles: true }));
       });
-      window.addEventListener('phx:change_language', (e) => {
-        let v = e.detail['#{assigns.field.field}'];
-        if (v) {
-          editor.setValue(v, -1);
-          editor.session.setMode(`ace/mode/${language_file(e.detail['language'])}`);
-        }
-      })
+      #{if assigns[:field] do
+        """
+        window.addEventListener('phx:change_language', (e) => {
+          let v = e.detail['#{assigns.field.field}'];
+          if (v) {
+            editor.setValue(v, -1);
+            editor.session.setMode(`ace/mode/${language_file(e.detail['language'])}`);
+          }
+        })
+        """
+      end}
     """)
     |> editor()
   end
